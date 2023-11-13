@@ -47,8 +47,6 @@ export function get_month_data(year, month, data) {
   const month_starts_on = get_day_of_week(date);
   let day = 1;
 
-  debugger;
-
   for (let i = 0; i < (days_in_month + month_starts_on) / DAYS_IN_WEEK; i++) {
     result[i] = [];
 
@@ -61,4 +59,11 @@ export function get_month_data(year, month, data) {
     }
   }
   return result;
+}
+
+export function get_start_of_day(input_date: Date) {
+  let date = new Date(input_date);
+  date.setHours(0, 0, 0, 0);
+
+  return date;
 }

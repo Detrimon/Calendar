@@ -1,6 +1,11 @@
-import { For } from "solid-js";
+import { For, createSignal, mergeProps } from "solid-js";
 import styles from "./Calendar.module.css";
-import { DAYS_IN_WEEK, get_month_data } from "./calendar_helpers";
+import {
+  DAYS_IN_WEEK,
+  get_month_data,
+  get_start_of_day,
+} from "./calendar_helpers";
+import { CalendarController } from "./CalendarController";
 
 const WEEKDAYS = ["пн", "вт", "ср", "чт", "пт", "сб", "вс"];
 const months = [
@@ -18,11 +23,19 @@ const months = [
   "Декабрь",
 ];
 
-export const Calendar = () => {
+export const Calendar = (input_props) => {
+  const default_props = {
+    controller: input_props.controller ? null : new CalendarController(),
+  };
+
+  const props = mergeProps(default_props, input_props);
+
+  props.controller.initialize();
+
   return (
     <div>
       <CalendarHeader year="2023" />
-      <CalendarBody />
+      <CalendarBody {...props} />
     </div>
   );
 };
@@ -42,6 +55,7 @@ const CalendarBody = (props) => {
                 month: month,
                 month_dates: get_month_data(2023, index()),
               }}
+              {...props}
             />
           );
         }}
@@ -56,8 +70,8 @@ const MonthItem = (props) => {
   return (
     <div class={styles.month_item_container}>
       <table class={styles.month_item_table}>
-        <MonthItemHeader month_name={month} />
-        <MonthItemBody month_dates={month_dates} />
+        <MonthItemHeader month_name={month} {...props} />
+        <MonthItemBody month_dates={month_dates} {...props} />
       </table>
     </div>
   );
@@ -79,6 +93,8 @@ const MonthItemHeader = (props) => {
 };
 
 const MonthItemBody = (props) => {
+  console.log(props);
+  console.log(props.dates_slice.month);
   return (
     <tbody>
       <For each={props.month_dates}>
@@ -92,6 +108,9 @@ const MonthItemBody = (props) => {
                       classList={{
                         [styles.day_weekend]:
                           day.getDay() === 6 || day.getDay() === 0,
+                        [styles.day_today]:
+                          props.controller.get_today().getTime() ===
+                          get_start_of_day(day).getTime(),
                       }}
                     >
                       {day.getDate()}
