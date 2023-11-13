@@ -44,6 +44,9 @@ const CalendarHeader = (props) => {
   return <div>{`< ${props.year} >`}</div>;
 };
 
+
+console.log('!!!');
+
 const CalendarBody = (props) => {
   return (
     <div class={styles.calendar_body_container}>
