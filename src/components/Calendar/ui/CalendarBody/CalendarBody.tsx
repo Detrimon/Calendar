@@ -1,16 +1,14 @@
 import { For } from "solid-js";
 
-import { MonthItem } from "../MonthItem";
+import { MonthItem } from "../MonthItem/MonthItem";
 import { MONTHS } from "../../lib/constants";
 import { get_month_data } from "../../helpers/calendar_helpers";
+import { useCalendarContext } from "../../context/CalendarContext";
 
 import styles from "./styles.module.css";
 
-type Props = {
-  year: number
-}
-
-export const CalendarBody = (props: Props) => {
+export const CalendarBody = () => {
+  const { controller } = useCalendarContext();
 
   return (
     <div class={styles.calendar_body_container}>
@@ -20,7 +18,7 @@ export const CalendarBody = (props: Props) => {
             <MonthItem
               dates_slice={{
                 month: month,
-                month_dates: get_month_data(props.year, index()),
+                month_dates: get_month_data(controller.get_year(), index()),
               }}
             />
           );

@@ -1,5 +1,5 @@
-import { MonthItemBody } from "./MonthItemBody";
-import { MonthItemHeader } from "./MonthItemHeader";
+import { MonthItemBody } from "./MonthItemBody/MonthItemBody";
+import { MonthItemHeader } from "./MonthItemHeader/MonthItemHeader";
 
 import styles from "./styles.module.css";
 

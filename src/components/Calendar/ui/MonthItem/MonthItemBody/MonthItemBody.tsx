@@ -1,19 +1,16 @@
-import { For, useContext } from "solid-js";
+import { For } from "solid-js";
 
-import { CalendarContext } from "../../../context/CalendarContext";
 import { get_start_of_day } from "../../../helpers/calendar_helpers";
+import { useCalendarContext } from "../../../context/CalendarContext";
 
 import styles from "./styles.module.css";
 
 type Props = {
   month_dates: Date[][]
-}
+};
 
 export const MonthItemBody = (props: Props) => {
-  const { controller } = useContext(CalendarContext);
-  
-  console.log('>>>',props);
-
+  const { controller } = useCalendarContext();
   
   return (
     <tbody>
