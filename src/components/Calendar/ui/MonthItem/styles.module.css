@@ -1,5 +1,6 @@
 .month_item_container {
-  flex: 0 0 25%;
+  flex: 0 0 20%;
+  text-align: center;
 }
 
 .month_item_table {

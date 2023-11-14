@@ -16,10 +16,8 @@ export const CalendarBody = () => {
         {(month, index) => {
           return (
             <MonthItem
-              dates_slice={{
-                month: month,
-                month_dates: get_month_data(controller.get_year(), index()),
-              }}
+              month={month}
+              month_dates={get_month_data(controller.get_year(), index())}
             />
           );
         }}
