@@ -5,6 +5,7 @@ export class CalendarController {
     get_today: Accessor<Date> | null;
     set_today: Setter<Date> | null;
   };
+
   constructor() {
     this.signals = {
       get_today: null,

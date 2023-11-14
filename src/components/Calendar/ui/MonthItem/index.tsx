@@ -1,9 +1,17 @@
+import { CalendarProps } from "../../lib/types";
 import { MonthItemBody } from "./MonthItemBody";
 import { MonthItemHeader } from "./MonthItemHeader";
 
 import styles from "./styles.module.css";
 
-export const MonthItem = (props) => {
+type Props = {
+  dates_slice: {
+    month: string
+    month_dates: Date[][]
+  }
+} & CalendarProps;
+
+export const MonthItem = (props: Props) => {
   const { month, month_dates } = props.dates_slice;
 
   return (

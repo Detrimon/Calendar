@@ -1,6 +1,6 @@
 import "./App.css";
 import { Calendar } from "./components/Calendar/Calendar";
-import { CalendarController } from "./components/Calendar/CalendarController";
+import { CalendarController } from "./components/Calendar/controllers/CalendarController";
 
 function App() {
   let calendarController = new CalendarController();

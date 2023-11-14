@@ -1,20 +1,25 @@
 import { For } from "solid-js";
 
-import { get_start_of_day } from "../../../utils/calendar_helpers";
+import { CalendarProps } from "../../../lib/types";
+import { get_start_of_day } from "../../../helpers/calendar_helpers";
 
 import styles from "./styles.module.css";
 
-export const MonthItemBody = (props) => {
-  console.log(props);
-  console.log(props.dates_slice.month);
+type Props = {
+  month_dates: Date[][]
+} & CalendarProps;
+
+export const MonthItemBody = (props: Props) => {
+  console.log('>>>',props);
+
   return (
     <tbody>
       <For each={props.month_dates}>
-        {(week, index) => {
+        {(week) => {
           return (
             <tr>
               <For each={week}>
-                {(day, index) => {
+                {(day) => {
                   return day ? (
                     <td
                       classList={{

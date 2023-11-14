@@ -1,21 +1,14 @@
-import { mergeProps } from "solid-js";
-
 import { CalendarHeader } from "./ui/CalendarHeader";
 import { CalendarBody } from "./ui/CalendarBody";
-import { CalendarController } from "./CalendarController";
+import { CalendarProps } from "./lib/types";
 
-export const Calendar = (input_props) => {
-  const default_props = {
-    controller: input_props.controller ? null : new CalendarController(),
-  };
-
-  const props = mergeProps(default_props, input_props);
-
+export const Calendar = (props: CalendarProps) => {
   props.controller.initialize();
+  const year = new Date().getFullYear();
 
   return (
     <div>
-      <CalendarHeader year="2023" />
+      <CalendarHeader year={year} />
       <CalendarBody {...props} />
     </div>
   );

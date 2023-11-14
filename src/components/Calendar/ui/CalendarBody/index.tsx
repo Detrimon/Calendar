@@ -2,11 +2,12 @@ import { For } from "solid-js";
 
 import { MonthItem } from "../MonthItem";
 import { MONTHS } from "../../lib/constants";
-import { get_month_data } from "../../utils/calendar_helpers";
+import { get_month_data } from "../../helpers/calendar_helpers";
+import { CalendarProps } from "../../lib/types";
 
 import styles from "./styles.module.css";
 
-export const CalendarBody = (props) => {
+export const CalendarBody = (props: CalendarProps) => {
   return (
     <div class={styles.calendar_body_container}>
       <For each={MONTHS}>

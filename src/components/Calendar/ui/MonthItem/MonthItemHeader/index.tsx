@@ -1,11 +1,16 @@
 
 import { For } from "solid-js";
 
+import { CalendarProps } from "../../../lib/types";
 import { DAYS_IN_WEEK, WEEKDAYS } from "../../../lib/constants";
 
 import styles from "./styles.module.css";
 
-export const MonthItemHeader = (props) => {
+type Props = {
+  month_name: string
+} & CalendarProps;
+
+export const MonthItemHeader = (props: Props) => {
   return (
     <thead class={styles.month_item_header_container}>
       <tr>
