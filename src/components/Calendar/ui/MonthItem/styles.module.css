@@ -1,0 +1,7 @@
+.month_item_container {
+  flex: 0 0 25%;
+}
+
+.month_item_table {
+  border-collapse: collapse;
+}
