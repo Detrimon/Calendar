@@ -1,13 +1,15 @@
 import "./App.css";
 import { Calendar } from "./components/Calendar/Calendar";
+import { CalendarProvider } from "./components/Calendar/context/CalendarContext";
 import { CalendarController } from "./components/Calendar/controllers/CalendarController";
 
 function App() {
   let calendarController = new CalendarController();
+  
   return (
-    <>
-      <Calendar controller={calendarController} />
-    </>
+    <CalendarProvider controller={calendarController}>
+      <Calendar />
+    </CalendarProvider>
   );
 }
 

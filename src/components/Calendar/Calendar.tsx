@@ -1,15 +1,20 @@
+import { useContext } from "solid-js";
+
 import { CalendarHeader } from "./ui/CalendarHeader";
 import { CalendarBody } from "./ui/CalendarBody";
-import { CalendarProps } from "./lib/types";
+import { CalendarContext } from "./context/CalendarContext";
 
-export const Calendar = (props: CalendarProps) => {
-  props.controller.initialize();
-  const year = new Date().getFullYear();
+
+export const Calendar = () => {
+  const { controller } = useContext(CalendarContext);
+  controller.initialize();
+
+  const year = controller.get_year() as number;
 
   return (
     <div>
       <CalendarHeader year={year} />
-      <CalendarBody {...props} />
+      <CalendarBody year={year} />
     </div>
   );
 };

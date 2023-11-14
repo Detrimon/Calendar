@@ -1,4 +1,3 @@
-import { CalendarProps } from "../../lib/types";
 import { MonthItemBody } from "./MonthItemBody";
 import { MonthItemHeader } from "./MonthItemHeader";
 
@@ -9,7 +8,7 @@ type Props = {
     month: string
     month_dates: Date[][]
   }
-} & CalendarProps;
+}
 
 export const MonthItem = (props: Props) => {
   const { month, month_dates } = props.dates_slice;
@@ -17,8 +16,8 @@ export const MonthItem = (props: Props) => {
   return (
     <div class={styles.month_item_container}>
       <table class={styles.month_item_table}>
-        <MonthItemHeader month_name={month} {...props} />
-        <MonthItemBody month_dates={month_dates} {...props} />
+        <MonthItemHeader month_name={month}/>
+        <MonthItemBody month_dates={month_dates}/>
       </table>
     </div>
   );

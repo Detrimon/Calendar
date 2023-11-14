@@ -32,4 +32,8 @@ export class CalendarController {
   set_today() {
     this.signals.set_today && this.signals.set_today(new Date());
   }
+
+  get_year() {
+    return this.signals.get_today && this.signals.get_today().getFullYear();
+  }
 }
