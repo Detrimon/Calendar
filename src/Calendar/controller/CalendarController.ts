@@ -1,43 +1,47 @@
-import { Accessor, Setter, createSignal } from "solid-js";
+import { Accessor, Resource, Setter, createResource, createSignal } from "solid-js";
+import { get_holidays } from "../utils/get_holidays";
 
 export class CalendarController {
   signals: {
-    get_today: Accessor<Date> | null;
-    set_today: Setter<Date> | null;
+    get_selected_date: Accessor<Date> | null;
+    set_selected_date: Setter<Date> | null;
     get_year: Accessor<number> | null;
     set_year: Setter<number> | null;
   };
+  public_holidays_resource: Resource<Date[]> | null;
 
   constructor() {
     this.signals = {
-      get_today: null,
-      set_today: null,
       get_year: null,
       set_year: null,
+      get_selected_date: null,
+      set_selected_date: null,
     };
+    this.public_holidays_resource = null;
   }
 
   initialize() {
-    let today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const [get_today, set_today] = createSignal(today);
-    const [get_year, set_year] = createSignal(today.getFullYear());
+    const [get_year, set_year] = createSignal(new Date().getFullYear());
+    const [get_selected_date, set_selected_date] = createSignal(this.get_today());
+    const [public_holidays] = createResource(get_year, get_holidays);
 
     this.signals = {
-      get_today,
-      set_today,
       get_year,
       set_year,
+      get_selected_date,
+      set_selected_date
     };
+    this.public_holidays_resource = public_holidays;
+  }
+
+  get_holidays() {
+    return this.public_holidays_resource && this.public_holidays_resource();
   }
 
   get_today() {
-    return this.signals?.get_today && this.signals.get_today();
-  }
-
-  set_today() {
-    this.signals.set_today && this.signals.set_today(new Date());
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return today
   }
 
   get_year() {
@@ -46,5 +50,13 @@ export class CalendarController {
 
   set_year(year: number) {
     return this.signals.set_year && this.signals.set_year(year);
+  }
+
+  get_selected_date() {
+    return this.signals.get_selected_date && this.signals.get_selected_date();
+  }
+
+  set_selected_date(date: Date) {
+    return this.signals.set_selected_date && this.signals.set_selected_date(date);
   }
 }

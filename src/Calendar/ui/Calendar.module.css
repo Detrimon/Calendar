@@ -19,11 +19,7 @@
 .month_item_container {
   flex: 0 0 20%;
   text-align: center;
-  min-height: 175px;
-}
-
-.month_item_table {
-  border-collapse: collapse;
+  min-height: 200px;
 }
 
 .month_item_header_container {
@@ -48,6 +44,13 @@
 }
 
 .day_today {
-  border: 2px solid black;
-  color: green;
+  background-color: lightgreen;
+}
+
+.day_selected {
+  border: 1px solid black;
+}
+
+td{
+  border: 1px solid transparent;
 }

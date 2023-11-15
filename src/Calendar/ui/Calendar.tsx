@@ -1,7 +1,7 @@
-import { For } from "solid-js";
+import { For, Show } from "solid-js";
 import { CalendarProvider, useCalendarContext } from "../context/CalendarContext";
 import { DAYS_IN_WEEK, MONTHS, WEEKDAYS } from "../lib/constants";
-import { get_month_data, get_start_of_day } from "../helpers/calendar_helpers";
+import { get_month_data } from "../helpers/calendar_helpers";
 import type {
   CalendarProps,
   MonthItemBodyProps,
@@ -13,9 +13,13 @@ import styles from "./Calendar.module.css";
 
 export const Calendar = (props: CalendarProps) => {
   props.controller.initialize();
+  props.events_provider.initialize();
 
   return (
-    <CalendarProvider controller={props.controller}>
+    <CalendarProvider
+      controller={props.controller}
+      events_provider={props.events_provider}
+    >
       <CalendarHeader />
       <CalendarBody />
     </CalendarProvider>
@@ -68,7 +72,7 @@ const CalendarBody = () => {
 
 const MonthItem = (props: MonthItemProps) => (
   <div class={styles.month_item_container}>
-    <table class={styles.month_item_table}>
+    <table>
       <MonthItemHeader month_name={props.month} />
       <MonthItemBody month_dates={props.month_dates} />
     </table>
@@ -94,35 +98,33 @@ const MonthItemHeader = (props: MonthItemHeader) => (
 
 const MonthItemBody = (props: MonthItemBodyProps) => {
   const { controller } = useCalendarContext();
+  const day_today = controller.get_today().getTime();
+
+  const selectDate = (date: Date) => controller.set_selected_date(date);
   
   return (
     <tbody>
       <For each={props.month_dates}>
-        {(week) => {
-          return (
-            <tr>
-              <For each={week}>
-                {(day) => {
-                  return day ? (
-                    <td
-                      classList={{
-                        [styles.day_weekend]:
-                          day.getDay() === 6 || day.getDay() === 0,
-                        [styles.day_today]:
-                          controller.get_today()?.getTime() ===
-                          get_start_of_day(day).getTime(),
-                      }}
-                    >
-                      {day.getDate()}
-                    </td>
-                  ) : (
-                    <td></td>
-                  );
-                }}
-              </For>
-            </tr>
-          );
-        }}
+        {week => (
+          <tr>
+            <For each={week}>
+              {day => (
+                <Show when={day} fallback={<td></td>}>
+                  <td
+                    onClick={() => selectDate(day)}
+                    classList={{
+                      [styles.day_weekend]: day.getDay() === 6 || day.getDay() === 0,
+                      [styles.day_selected]: controller.get_selected_date()?.getTime() === day.getTime(),
+                      [styles.day_today]: day_today === day.getTime(),
+                    }}
+                  >
+                    {day.getDate()}
+                  </td>
+                </Show>
+              )}
+            </For>
+          </tr>
+        )}
       </For>
     </tbody>
   );
