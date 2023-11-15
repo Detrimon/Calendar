@@ -1,7 +1,7 @@
 import { ParentComponent, createContext, useContext } from "solid-js";
 
-import { CalendarController } from "../controllers/CalendarController";
-import { CalendarProps } from "../lib/types";
+import { CalendarController } from "../controller/CalendarController";
+import { CalendarProps } from "../ui/CalendarTypes";
 
 export const CalendarContext = createContext<CalendarProps>({
   controller: new CalendarController()

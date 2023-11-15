@@ -1,0 +1,53 @@
+.calendar_header_container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.calendar_header_button {
+  cursor: pointer;
+}
+
+.calendar_body_container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  gap: 20px;
+}
+
+.month_item_container {
+  flex: 0 0 20%;
+  text-align: center;
+  min-height: 175px;
+}
+
+.month_item_table {
+  border-collapse: collapse;
+}
+
+.month_item_header_container {
+  color: white;
+  display: table-caption;
+  border: 1px solid blue;
+  background: blue;
+  border-radius: 8px;
+}
+
+.month_title {
+  padding: 5px 0;
+  text-transform: uppercase;
+}
+
+.week_day {
+  padding: 0 10px;
+}
+
+.day_weekend {
+  color: red;
+}
+
+.day_today {
+  border: 2px solid black;
+  color: green;
+}

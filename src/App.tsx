@@ -1,5 +1,5 @@
-import { Calendar } from "./components/Calendar/Calendar";
-import { CalendarController } from "./components/Calendar/controllers/CalendarController";
+import { Calendar } from "./Calendar"
+import { CalendarController } from "./Calendar/controller/CalendarController";
 
 import "./App.css";
 
