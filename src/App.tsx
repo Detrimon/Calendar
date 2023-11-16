@@ -1,14 +1,12 @@
+import { Calendar } from "./Calendar"
+import { CalendarController } from "./Calendar/controller/CalendarController";
+import { CalendarEventsProvider } from "./Calendar/data_provider/CalendarEventsProvider";
+
 import "./App.css";
-import { Calendar } from "./components/Calendar/Calendar";
-import { CalendarController } from "./components/Calendar/CalendarController";
 
-function App() {
-  let calendarController = new CalendarController();
-  return (
-    <>
-      <Calendar controller={calendarController} />
-    </>
-  );
-}
-
-export default App;
+export const App = () => {
+  const controller = new CalendarController();
+  const events_provider = new CalendarEventsProvider();
+  
+  return <Calendar controller={controller} events_provider={events_provider}/>
+};
