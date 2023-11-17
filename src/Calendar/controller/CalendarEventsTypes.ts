@@ -1,7 +1,7 @@
 interface CalendarEventsInterface {
   // [date: Date]: CalendarDayEventsInterface
-  events: CalendarDayEventsInterface[]
-}
+  [date: string]: CalendarDayEventsInterface
+};
 
 interface CalendarDayEventsInterface {
   day_events: {

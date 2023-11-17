@@ -8,12 +8,20 @@ import type {
   MonthItemHeader,
   MonthItemProps
 } from "./CalendarTypes";
+import { EventsParams } from "../data_provider/CalendarEventsProviderTypes";
 
 import styles from "./Calendar.module.css";
 
+const paramsForTest: EventsParams = {
+  date_from: new Date(),
+  date_to: new Date(),
+  time_from: '00:00:00',
+  time_to: '23:59:59'
+};
+
 export const Calendar = (props: CalendarProps) => {
   props.controller.initialize();
-  props.events_provider.initialize();
+  props.events_provider.initialize(paramsForTest);
 
   return (
     <CalendarProvider
