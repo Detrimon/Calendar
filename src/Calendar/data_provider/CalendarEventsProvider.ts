@@ -1,4 +1,4 @@
-import { Accessor, Resource, Setter, createResource, createSignal } from "solid-js";
+import { Accessor, Resource, Setter, batch, createResource, createSignal } from "solid-js";
 import { get_repeated_events, get_unique_events } from "../utils/get_events";
 import { EventsParams, ICalendarEventsProvider } from "./CalendarEventsProviderTypes";
 
@@ -50,9 +50,12 @@ export class CalendarEventsProvider implements ICalendarEventsProvider {
   };
 
   // TODO Имплементировать функцию, когда появится чёткое представление о структуре repeated_events. Нужна функция transform 
-  get_events(params: EventsParams) : CalendarEventsInterface[] {
-    this.set_repeated_events_params(params);
-    this.set_unique_events_params(params);
+  get_events(params: EventsParams): CalendarEventsInterface[] {
+    batch(() => {
+      this.set_repeated_events_params(params);
+      this.set_unique_events_params(params);
+    });
+    
 
     const result = {
       ...this.get_unique_events(),
