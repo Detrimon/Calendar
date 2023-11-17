@@ -1,8 +1,8 @@
 import { CalendarController } from "../controller/CalendarController";
-import { CalendarEventsProvider } from "../data_provider/CalendarEventsProvider";
+import { CalendarEvents } from "../controller/CalendarEvents";
 
 export type CalendarProps = {
-  events_provider: CalendarEventsProvider,
+  events: CalendarEvents,
   controller: CalendarController,
   view?: null
 }

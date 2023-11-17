@@ -1,8 +1,8 @@
 import { Accessor, Resource, Setter, createResource, createSignal } from "solid-js";
-import { get_unique_events } from "../utils/get_events";
-import { EventsParams } from "./CalendarEventsProviderTypes";
+import { get_repeated_events, get_unique_events } from "../utils/get_events";
+import { EventsParams, ICalendarEventsProvider } from "./CalendarEventsProviderTypes";
 
-export class CalendarEventsProvider {
+export class CalendarEventsProvider implements ICalendarEventsProvider {
   signals: {
     unique_events_params: Accessor<EventsParams>;
     set_unique_events_params: Setter<EventsParams>;
@@ -26,7 +26,7 @@ export class CalendarEventsProvider {
     const [unique_events_params, set_unique_events_params] = createSignal(defaultParams);
     const [repeated_events_params, set_repeated_events_params] = createSignal(defaultParams);
     const [unique_events] = createResource(unique_events_params, get_unique_events);
-    const [repeated_events] = createResource(repeated_events_params, get_unique_events);
+    const [repeated_events] = createResource(repeated_events_params, get_repeated_events);
 
     this.signals = {
       unique_events_params,
@@ -41,11 +41,6 @@ export class CalendarEventsProvider {
     };
   };
 
-  initialize(params: EventsParams) {
-    this.set_repeated_events_params(params);
-    this.set_unique_events_params(params);
-  };
-
   get_unique_events() {
     return this.resources.unique_events_resource();
   };
@@ -55,20 +50,23 @@ export class CalendarEventsProvider {
   };
 
   // TODO Имплементировать функцию, когда появится чёткое представление о структуре repeated_events. Нужна функция transform 
-  get_events() {
+  get_events(params: EventsParams) : CalendarEventsInterface[] {
+    this.set_repeated_events_params(params);
+    this.set_unique_events_params(params);
+
     const result = {
       ...this.get_unique_events(),
       ...this.get_repeated_events()
     }
-    return result
+
+    return []
   };
 
   set_unique_events_params(params: EventsParams) {
-    return this.signals.set_unique_events_params(params)
+    this.signals.set_unique_events_params(params)
   };
 
   set_repeated_events_params(params: EventsParams) {
-    return this.signals.set_repeated_events_params(params)
+    this.signals.set_repeated_events_params(params)
   };
 };
-

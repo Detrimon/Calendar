@@ -4,3 +4,7 @@ export type EventsParams = {
   time_from: string;
   time_to: string;
 };
+
+export interface ICalendarEventsProvider{
+  get_events: (params: EventsParams) => CalendarEventsInterface[]
+}

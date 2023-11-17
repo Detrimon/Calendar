@@ -4,6 +4,9 @@ import { EventsParams } from "../data_provider/CalendarEventsProviderTypes";
 export async function get_unique_events(params: EventsParams): Promise<CalendarEventsInterface>{
   const resp = await fetch('https://jsonplaceholder.typicode.com/todos/1')
   const result = await resp.json()
+
+  console.log(' from get_unique_events', result);
+
       
   return result
 }
@@ -12,6 +15,9 @@ export async function get_unique_events(params: EventsParams): Promise<CalendarE
 export async function get_repeated_events(params: EventsParams): Promise<CalendarEventsInterface>{
   const resp = await fetch('https://jsonplaceholder.typicode.com/todos/1')
   const result = await resp.json()
+
+  console.log(' from get_repeated_events', result);
+  
       
   return result
 }
