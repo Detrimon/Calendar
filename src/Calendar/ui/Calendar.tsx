@@ -1,4 +1,4 @@
-import { For, Show } from "solid-js";
+import { For, Show, createEffect, on } from "solid-js";
 import { CalendarProvider, useCalendarContext } from "../context/CalendarContext";
 import { DAYS_IN_WEEK, MONTHS, WEEKDAYS } from "../lib/constants";
 import { get_month_data } from "../helpers/calendar_helpers";
@@ -6,9 +6,11 @@ import type {
   CalendarProps,
   MonthItemBodyProps,
   MonthItemHeader,
-  MonthItemProps
+  MonthItemProps,
+  PrevCreateEffectValues
 } from "./CalendarTypes";
 import { EventsParams } from "../data_provider/CalendarEventsProviderTypes";
+import { CalendarActions } from "../controller/CalendarControllerTypes";
 
 import styles from "./Calendar.module.css";
 
@@ -22,6 +24,22 @@ const paramsForTest: EventsParams = {
 export const Calendar = (props: CalendarProps) => {
   props.controller.initialize();
   props.events.initialize(paramsForTest);
+
+  createEffect<PrevCreateEffectValues>((prev_values) => {
+    const new_values: PrevCreateEffectValues = {};
+
+    for (let action of Object.values(CalendarActions)) {
+      const new_value = props.controller[action]();
+      const old_value = prev_values[action];
+
+      if (new_value !== old_value) {
+        props.controller.observers[action]?.forEach(observer => observer.handleEvent(new_value));
+        new_values[action] = new_value;
+      };
+    };
+
+    return { ...prev_values, ...new_values }
+  }, {});
 
   return (
     <CalendarProvider

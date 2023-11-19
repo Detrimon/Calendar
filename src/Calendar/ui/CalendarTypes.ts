@@ -1,4 +1,5 @@
 import { CalendarController } from "../controller/CalendarController";
+import { CalendarActions } from "../controller/CalendarControllerTypes";
 import { CalendarEvents } from "../controller/CalendarEvents";
 
 export type CalendarProps = {
@@ -19,4 +20,7 @@ export type MonthItemProps = {
 export type MonthItemBodyProps = {
   month_dates: Date[][]
 };
+
+export type PrevCreateEffectValues = Partial<Record<CalendarActions, any>>;
+
 

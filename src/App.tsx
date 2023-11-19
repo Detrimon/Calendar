@@ -7,7 +7,7 @@ import "./App.css";
 
 export const App = () => {
   const controller = new CalendarController();
-  const events = new CalendarEvents(new CalendarEventsProvider())
+  const events = new CalendarEvents(new CalendarEventsProvider());  
   
   return <Calendar controller={controller} events={events}/>
 };
