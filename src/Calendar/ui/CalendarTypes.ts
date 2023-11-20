@@ -1,11 +1,13 @@
 import { CalendarController } from "../controller/CalendarController";
 import { CalendarActions } from "../controller/CalendarControllerTypes";
 import { CalendarEvents } from "../controller/CalendarEvents";
+import { CalendarConfig } from "./CalendarConfig";
 
 export type CalendarProps = {
   events: CalendarEvents,
   controller: CalendarController,
-  view?: null
+  view?: null,
+  initial_settings: CalendarConfig
 }
 
 export type MonthItemHeader = {

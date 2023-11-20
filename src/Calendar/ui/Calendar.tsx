@@ -1,4 +1,4 @@
-import { For, Show, createEffect, on } from "solid-js";
+import { For, Show, createEffect } from "solid-js";
 import { CalendarProvider, useCalendarContext } from "../context/CalendarContext";
 import { DAYS_IN_WEEK, MONTHS, WEEKDAYS } from "../lib/constants";
 import { get_month_data } from "../helpers/calendar_helpers";
@@ -9,21 +9,13 @@ import type {
   MonthItemProps,
   PrevCreateEffectValues
 } from "./CalendarTypes";
-import { EventsParams } from "../data_provider/CalendarEventsProviderTypes";
 import { CalendarActions } from "../controller/CalendarControllerTypes";
 
 import styles from "./Calendar.module.css";
 
-const paramsForTest: EventsParams = {
-  date_from: new Date(),
-  date_to: new Date(),
-  time_from: '00:00:00',
-  time_to: '22:59:59'
-};
-
 export const Calendar = (props: CalendarProps) => {
   props.controller.initialize();
-  props.events.initialize(paramsForTest);
+  props.events.initialize(props.initial_settings.events_params);
 
   createEffect<PrevCreateEffectValues>((prev_values) => {
     const new_values: PrevCreateEffectValues = {};

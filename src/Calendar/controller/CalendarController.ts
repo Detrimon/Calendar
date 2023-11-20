@@ -1,6 +1,6 @@
 import { Accessor, Resource, Setter, createResource, createSignal } from "solid-js";
 import { get_holidays } from "../utils/get_holidays";
-import { Observers, CalendarActions, Observer } from "./CalendarControllerTypes";
+import type { Observers, CalendarActions, Observer } from "./CalendarControllerTypes";
 
 export class CalendarController {
   readonly observers: Observers;
