@@ -5,11 +5,16 @@ import { CalendarEvents } from "./Calendar/controller/CalendarEvents";
 import { CalendarConfig } from "./Calendar/ui/CalendarConfig";
 
 import "./App.css";
+import { CalendarProvider } from "./Calendar/context/CalendarContext";
 
 export const App = () => {
   const controller = new CalendarController();
   const events = new CalendarEvents(new CalendarEventsProvider());  
   const configs = new CalendarConfig()
   
-  return <Calendar controller={controller} events={events} initial_settings={configs} />
+  return (
+    <CalendarProvider initial_settings={configs}>
+      <Calendar />
+    </CalendarProvider>
+  )
 };

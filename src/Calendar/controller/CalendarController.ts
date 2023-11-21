@@ -22,7 +22,7 @@ export class CalendarController {
     this.public_holidays_resource = null;
     this.get_selected_date = this.get_selected_date.bind(this);
     this.observers = {}
-  }
+  };
 
   subscribe(event: CalendarActions, observer: Observer) {
     if (this.observers[event] === undefined) {

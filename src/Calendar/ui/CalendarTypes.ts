@@ -4,9 +4,9 @@ import { CalendarEvents } from "../controller/CalendarEvents";
 import { CalendarConfig } from "./CalendarConfig";
 
 export type CalendarProps = {
-  events: CalendarEvents,
-  controller: CalendarController,
-  view?: null,
+  // events: CalendarEvents,
+  // controller: CalendarController,
+  // view?: null,
   initial_settings: CalendarConfig
 }
 

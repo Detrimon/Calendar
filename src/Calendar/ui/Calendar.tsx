@@ -1,66 +1,45 @@
-import { For, Show, createEffect } from "solid-js";
-import { CalendarProvider, useCalendarContext } from "../context/CalendarContext";
+import { For, Show, createEffect, on } from "solid-js";
+import { useCalendarContext } from "../context/CalendarContext";
 import { DAYS_IN_WEEK, MONTHS, WEEKDAYS } from "../lib/constants";
-import { get_month_data } from "../helpers/calendar_helpers";
+import { get_month_data, get_today } from "../helpers/calendar_helpers";
 import type {
-  CalendarProps,
   MonthItemBodyProps,
   MonthItemHeader,
   MonthItemProps,
-  PrevCreateEffectValues
 } from "./CalendarTypes";
 import { CalendarActions } from "../controller/CalendarControllerTypes";
 
 import styles from "./Calendar.module.css";
 
-export const Calendar = (props: CalendarProps) => {
-  props.controller.initialize();
-  props.events.initialize(props.initial_settings.events_params);
+export const Calendar = () => {
+  const [{observers},{get_selected_date}] = useCalendarContext();
 
-  createEffect<PrevCreateEffectValues>((prev_values) => {
-    const new_values: PrevCreateEffectValues = {};
-
-    for (let action of Object.values(CalendarActions)) {
-      const new_value = props.controller[action]();
-      const old_value = prev_values[action];
-
-      if (new_value !== old_value) {
-        props.controller.observers[action]?.forEach(observer => observer.handleEvent(new_value));
-        new_values[action] = new_value;
-      };
-    };
-
-    return { ...prev_values, ...new_values }
-  }, {});
+  createEffect(on(get_selected_date, (new_value => {
+    observers[CalendarActions.SELECTED_DATE]?.forEach(observer => observer.handleEvent(new_value));
+  }), { defer: true }));
 
   return (
-    <CalendarProvider
-      controller={props.controller}
-      events={props.events}
-    >
+    <>
       <CalendarHeader />
       <CalendarBody />
-    </CalendarProvider>
+    </>
   );
 };
 
 const CalendarHeader = () => {
-  const { controller } = useCalendarContext();
-
-  const incrementYear = () => controller.set_year(controller.get_year() + 1);
-  const decrementYear = () => controller.set_year(controller.get_year() - 1);
+  const [_, { get_year, minus_year, plus_year }] = useCalendarContext();
 
   return (
     <div class={styles.calendar_header_container}>
       <button
-        onClick={decrementYear}
+        onClick={minus_year}
         class={styles.calendar_header_button}
       >
         &#60;
       </button>
-      <p>{controller.get_year()}</p>
+      <p>{get_year()}</p>
       <button
-        onClick={incrementYear}
+        onClick={plus_year}
         class={styles.calendar_header_button}
       >
         &#62;
@@ -70,7 +49,7 @@ const CalendarHeader = () => {
 };
 
 const CalendarBody = () => {
-  const { controller } = useCalendarContext();
+  const [_, { get_year }] = useCalendarContext();
 
   return (
     <div class={styles.calendar_body_container}>
@@ -79,7 +58,7 @@ const CalendarBody = () => {
           return (
             <MonthItem
               month={month}
-              month_dates={get_month_data(controller.get_year(), index())}
+              month_dates={get_month_data(get_year(), index())}
             />
           );
         }}
@@ -115,10 +94,9 @@ const MonthItemHeader = (props: MonthItemHeader) => (
 );
 
 const MonthItemBody = (props: MonthItemBodyProps) => {
-  const { controller } = useCalendarContext();
-  const day_today = controller.get_today().getTime();
+  const [_, { get_selected_date, set_selected_date }] = useCalendarContext();
 
-  const selectDate = (date: Date) => controller.set_selected_date(date);
+  const day_today = get_today().getTime();
   
   return (
     <tbody>
@@ -129,10 +107,10 @@ const MonthItemBody = (props: MonthItemBodyProps) => {
               {day => (
                 <Show when={day} fallback={<td></td>}>
                   <td
-                    onClick={() => selectDate(day)}
+                    onClick={() => set_selected_date(day)}
                     classList={{
                       [styles.day_weekend]: day.getDay() === 6 || day.getDay() === 0,
-                      [styles.day_selected]: controller.get_selected_date()?.getTime() === day.getTime(),
+                      [styles.day_selected]: get_selected_date()?.getTime() === day.getTime(),
                       [styles.day_today]: day_today === day.getTime(),
                     }}
                   >
