@@ -38,7 +38,7 @@ type CalendarProviderProps = {
 export const CalendarContext = createContext() as Context<[TCalendarContext, TCalendarContextMethods]>;
 
 export const CalendarProvider: ParentComponent<CalendarProviderProps> = (props) => {
-   const [state, set_state] = createStore<TCalendarContext>({
+  const [state, set_state] = createStore<TCalendarContext>({
     year: props.initial_settings.year,
     year_value: 23,
     selected_date: props.initial_settings.selected_date,

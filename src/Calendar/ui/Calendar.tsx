@@ -1,5 +1,5 @@
 import { For, Show, createEffect, on } from "solid-js";
-import { useCalendarContext } from "../context/CalendarContext";
+import { CalendarProvider, useCalendarContext } from "../context/CalendarContext";
 import { DAYS_IN_WEEK, MONTHS, WEEKDAYS } from "../lib/constants";
 import { get_month_data, get_today } from "../helpers/calendar_helpers";
 import type {
@@ -10,19 +10,30 @@ import type {
 import { CalendarActions } from "../controller/CalendarControllerTypes";
 
 import styles from "./Calendar.module.css";
+import { CalendarController } from "../controller/CalendarController";
+import { CalendarConfig } from "./CalendarConfig";
 
-export const Calendar = () => {
-  const [{observers},{get_selected_date}] = useCalendarContext();
+type TCalendarProps = {
+  controller: CalendarController
+  configs: CalendarConfig
+};
 
-  createEffect(on(get_selected_date, (new_value => {
-    observers[CalendarActions.SELECTED_DATE]?.forEach(observer => observer.handleEvent(new_value));
-  }), { defer: true }));
+export const Calendar = (props: TCalendarProps) => {
+  // const [{observers},{get_selected_date}] = useCalendarContext();
+
+  const {selected_date, year} = props.configs
+
+  props.controller.initialize({ selected_date, year });
+
+  // createEffect(on(get_selected_date, (new_value => {
+  //   observers[CalendarActions.SELECTED_DATE]?.forEach(observer => observer.handleEvent(new_value));
+  // }), { defer: true }));
 
   return (
-    <>
+    <CalendarProvider>
       <CalendarHeader />
       <CalendarBody />
-    </>
+    </CalendarProvider>
   );
 };
 

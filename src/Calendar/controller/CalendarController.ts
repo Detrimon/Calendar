@@ -1,7 +1,12 @@
-import { Accessor, Resource, Setter, createResource, createSignal } from "solid-js";
+import { Accessor, Resource, Setter, createResource, createSignal, onMount } from "solid-js";
 import { get_holidays } from "../utils/get_holidays";
 import type { Observers, CalendarActions, Observer } from "./CalendarControllerTypes";
 
+
+type TInitializeProps = {
+  year: number;
+  selected_date: Date
+}
 export class CalendarController {
   readonly observers: Observers;
   signals: {
@@ -9,8 +14,9 @@ export class CalendarController {
     set_selected_date: Setter<Date> | null;
     get_year: Accessor<number> | null;
     set_year: Setter<number> | null;
+    get_public_holidays: Accessor<Date[]> | null,
+    set_public_holidays: Setter<Date[]> | null
   };
-  public_holidays_resource: Resource<Date[]> | null;
 
   constructor() {
     this.signals = {
@@ -18,8 +24,9 @@ export class CalendarController {
       set_year: null,
       get_selected_date: null,
       set_selected_date: null,
+      get_public_holidays: null,
+      set_public_holidays: null
     };
-    this.public_holidays_resource = null;
     this.get_selected_date = this.get_selected_date.bind(this);
     this.observers = {}
   };
@@ -31,22 +38,33 @@ export class CalendarController {
     this.observers[event]?.push(observer);
   };
 
-  initialize() {
-    const [get_year, set_year] = createSignal(new Date().getFullYear());
-    const [get_selected_date, set_selected_date] = createSignal(this.get_today());
-    const [public_holidays] = createResource(get_year, get_holidays);
+  initialize({year, selected_date}: TInitializeProps) {
+    const [get_year, set_year] = createSignal(year);
+    const [get_selected_date, set_selected_date] = createSignal(selected_date);
+    const [get_public_holidays, set_public_holidays] = createSignal<Date[]>([]);
 
     this.signals = {
       get_year,
       set_year,
       get_selected_date,
-      set_selected_date
+      set_selected_date,
+      get_public_holidays,
+      set_public_holidays
     };
-    this.public_holidays_resource = public_holidays;
+
+    onMount(async () => {
+      const holidays = await get_holidays(year);
+      set_public_holidays(holidays);
+    });
   }
 
   get_holidays() {
-    return this.public_holidays_resource && this.public_holidays_resource();
+    return this.signals.get_public_holidays && this.signals.get_public_holidays();
+  }
+
+  async set_holidays(year: number) {
+    const holidays = await get_holidays(year);
+    return this.signals.set_public_holidays && this.signals.set_public_holidays(holidays);
   }
 
   get_today() {
@@ -60,7 +78,10 @@ export class CalendarController {
   }
 
   set_year(year: number) {
-    return this.signals.set_year && this.signals.set_year(year);
+    if (this.signals.set_year && this.signals.set_public_holidays) {
+      this.signals.set_year(year);
+      this.set_holidays(year);
+    }
   }
 
   get_selected_date() {
@@ -70,4 +91,4 @@ export class CalendarController {
   set_selected_date(date: Date) {
     return this.signals.set_selected_date && this.signals.set_selected_date(date);
   }
-}
+};

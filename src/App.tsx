@@ -12,9 +12,5 @@ export const App = () => {
   const events = new CalendarEvents(new CalendarEventsProvider());  
   const configs = new CalendarConfig()
   
-  return (
-    <CalendarProvider initial_settings={configs}>
-      <Calendar />
-    </CalendarProvider>
-  )
+  return <Calendar controller={controller} configs={configs} />
 };
