@@ -1,94 +1,57 @@
-import { Accessor, Resource, Setter, createResource, createSignal, onMount } from "solid-js";
-import { get_holidays } from "../utils/get_holidays";
-import type { Observers, CalendarActions, Observer } from "./CalendarControllerTypes";
+import { onMount } from "solid-js";
 
+import { CalendarContextClass } from "../context/CalendarContextClass";
+import { CalendarDataProvider } from "../data_provider/CalendarDataProvider";
+import { CalendarView } from "../ui/CalendarView/CalendarView";
+import { CalendarActions } from "../ui/CalendarTypes";
+import type { CalendarEventsInterface } from "../data_provider/CalendarDataProviderTypes";
+import type { Observers } from "./CalendarControllerTypes";
 
-type TInitializeProps = {
-  year: number;
-  selected_date: Date
-}
 export class CalendarController {
-  readonly observers: Observers;
-  signals: {
-    get_selected_date: Accessor<Date> | null;
-    set_selected_date: Setter<Date> | null;
-    get_year: Accessor<number> | null;
-    set_year: Setter<number> | null;
-    get_public_holidays: Accessor<Date[]> | null,
-    set_public_holidays: Setter<Date[]> | null
-  };
+  provider: CalendarDataProvider | null
+  view: CalendarView | null
+  context: CalendarContextClass | null
 
+  static observers: Observers = {}
+  static subscribe(event: `${CalendarActions}` , fn: (data: any) => void) {
+    if (CalendarController.observers[event] === undefined) {
+      CalendarController.observers[event] = [];
+    };
+    CalendarController.observers[event]?.push(fn);
+  };
+  
   constructor() {
-    this.signals = {
-      get_year: null,
-      set_year: null,
-      get_selected_date: null,
-      set_selected_date: null,
-      get_public_holidays: null,
-      set_public_holidays: null
-    };
-    this.get_selected_date = this.get_selected_date.bind(this);
-    this.observers = {}
+    this.provider = null;
+    this.view = null;
+    this.context = null;
   };
 
-  subscribe(event: CalendarActions, observer: Observer) {
-    if (this.observers[event] === undefined) {
-      this.observers[event] = [];
-    }
-    this.observers[event]?.push(observer);
-  };
-
-  initialize({year, selected_date}: TInitializeProps) {
-    const [get_year, set_year] = createSignal(year);
-    const [get_selected_date, set_selected_date] = createSignal(selected_date);
-    const [get_public_holidays, set_public_holidays] = createSignal<Date[]>([]);
-
-    this.signals = {
-      get_year,
-      set_year,
-      get_selected_date,
-      set_selected_date,
-      get_public_holidays,
-      set_public_holidays
-    };
+  initialize(context: CalendarContextClass) {
+    this.provider = context.store.data_provider;
+    this.view = context.store.view;
+    this.context = context
 
     onMount(async () => {
-      const holidays = await get_holidays(year);
-      set_public_holidays(holidays);
-    });
+      const current_year = new Date().getFullYear();
+      const events = await this.provider?.get_events(current_year) as CalendarEventsInterface[];
+
+      context.set_events(events);
+    })
   }
 
-  get_holidays() {
-    return this.signals.get_public_holidays && this.signals.get_public_holidays();
-  }
+  async plus_year() {
+    const next_year = this.context.get_year() + 1;
+    this.context && this.context.set_year(next_year)
 
-  async set_holidays(year: number) {
-    const holidays = await get_holidays(year);
-    return this.signals.set_public_holidays && this.signals.set_public_holidays(holidays);
-  }
+    const events = await this.provider?.get_events(next_year) as CalendarEventsInterface[];
+    this.context?.set_events(events);
+  };
 
-  get_today() {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return today
-  }
+  async minus_year() {
+    const prev_year = this.context.get_year() - 1;
+    this.context && this.context.set_year(prev_year)
 
-  get_year() {
-    return this.signals.get_year && this.signals.get_year();
-  }
-
-  set_year(year: number) {
-    if (this.signals.set_year && this.signals.set_public_holidays) {
-      this.signals.set_year(year);
-      this.set_holidays(year);
-    }
-  }
-
-  get_selected_date() {
-    return this.signals.get_selected_date && this.signals.get_selected_date();
-  }
-
-  set_selected_date(date: Date) {
-    return this.signals.set_selected_date && this.signals.set_selected_date(date);
-  }
+    const events = await this.provider?.get_events(prev_year) as CalendarEventsInterface[];
+    this.context?.set_events(events);
+  };
 };

@@ -1,36 +1,20 @@
-import { For, Show, createEffect, on } from "solid-js";
-import { CalendarProvider, useCalendarContext } from "../context/CalendarContext";
+import { For, Show } from "solid-js";
+
 import { DAYS_IN_WEEK, MONTHS, WEEKDAYS } from "../lib/constants";
 import { get_month_data, get_today } from "../helpers/calendar_helpers";
+import { CalendarProvider, useCalendarContext } from "../context/CalendarContext";
 import type {
   MonthItemBodyProps,
   MonthItemHeader,
   MonthItemProps,
+  TCalendarProps,
 } from "./CalendarTypes";
-import { CalendarActions } from "../controller/CalendarControllerTypes";
 
 import styles from "./Calendar.module.css";
-import { CalendarController } from "../controller/CalendarController";
-import { CalendarConfig } from "./CalendarConfig";
-
-type TCalendarProps = {
-  controller: CalendarController
-  configs: CalendarConfig
-};
 
 export const Calendar = (props: TCalendarProps) => {
-  // const [{observers},{get_selected_date}] = useCalendarContext();
-
-  const {selected_date, year} = props.configs
-
-  props.controller.initialize({ selected_date, year });
-
-  // createEffect(on(get_selected_date, (new_value => {
-  //   observers[CalendarActions.SELECTED_DATE]?.forEach(observer => observer.handleEvent(new_value));
-  // }), { defer: true }));
-
   return (
-    <CalendarProvider>
+    <CalendarProvider {...props}>
       <CalendarHeader />
       <CalendarBody />
     </CalendarProvider>
@@ -38,7 +22,9 @@ export const Calendar = (props: TCalendarProps) => {
 };
 
 const CalendarHeader = () => {
-  const [_, { get_year, minus_year, plus_year }] = useCalendarContext();
+  const context = useCalendarContext();
+  const plus_year = () => context.store.controller?.plus_year();
+  const minus_year = () => context.store.controller?.minus_year();
 
   return (
     <div class={styles.calendar_header_container}>
@@ -48,7 +34,7 @@ const CalendarHeader = () => {
       >
         &#60;
       </button>
-      <p>{get_year()}</p>
+      <p>{context.get_year()}</p>
       <button
         onClick={plus_year}
         class={styles.calendar_header_button}
@@ -60,7 +46,7 @@ const CalendarHeader = () => {
 };
 
 const CalendarBody = () => {
-  const [_, { get_year }] = useCalendarContext();
+  const context = useCalendarContext();
 
   return (
     <div class={styles.calendar_body_container}>
@@ -69,7 +55,7 @@ const CalendarBody = () => {
           return (
             <MonthItem
               month={month}
-              month_dates={get_month_data(get_year(), index())}
+              month_dates={get_month_data(context.get_year(), index())}
             />
           );
         }}
@@ -105,8 +91,9 @@ const MonthItemHeader = (props: MonthItemHeader) => (
 );
 
 const MonthItemBody = (props: MonthItemBodyProps) => {
-  const [_, { get_selected_date, set_selected_date }] = useCalendarContext();
-
+  const context = useCalendarContext();
+  
+  const select_day = (date: Date) => context.set_selected_date(date);
   const day_today = get_today().getTime();
   
   return (
@@ -118,10 +105,10 @@ const MonthItemBody = (props: MonthItemBodyProps) => {
               {day => (
                 <Show when={day} fallback={<td></td>}>
                   <td
-                    onClick={() => set_selected_date(day)}
+                    onClick={() => select_day(day)}
                     classList={{
                       [styles.day_weekend]: day.getDay() === 6 || day.getDay() === 0,
-                      [styles.day_selected]: get_selected_date()?.getTime() === day.getTime(),
+                      [styles.day_selected]: context.get_selected_date()?.getTime() === day.getTime(),
                       [styles.day_today]: day_today === day.getTime(),
                     }}
                   >

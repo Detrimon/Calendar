@@ -1,9 +1,3 @@
-export enum CalendarActions{
-  SELECTED_DATE = 'get_selected_date'
-}
+import { CalendarActions } from "../ui/CalendarTypes";
 
-export type Observers = Partial<Record<CalendarActions, Array<Observer>>>
-
-export interface Observer{
-  handleEvent: (data: any) => void 
-}
+export type Observers = Partial<Record<CalendarActions, Array<(data: any) => void>>>;
