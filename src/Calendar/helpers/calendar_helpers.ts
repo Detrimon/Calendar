@@ -14,7 +14,7 @@ export function get_days_in_month(date: Date) {
   } else {
     return days_in_month;
   }
-};
+}
 
 export function get_day_of_week(date: Date) {
   const day_of_week = date.getDay();
@@ -22,7 +22,7 @@ export function get_day_of_week(date: Date) {
   if (day_of_week === 0) return 6;
 
   return day_of_week - 1;
-};
+}
 
 export function get_month_data(year: number, month: number) {
   const result: Array<Date[]> = [];
@@ -42,19 +42,24 @@ export function get_month_data(year: number, month: number) {
       }
     }
   }
-  
+
   return result;
-};
+}
 
 export function get_start_of_day(input_date: Date) {
   let date = new Date(input_date);
   date.setHours(0, 0, 0, 0);
 
   return date;
-};
+}
 
 export function get_today() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   return today;
-};
+}
+
+export function get_current_year() {
+  let now = new Date();
+  return now.getFullYear();
+}
