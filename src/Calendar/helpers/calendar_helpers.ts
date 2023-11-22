@@ -42,7 +42,7 @@ export function get_month_data(year: number, month: number) {
       }
     }
   }
-  
+
   return result;
 }
 
@@ -51,4 +51,15 @@ export function get_start_of_day(input_date: Date) {
   date.setHours(0, 0, 0, 0);
 
   return date;
+}
+
+export function get_today() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return today;
+}
+
+export function get_current_year() {
+  let now = new Date();
+  return now.getFullYear();
 }

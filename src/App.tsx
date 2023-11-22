@@ -1,12 +1,23 @@
-import { Calendar } from "./Calendar"
+import { Calendar } from "./Calendar/ui/Calendar";
+import { CalendarDataProvider } from "./Calendar/data_provider/CalendarDataProvider";
 import { CalendarController } from "./Calendar/controller/CalendarController";
-import { CalendarEventsProvider } from "./Calendar/data_provider/CalendarEventsProvider";
+import { CalendarView } from "./Calendar/ui/CalendarView/CalendarView";
+import { CalendarConfig } from "./Calendar/config/CalendarConfig";
 
 import "./App.css";
 
 export const App = () => {
-  const controller = new CalendarController();
-  const events_provider = new CalendarEventsProvider();
+const calendar_data_provider = new CalendarDataProvider()
+const calendar_controller = new CalendarController()
+const calendar_view = new CalendarView()
+const calendar_config = new CalendarConfig({}) // Если конфиг дефолтный - можно не делать
   
-  return <Calendar controller={controller} events_provider={events_provider}/>
+  return (
+    <Calendar
+      data_provider={calendar_data_provider}
+      controller={calendar_controller}
+      view={calendar_view}
+      config={calendar_config}
+    />
+  );
 };

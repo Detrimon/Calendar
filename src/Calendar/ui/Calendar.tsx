@@ -1,50 +1,76 @@
-import { For, Show } from "solid-js";
-import { CalendarProvider, useCalendarContext } from "../context/CalendarContext";
+import { For, Show, mergeProps } from "solid-js";
+
 import { DAYS_IN_WEEK, MONTHS, WEEKDAYS } from "../lib/constants";
-import { get_month_data } from "../helpers/calendar_helpers";
+import { get_month_data, get_today } from "../helpers/calendar_helpers";
+import {
+  CalendarProvider,
+  useCalendarContext,
+} from "../context/CalendarContext";
 import type {
-  CalendarProps,
   MonthItemBodyProps,
   MonthItemHeader,
-  MonthItemProps
+  MonthItemProps,
+  TCalendarProps,
 } from "./CalendarTypes";
 
 import styles from "./Calendar.module.css";
+import { CalendarController } from "../controller/CalendarController";
+import { CalendarDataProvider } from "../data_provider/CalendarDataProvider";
+import { CalendarView } from "./CalendarView/CalendarView";
+import { CalendarConfig } from "../config/CalendarConfig";
 
-export const Calendar = (props: CalendarProps) => {
-  props.controller.initialize();
-  props.events_provider.initialize();
+function get_default_props(
+  initial_props: Partial<TCalendarProps>
+): TCalendarProps {
+  return {
+    controller: initial_props.controller ? null : new CalendarController(),
+    data_provider: initial_props.data_provider
+      ? null
+      : new CalendarDataProvider(),
+    view: initial_props.view ? null : new CalendarView(),
+    config: initial_props.config ? null : new CalendarConfig({}),
+  } as TCalendarProps;
+}
 
+export const Calendar = (initial_props: Partial<TCalendarProps>) => {
   return (
-    <CalendarProvider
-      controller={props.controller}
-      events_provider={props.events_provider}
-    >
-      <CalendarHeader />
-      <CalendarBody />
+    <CalendarProvider>
+      <CalendarMain {...initial_props} />
     </CalendarProvider>
   );
 };
 
-const CalendarHeader = () => {
-  const { controller } = useCalendarContext();
+const CalendarMain = (initial_props: Partial<TCalendarProps>) => {
+  const default_props = get_default_props(initial_props);
 
-  const incrementYear = () => controller.set_year(controller.get_year() + 1);
-  const decrementYear = () => controller.set_year(controller.get_year() - 1);
+  const props = mergeProps(default_props, initial_props) as TCalendarProps;
+
+  const [_, context] = useCalendarContext();
+  context.initialize(props);
+  props.controller.initialize(context);
+
+  return (
+    <>
+      <CalendarHeader />
+      <CalendarBody />
+    </>
+  );
+};
+
+const CalendarHeader = () => {
+  const [_, context] = useCalendarContext();
+  const controller = context.get_controller();
+
+  const plus_year = () => controller.plus_year();
+  const minus_year = () => controller.minus_year();
 
   return (
     <div class={styles.calendar_header_container}>
-      <button
-        onClick={decrementYear}
-        class={styles.calendar_header_button}
-      >
+      <button onClick={minus_year} class={styles.calendar_header_button}>
         &#60;
       </button>
-      <p>{controller.get_year()}</p>
-      <button
-        onClick={incrementYear}
-        class={styles.calendar_header_button}
-      >
+      <p>{context.get_year()}</p>
+      <button onClick={plus_year} class={styles.calendar_header_button}>
         &#62;
       </button>
     </div>
@@ -52,7 +78,7 @@ const CalendarHeader = () => {
 };
 
 const CalendarBody = () => {
-  const { controller } = useCalendarContext();
+  const [_, context] = useCalendarContext();
 
   return (
     <div class={styles.calendar_body_container}>
@@ -61,7 +87,7 @@ const CalendarBody = () => {
           return (
             <MonthItem
               month={month}
-              month_dates={get_month_data(controller.get_year(), index())}
+              month_dates={get_month_data(context.get_year(), index())}
             />
           );
         }}
@@ -88,33 +114,34 @@ const MonthItemHeader = (props: MonthItemHeader) => (
     </tr>
     <tr>
       <For each={WEEKDAYS}>
-        {(week_day) => (
-          <th class={styles.week_day}>{week_day}</th>
-        )}
+        {(week_day) => <th class={styles.week_day}>{week_day}</th>}
       </For>
     </tr>
   </thead>
 );
 
 const MonthItemBody = (props: MonthItemBodyProps) => {
-  const { controller } = useCalendarContext();
-  const day_today = controller.get_today().getTime();
+  const [_, context] = useCalendarContext();
 
-  const selectDate = (date: Date) => controller.set_selected_date(date);
-  
+  const select_day = (date: Date) => context.set_selected_date(date);
+  const day_today = get_today().getTime();
+
   return (
     <tbody>
       <For each={props.month_dates}>
-        {week => (
+        {(week) => (
           <tr>
             <For each={week}>
-              {day => (
+              {(day) => (
                 <Show when={day} fallback={<td></td>}>
                   <td
-                    onClick={() => selectDate(day)}
+                    onClick={() => select_day(day)}
                     classList={{
-                      [styles.day_weekend]: day.getDay() === 6 || day.getDay() === 0,
-                      [styles.day_selected]: controller.get_selected_date()?.getTime() === day.getTime(),
+                      [styles.day_weekend]:
+                        day.getDay() === 6 || day.getDay() === 0,
+                      [styles.day_selected]:
+                        context.get_selected_date()?.getTime() ===
+                        day.getTime(),
                       [styles.day_today]: day_today === day.getTime(),
                     }}
                   >
