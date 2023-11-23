@@ -10,22 +10,19 @@ export class CalendarController {
   data_provider: CalendarDataProvider | null;
   view: CalendarView | null;
   context: TCalendarStateMethods | null;
+  observers: Observers;
 
-  // Мне кажется тут static использовать нельзя. Если у нас так случиться, что в системе будет использоваться
-  // две инстанции Календаря, то у них observers будут общие, так как они принадлежат классу, а не экземпляру класса.
-  static observers: Observers = {};
-  static subscribe(event: CalendarActions, fn: (data: any) => void) {
-    if (CalendarController.observers[event] === undefined) {
-      CalendarController.observers[event] = {};
+  subscribe(event: CalendarActions, fn: (data: any) => void) {
+    if (this.observers[event] === undefined) {
+      this.observers[event] = {};
     }
     const guid = uuidv4() as GUID;
-    CalendarController.observers[event][guid] = fn;
+    this.observers[event][guid] = fn;
     return guid;
-    // CalendarController.observers[event]?.push(fn);
   }
-
-  static notify(event: CalendarActions, data: any) {
-    let observers_by_event = CalendarController.observers[event];
+  
+  notify(event: CalendarActions, data: any) {
+    let observers_by_event = this.observers[event];
     if (!observers_by_event) return;
 
     Object.values(observers_by_event).forEach((fn) => {
@@ -37,6 +34,10 @@ export class CalendarController {
     this.data_provider = null;
     this.view = null;
     this.context = null;
+    this.observers = {};
+
+    this.subscribe = this.subscribe.bind(this);
+    this.notify = this.notify.bind(this);
   }
 
   initialize(context: TCalendarStateMethods) {
@@ -59,29 +60,26 @@ export class CalendarController {
     return this.data_provider;
   }
 
-  async plus_year() {
+  //! Нужно другое название функции?
+  async load_and_set_new_events(year: number) {
     const context = this.get_context();
     const data_provider = this.get_data_provider();
 
-    const next_year = context.get_year() + 1;
-    context.set_year(next_year);
-
     const events = (await data_provider.get_events(
-      next_year
+      year
     )) as CalendarEventsInterface[];
     context.set_events(events);
   }
 
+  async plus_year() {
+    const context = this.get_context();
+    const next_year = context.get_year() + 1;
+    context.set_year(next_year);
+  }
+
   async minus_year() {
     const context = this.get_context();
-    const data_provider = this.get_data_provider();
-
     const prev_year = context.get_year() - 1;
     context.set_year(prev_year);
-
-    const events = (await data_provider.get_events(
-      prev_year
-    )) as CalendarEventsInterface[];
-    context.set_events(events);
   }
 }

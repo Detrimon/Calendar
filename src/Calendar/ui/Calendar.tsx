@@ -1,4 +1,4 @@
-import { For, Show, mergeProps } from "solid-js";
+import { For, Show, createEffect, mergeProps, on } from "solid-js";
 
 import { DAYS_IN_WEEK, MONTHS, WEEKDAYS } from "../lib/constants";
 import { get_month_data, get_today } from "../helpers/calendar_helpers";
@@ -6,11 +6,12 @@ import {
   CalendarProvider,
   useCalendarContext,
 } from "../context/CalendarContext";
-import type {
-  MonthItemBodyProps,
-  MonthItemHeader,
-  MonthItemProps,
-  TCalendarProps,
+import {
+  CalendarActions,
+  type MonthItemBodyProps,
+  type MonthItemHeader,
+  type MonthItemProps,
+  type TCalendarProps,
 } from "./CalendarTypes";
 
 import styles from "./Calendar.module.css";
@@ -48,6 +49,13 @@ const CalendarMain = (initial_props: Partial<TCalendarProps>) => {
   const [_, context] = useCalendarContext();
   context.initialize(props);
   props.controller.initialize(context);
+
+  props.controller.load_and_set_new_events(context.get_year());
+
+  createEffect(on(context.get_year, (year) => {
+    props.controller.load_and_set_new_events(year);
+    props.controller.notify(CalendarActions.GET_YEAR, year);
+  }, { defer: true }));
 
   return (
     <>

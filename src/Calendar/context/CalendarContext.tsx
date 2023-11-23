@@ -3,6 +3,7 @@ import { JSX, createContext, useContext } from "solid-js";
 import { type TCalendarProps } from "../ui/CalendarTypes";
 import { createStore } from "solid-js/store";
 import { TCalendarStateMethods, TContextStore } from "./CalendarContextTypes";
+import { CalendarEventsInterface } from "../data_provider/CalendarDataProviderTypes";
 
 // export const CalendarContext = createContext(new CalendarContextClass());
 const CalendarContext = createContext<[TContextStore, TCalendarStateMethods]>();
