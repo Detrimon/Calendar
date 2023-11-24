@@ -5,6 +5,7 @@ import { CalendarActions } from "../ui/CalendarTypes";
 import type { CalendarEventsInterface } from "../data_provider/CalendarDataProviderTypes";
 import type { GUID, Observers } from "./CalendarControllerTypes";
 import { TCalendarStateMethods } from "../context/CalendarContextTypes";
+import { CalendarViewMode } from "../ui/CalendarView/CalendarViewTypes";
 
 export class CalendarController {
   data_provider: CalendarDataProvider | null;
@@ -51,6 +52,12 @@ export class CalendarController {
       throw Error('CalendarController instance has not "context" property');
     return this.context;
   }
+  
+  get_view() {
+    if (!this.view)
+      throw Error('CalendarController instance has not "view" property');
+    return this.view;
+  }
 
   get_data_provider() {
     if (!this.data_provider)
@@ -71,15 +78,20 @@ export class CalendarController {
     context.set_events(events);
   }
 
-  async plus_year() {
+  plus_year() {
     const context = this.get_context();
     const next_year = context.get_year() + 1;
     context.set_year(next_year);
-  }
+  };
 
-  async minus_year() {
+  minus_year() {
     const context = this.get_context();
     const prev_year = context.get_year() - 1;
     context.set_year(prev_year);
-  }
+  };
+        
+  set_calendar_mode(mode: CalendarViewMode) {
+    const view = this.get_view();
+    view.set_mode(mode);
+  };
 }

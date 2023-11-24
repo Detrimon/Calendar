@@ -3,6 +3,7 @@ import { CalendarDataProvider } from "../data_provider/CalendarDataProvider";
 import { CalendarEventsInterface } from "../data_provider/CalendarDataProviderTypes";
 import { TCalendarProps } from "../ui/CalendarTypes";
 import { CalendarView } from "../ui/CalendarView/CalendarView";
+import { CalendarViewMode } from "../ui/CalendarView/CalendarViewTypes";
 
 export type TStore = {
   controller: CalendarController | null;
@@ -35,6 +36,7 @@ export type TCalendarStateMethods = {
   get_selected_date(): Date;
   set_selected_date(date: Date): void;
   set_events(events: CalendarEventsInterface[]): void;
+  get_calendar_mode(): CalendarViewMode;
 };
 
 export type TContextStore = Partial<TCalendarProps> & {

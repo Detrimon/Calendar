@@ -45,6 +45,10 @@ export const CalendarProvider = (props: { children: JSX.Element }) => {
         return store.view;
       },
 
+      get_calendar_mode() {
+        return this.get_view().get_mode();
+      },
+
       get_year() {
         if (!store.state.year)
           throw Error("CalendarProvider has not year in it store");

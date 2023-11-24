@@ -1,4 +1,4 @@
-import { For, Show, createEffect, mergeProps, on } from "solid-js";
+import { For, JSX, Show, createEffect, mergeProps, on } from "solid-js";
 
 import { DAYS_IN_WEEK, MONTHS, WEEKDAYS } from "../lib/constants";
 import { get_month_data, get_today } from "../helpers/calendar_helpers";
@@ -13,12 +13,15 @@ import {
   type MonthItemProps,
   type TCalendarProps,
 } from "./CalendarTypes";
-
-import styles from "./Calendar.module.css";
 import { CalendarController } from "../controller/CalendarController";
 import { CalendarDataProvider } from "../data_provider/CalendarDataProvider";
 import { CalendarView } from "./CalendarView/CalendarView";
 import { CalendarConfig } from "../config/CalendarConfig";
+import { Dynamic } from "solid-js/web";
+import { CalendarViewMode } from "./CalendarView/CalendarViewTypes";
+import { TCalendarStateMethods } from "../context/CalendarContextTypes";
+
+import styles from "./Calendar.module.css";
 
 function get_default_props(
   initial_props: Partial<TCalendarProps>
@@ -33,6 +36,15 @@ function get_default_props(
   } as TCalendarProps;
 }
 
+function initialize_settings(
+  props: Required<TCalendarProps>, context: TCalendarStateMethods
+): void {
+  context.initialize(props);
+  props.controller.initialize(context);
+  props.view.initialize(props.config.calendar_mode as CalendarViewMode);
+  props.controller.load_and_set_new_events(context.get_year());
+};
+
 export const Calendar = (initial_props: Partial<TCalendarProps>) => {
   return (
     <CalendarProvider>
@@ -42,25 +54,65 @@ export const Calendar = (initial_props: Partial<TCalendarProps>) => {
 };
 
 const CalendarMain = (initial_props: Partial<TCalendarProps>) => {
-  const default_props = get_default_props(initial_props);
-
-  const props = mergeProps(default_props, initial_props) as TCalendarProps;
-
   const [_, context] = useCalendarContext();
-  context.initialize(props);
-  props.controller.initialize(context);
+  const default_props = get_default_props(initial_props);
+  const props = mergeProps(default_props, initial_props) as Required<TCalendarProps>;
 
-  props.controller.load_and_set_new_events(context.get_year());
+  initialize_settings(props, context);
 
   createEffect(on(context.get_year, (year) => {
     props.controller.load_and_set_new_events(year);
     props.controller.notify(CalendarActions.GET_YEAR, year);
   }, { defer: true }));
 
+  const options: { [key: string]: () => JSX.Element } = {
+    year: Year,
+    months: Months,
+    month: Month,
+  };
+
+  return <Dynamic component={options[context.get_calendar_mode()]} />
+};
+
+const Year = () => (
+  <>
+    <CalendarHeader />
+    <CalendarBody />
+  </>
+);
+  
+const Month = () => {
+  const [_, context] = useCalendarContext();
+
+  //* Тут будет логика получения месяца из стейта
+  const monthNumber = new Date().getMonth();
+  const dates = get_month_data(context.get_year(), monthNumber);
+    
   return (
     <>
       <CalendarHeader />
-      <CalendarBody />
+      <MonthItem month={MONTHS[monthNumber]} month_dates={dates} />
+    </>
+  );
+};
+  
+const Months = () => {
+  const [_, context] = useCalendarContext();
+
+  //* Тут будет логика получения месяца из стейта
+  const monthNumber = new Date().getMonth();
+  const dates = get_month_data(context.get_year(), monthNumber);
+  const dates_prev = get_month_data(new Date().getFullYear(), monthNumber - 1);
+  const dates_next = get_month_data(new Date().getFullYear(), monthNumber + 1);
+
+  return (
+    <>
+      <CalendarHeader />
+      <div class={styles.calendar_months_wrapper}>
+        <MonthItem month={MONTHS[monthNumber - 1]} month_dates={dates_prev} />
+        <MonthItem month={MONTHS[monthNumber]} month_dates={dates} />
+        <MonthItem month={MONTHS[monthNumber + 1]} month_dates={dates_next} />
+      </div>
     </>
   );
 };
@@ -74,6 +126,7 @@ const CalendarHeader = () => {
 
   return (
     <div class={styles.calendar_header_container}>
+      <CalendarHeaderButtons/>
       <button onClick={minus_year} class={styles.calendar_header_button}>
         &#60;
       </button>
@@ -84,6 +137,23 @@ const CalendarHeader = () => {
     </div>
   );
 };
+
+const CalendarHeaderButtons = () => {
+  const [_, context] = useCalendarContext();
+  const controller = context.get_controller();
+
+  const set_year_mode = () => controller.set_calendar_mode(CalendarViewMode.YEAR);
+  const set_months_mode = () => controller.set_calendar_mode(CalendarViewMode.MONTHS);
+  const set_month_mode = () => controller.set_calendar_mode(CalendarViewMode.MONTH);
+
+  return (
+    <div class={styles.calendar_button_container}>
+      <button onClick={set_year_mode}>Year</button>
+      <button onClick={set_months_mode}>3 Months</button>
+      <button onClick={set_month_mode}>Month</button>
+    </div>
+  )
+}
 
 const CalendarBody = () => {
   const [_, context] = useCalendarContext();
