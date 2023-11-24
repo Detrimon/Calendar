@@ -60,11 +60,6 @@ const CalendarMain = (initial_props: Partial<TCalendarProps>) => {
 
   initialize_settings(props, context);
 
-  createEffect(on(context.get_year, (year) => {
-    props.controller.load_and_set_new_events(year);
-    props.controller.notify(CalendarActions.GET_YEAR, year);
-  }, { defer: true }));
-
   const options: { [key: string]: () => JSX.Element } = {
     year: Year,
     months: Months,

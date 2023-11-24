@@ -6,6 +6,7 @@ import type { CalendarEventsInterface } from "../data_provider/CalendarDataProvi
 import type { GUID, Observers } from "./CalendarControllerTypes";
 import { TCalendarStateMethods } from "../context/CalendarContextTypes";
 import { CalendarViewMode } from "../ui/CalendarView/CalendarViewTypes";
+import { createEffect, on } from "solid-js";
 
 export class CalendarController {
   data_provider: CalendarDataProvider | null;
@@ -45,7 +46,12 @@ export class CalendarController {
     this.data_provider = context.get_data_provider();
     this.view = context.get_view();
     this.context = context;
-  }
+
+    createEffect(on(context.get_year, (year) => {
+      this.load_and_set_new_events(year);
+      this.notify(CalendarActions.GET_YEAR, year);
+    }, { defer: true }));
+  };
 
   get_context() {
     if (!this.context)
