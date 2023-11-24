@@ -6,12 +6,11 @@ import {
   CalendarProvider,
   useCalendarContext,
 } from "../context/CalendarContext";
-import {
-  CalendarActions,
-  type MonthItemBodyProps,
-  type MonthItemHeader,
-  type MonthItemProps,
-  type TCalendarProps,
+import type {
+  MonthItemBodyProps,
+  MonthItemHeader,
+  MonthItemProps,
+  TCalendarProps,
 } from "./CalendarTypes";
 import { CalendarController } from "../controller/CalendarController";
 import { CalendarDataProvider } from "../data_provider/CalendarDataProvider";
@@ -34,14 +33,13 @@ function get_default_props(
     view: initial_props.view ? null : new CalendarView(),
     config: initial_props.config ? null : new CalendarConfig({}),
   } as TCalendarProps;
-}
+};
 
 function initialize_settings(
   props: Required<TCalendarProps>, context: TCalendarStateMethods
 ): void {
   context.initialize(props);
   props.controller.initialize(context);
-  props.view.initialize(props.config.calendar_mode as CalendarViewMode);
   props.controller.load_and_set_new_events(context.get_year());
 };
 
@@ -97,8 +95,8 @@ const Months = () => {
   //* Тут будет логика получения месяца из стейта
   const monthNumber = new Date().getMonth();
   const dates = get_month_data(context.get_year(), monthNumber);
-  const dates_prev = get_month_data(new Date().getFullYear(), monthNumber - 1);
-  const dates_next = get_month_data(new Date().getFullYear(), monthNumber + 1);
+  const dates_prev = get_month_data(context.get_year(), monthNumber - 1);
+  const dates_next = get_month_data(context.get_year(), monthNumber + 1);
 
   return (
     <>
