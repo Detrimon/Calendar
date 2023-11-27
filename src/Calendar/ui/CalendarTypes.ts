@@ -2,6 +2,7 @@ import { CalendarController } from "../controller/CalendarController";
 import { CalendarDataProvider } from "../data_provider/CalendarDataProvider";
 import { CalendarConfig } from "../config/CalendarConfig";
 import { CalendarView } from "./CalendarView/CalendarView";
+import { Setter } from "solid-js";
 
 export type TCalendarProps = {
   data_provider: CalendarDataProvider
@@ -29,5 +30,14 @@ export enum CalendarActions{
   SELECTED_DATE = 'get_selected_date',
   GET_YEAR = 'get_year',
 };
+
+export type TChooseYearEvent = MouseEvent & {
+  currentTarget: HTMLUListElement;
+  target: Element;
+};
+
+export type TChooseYearProps = {
+  set_show_modal: Setter<boolean>
+}
 
 

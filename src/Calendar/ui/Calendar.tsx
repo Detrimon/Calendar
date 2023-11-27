@@ -1,4 +1,4 @@
-import { For, JSX, Show, createEffect, mergeProps, on } from "solid-js";
+import { For, JSX, Setter, Show, batch, createEffect, createSelector, createSignal, mergeProps, on } from "solid-js";
 
 import { DAYS_IN_WEEK, MONTHS, WEEKDAYS } from "../lib/constants";
 import { get_month_data, get_today } from "../helpers/calendar_helpers";
@@ -11,6 +11,8 @@ import type {
   MonthItemHeader,
   MonthItemProps,
   TCalendarProps,
+  TChooseYearEvent,
+  TChooseYearProps,
 } from "./CalendarTypes";
 import { CalendarController } from "../controller/CalendarController";
 import { CalendarDataProvider } from "../data_provider/CalendarDataProvider";
@@ -69,7 +71,7 @@ const CalendarMain = (initial_props: Partial<TCalendarProps>) => {
 
 const Year = () => (
   <>
-    <CalendarHeader />
+    <CalendarYearHeader />
     <CalendarBody />
   </>
 );
@@ -83,7 +85,7 @@ const Month = () => {
     
   return (
     <>
-      <CalendarHeader />
+      <CalendarYearHeader />
       <MonthItem month={MONTHS[monthNumber]} month_dates={dates} />
     </>
   );
@@ -100,7 +102,7 @@ const Months = () => {
 
   return (
     <>
-      <CalendarHeader />
+      <CalendarYearHeader />
       <div class={styles.calendar_months_wrapper}>
         <MonthItem month={MONTHS[monthNumber - 1]} month_dates={dates_prev} />
         <MonthItem month={MONTHS[monthNumber]} month_dates={dates} />
@@ -110,26 +112,59 @@ const Months = () => {
   );
 };
 
-const CalendarHeader = () => {
+const CalendarYearHeader = () => {
   const [_, context] = useCalendarContext();
-  const controller = context.get_controller();
-
-  const plus_year = () => controller.plus_year();
-  const minus_year = () => controller.minus_year();
-
+  const [show_modal, set_show_modal] = createSignal(false);
+  const showModal = () => set_show_modal(true);
+  
   return (
     <div class={styles.calendar_header_container}>
-      <CalendarHeaderButtons/>
-      <button onClick={minus_year} class={styles.calendar_header_button}>
-        &#60;
-      </button>
-      <p>{context.get_year()}</p>
-      <button onClick={plus_year} class={styles.calendar_header_button}>
-        &#62;
-      </button>
+      <CalendarHeaderButtons />
+      <p onClick={showModal}>
+        {context.get_year()}
+      </p>
+      <Show when={show_modal()}>
+        <ChooseYear set_show_modal={set_show_modal} />
+      </Show>
     </div>
   );
 };
+
+const ChooseYear = (props: TChooseYearProps) => {
+    const [_, context] = useCalendarContext();
+    const year = context.get_year();
+    const [current_year, set_current_year] = createSignal(year);
+
+    const plus_year = () => set_current_year(prev => prev + 1);
+    const minus_year = () => set_current_year(prev => prev - 1);
+
+    const choose_year = (e: TChooseYearEvent) => {
+      const target = e.target;
+      if (target.tagName !== "LI") return;
+      const value = target.textContent as string;
+
+      batch(() => {
+        context.set_year(+value);
+        props.set_show_modal(false);
+      });
+    };
+
+    return (
+      <div class={styles.choose_year_wrapper}>
+        <button onClick={minus_year} class={styles.calendar_header_button}>
+          &#60;
+        </button>
+        <ul class={styles.choose_year_list} onClick={(e)=> choose_year(e)}>
+          <li>{current_year() - 1}</li>
+          <li>{current_year()}</li>
+          <li>{current_year() + 1}</li>
+        </ul>
+        <button onClick={plus_year} class={styles.calendar_header_button}>
+          &#62;
+        </button>
+      </div>
+    )
+  };
 
 const CalendarHeaderButtons = () => {
   const [_, context] = useCalendarContext();
