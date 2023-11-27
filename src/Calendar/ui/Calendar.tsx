@@ -1,4 +1,4 @@
-import { For, JSX, Setter, Show, batch, createEffect, createSelector, createSignal, mergeProps, on } from "solid-js";
+import { For, JSX, Show, batch, createSignal, mergeProps } from "solid-js";
 
 import { DAYS_IN_WEEK, MONTHS, WEEKDAYS } from "../lib/constants";
 import { get_month_data, get_today } from "../helpers/calendar_helpers";
@@ -80,15 +80,52 @@ const Year = () => (
 const Month = () => {
   const [_, context] = useCalendarContext();
 
-  //* Тут будет логика получения месяца из стейта
-  const monthNumber = new Date().getMonth();
-  const dates = get_month_data(context.get_year(), monthNumber);
+  const [month_data, set_month_data] = createStore({
+    month_dates: get_month_data(context.get_year(), new Date().getMonth()),
+    month: MONTHS[new Date().getMonth()],
+    year: context.get_year()
+  });
+
+  const slide = (modifier: 'left' | 'right') => {
+    const month_number = MONTHS.findIndex(month_name => month_name === month_data.month);
+    let month: number;
+    let year: number;
+
+    if (modifier === "left") {
+      if (month_number === 0) {
+        month = 11;
+        year = month_data.year - 1;
+      } else {
+        month = month_number - 1;
+        year = month_data.year;
+      };
+    } else {
+      if (month_number === 11) {
+        month = 0;
+        year = month_data.year + 1;
+    } else {
+        month = month_number + 1;
+        year = month_data.year;
+      };
+    };
+
+    const month_name = MONTHS[month];
+    const month_dates = get_month_data(context.get_year(), new Date().getMonth());
     
+    set_month_data({ month_dates, month: month_name, year })
+  };
+
   return (
     <>
-      <CalendarYearHeader />
+      <CalendarMonthsHeader />
       <div class={styles.calendar_month_wrapper}>
-        <MonthItem month={MONTHS[monthNumber]} month_dates={dates} />
+        <button onClick={() => slide("left")} class={styles.calendar_header_button}>
+          &#60;
+        </button>
+        <MonthItem {...month_data} />
+        <button onClick={() => slide("right")} class={styles.calendar_header_button}>
+          &#62;
+        </button>
       </div>
     </>
   );
