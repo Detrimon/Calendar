@@ -23,6 +23,7 @@ import { CalendarViewMode } from "./CalendarView/CalendarViewTypes";
 import { TCalendarStateMethods } from "../context/CalendarContextTypes";
 
 import styles from "./Calendar.module.css";
+import { createStore } from "solid-js/store";
 
 function get_default_props(
   initial_props: Partial<TCalendarProps>
@@ -86,27 +87,111 @@ const Month = () => {
   return (
     <>
       <CalendarYearHeader />
-      <MonthItem month={MONTHS[monthNumber]} month_dates={dates} />
+      <div class={styles.calendar_month_wrapper}>
+        <MonthItem month={MONTHS[monthNumber]} month_dates={dates} />
+      </div>
     </>
   );
 };
   
 const Months = () => {
   const [_, context] = useCalendarContext();
-
-  //* Тут будет логика получения месяца из стейта
   const monthNumber = new Date().getMonth();
-  const dates = get_month_data(context.get_year(), monthNumber);
-  const dates_prev = get_month_data(context.get_year(), monthNumber - 1);
-  const dates_next = get_month_data(context.get_year(), monthNumber + 1);
+
+  const get_initial_month_item_data = (modifier: -1 | 0 | 1) => {
+    let month: number;
+    let year: number;
+
+    switch (monthNumber + modifier) {
+      case -1:
+        month = 11;
+        year = context.get_year() - 1;
+        break;
+      case 12:
+        month = 0;
+        year = context.get_year() + 1;
+        break;
+      default:
+        month = monthNumber + modifier;
+        year = context.get_year();
+        break;
+    };
+
+    const month_dates = get_month_data(year, month);
+    const month_name = MONTHS[month];
+
+    return { month_dates, month: month_name, year };
+  }
+
+  const [month_items_data, set_month_items_data] = createStore({
+    left: get_initial_month_item_data(-1),
+    middle: get_initial_month_item_data(0),
+    right: get_initial_month_item_data(1),
+  });
+
+  const slide_right = () => {
+    const new_left = { ...month_items_data.middle };
+    const new_middle = { ...month_items_data.right };
+    let month: number;
+    let year: number;
+
+    const right_month_number = MONTHS.findIndex(month_name => month_name === month_items_data.right.month);
+    if (right_month_number === 11) {
+      month = 0;
+      year = month_items_data.right.year + 1;
+    } else {
+      month = right_month_number + 1;
+      year = month_items_data.right.year;
+    }
+
+    const month_name = MONTHS[month];
+    const month_dates = get_month_data(year, month);
+
+    batch(() => {
+      set_month_items_data('left', new_left);
+      set_month_items_data('middle', new_middle);
+      set_month_items_data('right', { month_dates, month: month_name, year });
+    });
+  };
+  
+  const slide_left = () => {
+    const new_right = { ...month_items_data.middle };
+    const new_middle = { ...month_items_data.left };
+    let month: number;
+    let year: number;
+
+    const left_month_number = MONTHS.findIndex(month_name => month_name === month_items_data.left.month);
+    if (left_month_number === 0) {
+      month = 11;
+      year = month_items_data.right.year - 1;
+    } else {
+      month = left_month_number - 1;
+      year = month_items_data.left.year;
+    }
+
+    const month_name = MONTHS[month];
+    const month_dates = get_month_data(year, month);
+
+    batch(() => {
+      set_month_items_data('left', { month_dates, month: month_name, year });
+      set_month_items_data('middle', new_middle);
+      set_month_items_data('right', new_right);
+    });
+  };
 
   return (
     <>
-      <CalendarYearHeader />
+      <CalendarMonthsHeader />
       <div class={styles.calendar_months_wrapper}>
-        <MonthItem month={MONTHS[monthNumber - 1]} month_dates={dates_prev} />
-        <MonthItem month={MONTHS[monthNumber]} month_dates={dates} />
-        <MonthItem month={MONTHS[monthNumber + 1]} month_dates={dates_next} />
+        <button onClick={slide_left} class={styles.calendar_header_button}>
+          &#60;
+        </button>
+        <MonthItem {...month_items_data.left} />
+        <MonthItem {...month_items_data.middle}/>
+        <MonthItem {...month_items_data.right}/>
+        <button onClick={slide_right} class={styles.calendar_header_button}>
+          &#62;
+        </button>
       </div>
     </>
   );
@@ -129,6 +214,12 @@ const CalendarYearHeader = () => {
     </div>
   );
 };
+
+const CalendarMonthsHeader = () => (
+  <div class={styles.calendar_header_container}>
+    <CalendarHeaderButtons />
+  </div>
+);
 
 const ChooseYear = (props: TChooseYearProps) => {
     const [_, context] = useCalendarContext();
@@ -205,7 +296,7 @@ const CalendarBody = () => {
 const MonthItem = (props: MonthItemProps) => (
   <div class={styles.month_item_container}>
     <table>
-      <MonthItemHeader month_name={props.month} />
+      <MonthItemHeader month_name={props.month} year={props.year}/>
       <MonthItemBody month_dates={props.month_dates} />
     </table>
   </div>
@@ -215,7 +306,7 @@ const MonthItemHeader = (props: MonthItemHeader) => (
   <thead class={styles.month_item_header_container}>
     <tr>
       <th colspan={DAYS_IN_WEEK} class={styles.month_title}>
-        {props.month_name}
+        {props.month_name} {props.year}
       </th>
     </tr>
     <tr>

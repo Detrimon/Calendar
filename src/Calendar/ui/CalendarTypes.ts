@@ -13,11 +13,13 @@ export type TCalendarProps = {
 
 export type MonthItemHeader = {
   month_name: string
+  year?: number
 }
 
 export type MonthItemProps = {
   month: string
   month_dates: Date[][]
+  year?: number
 };
 
 export type MonthItemBodyProps = {

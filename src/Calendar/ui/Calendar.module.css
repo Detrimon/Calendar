@@ -1,5 +1,6 @@
 .calendar_header_container {
   position: relative;
+  min-height: 51px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -13,7 +14,6 @@
 .calendar_button_container{
   position: absolute;
   right: 0;
-
   display: flex;
   align-items: center;
   gap: 15px
@@ -24,6 +24,12 @@
   display: flex;
   align-items: center;
   gap: 40px;
+}
+
+.calendar_month_wrapper {
+  display: flex;
+  align-self: center;
+  align-items: center;
 }
 
 .calendar_body_container {
