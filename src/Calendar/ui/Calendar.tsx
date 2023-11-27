@@ -110,7 +110,7 @@ const Month = () => {
     };
 
     const month_name = MONTHS[month];
-    const month_dates = get_month_data(context.get_year(), new Date().getMonth());
+    const month_dates = get_month_data(year, month);
     
     set_month_data({ month_dates, month: month_name, year })
   };
