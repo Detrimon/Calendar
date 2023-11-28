@@ -13,6 +13,7 @@ import type {
   TCalendarProps,
   TChooseYearEvent,
   TChooseYearProps,
+  TSelectMouseOver,
 } from "./CalendarTypes";
 import { CalendarController } from "../controller/CalendarController";
 import { CalendarDataProvider } from "../data_provider/CalendarDataProvider";
@@ -235,18 +236,16 @@ const Months = () => {
 };
 
 const CalendarYearHeader = () => {
-  const [_, context] = useCalendarContext();
   const [show_modal, set_show_modal] = createSignal(false);
-  const showModal = () => set_show_modal(true);
-  
+
   return (
     <div class={styles.calendar_header_container}>
       <CalendarHeaderButtons />
-      <p onClick={showModal}>
-        {context.get_year()}
-      </p>
-      <Show when={show_modal()}>
-        <ChooseYear set_show_modal={set_show_modal} />
+      <Show
+        when={show_modal()}
+        fallback={<ChooseYearSelect set_show_modal={set_show_modal}/>}
+      >
+        <ChooseYearModal set_show_modal={set_show_modal} />
       </Show>
     </div>
   );
@@ -258,41 +257,73 @@ const CalendarMonthsHeader = () => (
   </div>
 );
 
-const ChooseYear = (props: TChooseYearProps) => {
-    const [_, context] = useCalendarContext();
-    const year = context.get_year();
-    const [current_year, set_current_year] = createSignal(year);
+const ChooseYearModal = (props: TChooseYearProps) => {
+  const [_, context] = useCalendarContext();
+  const year = context.get_year();
+  const [current_year, set_current_year] = createSignal(year);
 
-    const plus_year = () => set_current_year(prev => prev + 1);
-    const minus_year = () => set_current_year(prev => prev - 1);
+  const plus_year = () => set_current_year(prev => prev + 1);
+  const minus_year = () => set_current_year(prev => prev - 1);
 
-    const choose_year = (e: TChooseYearEvent) => {
-      const target = e.target;
-      if (target.tagName !== "LI") return;
-      const value = target.textContent as string;
+  const choose_year = (e: TChooseYearEvent) => {
+    const target = e.target;
+    if (target.tagName !== "LI") return;
+    const value = target.textContent as string;
 
-      batch(() => {
-        context.set_year(+value);
-        props.set_show_modal(false);
-      });
-    };
-
-    return (
-      <div class={styles.choose_year_wrapper}>
-        <button onClick={minus_year} class={styles.calendar_header_button}>
-          &#60;
-        </button>
-        <ul class={styles.choose_year_list} onClick={(e)=> choose_year(e)}>
-          <li>{current_year() - 1}</li>
-          <li>{current_year()}</li>
-          <li>{current_year() + 1}</li>
-        </ul>
-        <button onClick={plus_year} class={styles.calendar_header_button}>
-          &#62;
-        </button>
-      </div>
-    )
+    batch(() => {
+      context.set_year(+value);
+      props.set_show_modal(false);
+    });
   };
+
+  return (
+    <div
+      onMouseLeave={() => props.set_show_modal(false)}
+      class={styles.choose_year_wrapper}>
+      <button onClick={minus_year} class={styles.calendar_header_button}>
+        &#60;
+      </button>
+      <ul class={styles.choose_year_list} onClick={(e) => choose_year(e)}>
+        <li>{current_year() - 1}</li>
+        <li>{current_year()}</li>
+        <li>{current_year() + 1}</li>
+      </ul>
+      <button onClick={plus_year} class={styles.calendar_header_button}>
+        &#62;
+      </button>
+    </div>
+  );
+};
+
+const ChooseYearSelect = (props: TChooseYearProps) => {
+  const [_, context] = useCalendarContext();
+  let timer_id: number;
+
+  const years = [];
+  for (let i = context.get_year() - 10; i <= context.get_year() + 10; i++) {
+    years.push(i)
+  };
+  
+  const clear_interval = () => clearInterval(timer_id);
+  const handle_change_year = (value: string) => context.set_year(+value);
+  const handle_mouse_over = (event: TSelectMouseOver) => {
+    if (event.relatedTarget && event.relatedTarget.tagName === "LI") return;
+    timer_id = setTimeout(() => props.set_show_modal(true), 800);
+  };
+  
+  return (
+    <select
+      onMouseOver={handle_mouse_over}
+      onMouseOut={clear_interval}
+      onClick={clear_interval}
+      onChange={(event) => handle_change_year(event.target.value)}
+      class={styles.calendar_header_select}
+      value={context.get_year()}
+    >
+      {years.map(year => <option value={year} >{year}</option>)}
+    </select>
+  );
+};
 
 const CalendarHeaderButtons = () => {
   const [_, context] = useCalendarContext();

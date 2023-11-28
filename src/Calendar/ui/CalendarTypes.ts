@@ -38,8 +38,13 @@ export type TChooseYearEvent = MouseEvent & {
   target: Element;
 };
 
+export type TSelectMouseOver = MouseEvent & {
+  currentTarget: HTMLSelectElement;
+  target: Element;
+};
+
 export type TChooseYearProps = {
   set_show_modal: Setter<boolean>
-}
+};
 
 

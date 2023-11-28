@@ -11,6 +11,12 @@
   cursor: pointer;
 }
 
+.calendar_header_select {
+  font-size: 20px;
+  border: none;
+  cursor: pointer;
+}
+
 .calendar_button_container{
   position: absolute;
   right: 0;
