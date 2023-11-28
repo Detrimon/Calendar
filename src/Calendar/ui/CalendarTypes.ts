@@ -11,6 +11,13 @@ export type TCalendarProps = {
   config?: CalendarConfig
 };
 
+export type TCalendarMonthsHeaderProps = {
+  set_year(year: number): void
+  get_year(): number
+  get_month(): string
+  set_month(month: string): void
+}
+
 export type MonthItemHeader = {
   month_name: string
   year?: number
@@ -45,6 +52,14 @@ export type TSelectMouseOver = MouseEvent & {
 
 export type TChooseYearProps = {
   set_show_modal: Setter<boolean>
+  set_year: (year: number) => void
+  get_year(): number
 };
+
+export type TChooseMonthSelectProps = {
+  get_month(): string
+  set_month(month: string): void
+
+}
 
 

@@ -10,7 +10,9 @@ import type {
   MonthItemBodyProps,
   MonthItemHeader,
   MonthItemProps,
+  TCalendarMonthsHeaderProps,
   TCalendarProps,
+  TChooseMonthSelectProps,
   TChooseYearEvent,
   TChooseYearProps,
   TSelectMouseOver,
@@ -87,6 +89,9 @@ const Month = () => {
     year: context.get_year()
   });
 
+  const get_year = () => month_data.year;
+  const get_month = () => month_data.month;
+
   const slide = (modifier: 'left' | 'right') => {
     const month_number = MONTHS.findIndex(month_name => month_name === month_data.month);
     let month: number;
@@ -116,9 +121,31 @@ const Month = () => {
     set_month_data({ month_dates, month: month_name, year })
   };
 
+  const handle_year_change = (year: number) => {
+    const month_number = MONTHS.findIndex(name => name === get_month());
+    const month_name = MONTHS[month_number];
+    const month_dates = get_month_data(year, month_number);
+
+    set_month_data({ month_dates, month: month_name, year })
+  };
+
+  const handle_month_change = (month: string) => {
+    const month_number = MONTHS.findIndex(month_name => month_name === month);
+    const year = get_year();
+    const month_name = MONTHS[month_number];
+    const month_dates = get_month_data(year, month_number);
+
+    set_month_data({ month_dates, month: month_name, year })
+  };
+
   return (
     <>
-      <CalendarMonthsHeader />
+      <CalendarMonthsHeader
+        set_year={handle_year_change}
+        set_month={handle_month_change}
+        get_year={get_year}
+        get_month={get_month}
+      />
       <div class={styles.calendar_month_wrapper}>
         <button onClick={() => slide("left")} class={styles.calendar_header_button}>
           &#60;
@@ -166,6 +193,9 @@ const Months = () => {
     middle: get_initial_month_item_data(0),
     right: get_initial_month_item_data(1),
   });
+
+  const get_middle_year = () => month_items_data.middle.year;
+  const get_middle_month = () => month_items_data.middle.month;
 
   const slide_right = () => {
     const new_left = { ...month_items_data.middle };
@@ -217,9 +247,74 @@ const Months = () => {
     });
   };
 
+  const handle_year_change = (year: number) => {
+    const middle_month_number = MONTHS.findIndex(name => name === month_items_data.middle.month);
+
+    const left_month_data = get_month_data(year, middle_month_number -1);
+    const middle_month_data = get_month_data(year, middle_month_number);
+    const right_month_data = get_month_data(year, middle_month_number + 1);
+
+    batch(() => {
+      set_month_items_data('left', 'year', year);
+      set_month_items_data('middle', 'year', year);
+      set_month_items_data('right', 'year', year);
+      set_month_items_data('left', 'month_dates', left_month_data);
+      set_month_items_data('middle', 'month_dates', middle_month_data);
+      set_month_items_data('right', 'month_dates', right_month_data);
+    });
+  };
+
+  const handle_month_change = (month: string) => {
+    const year = get_middle_year();
+    const middle_month_number = MONTHS.findIndex(name => name === month);
+
+    let left_month_number = middle_month_number - 1;
+    let left_year_number = year;
+    let right_month_number = middle_month_number + 1;
+    let right_year_number = year;
+
+    if (left_month_number < 0) {
+      left_month_number = 11;
+      left_year_number = year - 1;
+    }
+
+    if (right_month_number > 11) {
+      right_month_number = 0;
+      right_year_number = year + 1;
+    }
+
+    const left_month_data = get_month_data(year, middle_month_number -1);
+    const middle_month_data = get_month_data(year, middle_month_number);
+    const right_month_data = get_month_data(year, middle_month_number + 1);
+
+    batch(() => {
+      set_month_items_data('left', {
+        year: left_year_number,
+        month: MONTHS[left_month_number],
+        month_dates: left_month_data
+      });
+      set_month_items_data('middle', {
+        year,
+        month: MONTHS[middle_month_number],
+        month_dates: middle_month_data
+      });
+      set_month_items_data('right', {
+        year: right_year_number,
+        month: MONTHS[right_month_number],
+        month_dates: right_month_data
+      });
+    });
+    
+  }
+
   return (
     <>
-      <CalendarMonthsHeader />
+      <CalendarMonthsHeader
+        set_year={handle_year_change}
+        set_month={handle_month_change}
+        get_year={get_middle_year}
+        get_month={get_middle_month}
+      />
       <div class={styles.calendar_months_wrapper}>
         <button onClick={slide_left} class={styles.calendar_header_button}>
           &#60;
@@ -236,6 +331,7 @@ const Months = () => {
 };
 
 const CalendarYearHeader = () => {
+  const [_, context] = useCalendarContext();
   const [show_modal, set_show_modal] = createSignal(false);
 
   return (
@@ -244,23 +340,43 @@ const CalendarYearHeader = () => {
       <p>Выберите год</p>
       <Show
         when={show_modal()}
-        fallback={<ChooseYearSelect set_show_modal={set_show_modal}/>}
+        fallback={<ChooseYearSelect
+          get_year={context.get_year}
+          set_year={context.set_year}
+          set_show_modal={set_show_modal}
+        />}
       >
-        <ChooseYearModal set_show_modal={set_show_modal} />
+        <ChooseYearModal get_year={context.get_year} set_year={context.set_year} set_show_modal={set_show_modal} />
       </Show>
     </div>
   );
 };
 
-const CalendarMonthsHeader = () => (
-  <div class={styles.calendar_header_container}>
-    <CalendarHeaderButtons />
-  </div>
-);
+const CalendarMonthsHeader = (props: TCalendarMonthsHeaderProps) => {
+  const [show_modal, set_show_modal] = createSignal(false);
+
+  return (
+    <div class={styles.calendar_header_container}>
+      <CalendarHeaderButtons />
+      <p>Выберите год</p>
+      <Show
+        when={show_modal()}
+        fallback={<ChooseYearSelect
+          get_year={props.get_year}
+          set_year={props.set_year}
+          set_show_modal={set_show_modal}
+        />}
+      >
+        <ChooseYearModal get_year={props.get_year} set_year={props.set_year} set_show_modal={set_show_modal} />
+      </Show>
+      <p>Выберите месяц</p>
+      <ChooseMonthSelect get_month={props.get_month} set_month={props.set_month}/>
+    </div>
+  );
+};
 
 const ChooseYearModal = (props: TChooseYearProps) => {
-  const [_, context] = useCalendarContext();
-  const year = context.get_year();
+  const year = props.get_year();
   const [current_year, set_current_year] = createSignal(year);
 
   const plus_year = () => set_current_year(prev => prev + 1);
@@ -272,7 +388,7 @@ const ChooseYearModal = (props: TChooseYearProps) => {
     const value = target.textContent as string;
 
     batch(() => {
-      context.set_year(+value);
+      props.set_year(+value);
       props.set_show_modal(false);
     });
   };
@@ -306,7 +422,7 @@ const ChooseYearSelect = (props: TChooseYearProps) => {
   };
   
   const clear_interval = () => clearInterval(timer_id);
-  const handle_change_year = (value: string) => context.set_year(+value);
+  const handle_change_year = (value: string) => props.set_year(+value);
   const handle_mouse_over = (event: TSelectMouseOver) => {
     if (event.relatedTarget && event.relatedTarget.tagName === "LI") return;
     timer_id = setTimeout(() => props.set_show_modal(true), 800);
@@ -319,9 +435,23 @@ const ChooseYearSelect = (props: TChooseYearProps) => {
       onClick={clear_interval}
       onChange={(event) => handle_change_year(event.target.value)}
       class={styles.calendar_header_select}
-      value={context.get_year()}
+      value={props.get_year()}
     >
       {years.map(year => <option value={year} >{year}</option>)}
+    </select>
+  );
+};
+
+const ChooseMonthSelect = (props: TChooseMonthSelectProps) => {
+  const handle_change_year = (value: string) => props.set_month(value);
+  
+  return (
+    <select
+      onChange={(event) => handle_change_year(event.target.value)}
+      class={styles.calendar_header_select}
+      value={props.get_month()}
+    >
+      {MONTHS.map(month_name => <option value={month_name} >{month_name}</option>)}
     </select>
   );
 };
