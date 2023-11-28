@@ -241,6 +241,7 @@ const CalendarYearHeader = () => {
   return (
     <div class={styles.calendar_header_container}>
       <CalendarHeaderButtons />
+      <p>Выберите год</p>
       <Show
         when={show_modal()}
         fallback={<ChooseYearSelect set_show_modal={set_show_modal}/>}

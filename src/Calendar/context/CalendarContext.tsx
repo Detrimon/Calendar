@@ -5,13 +5,9 @@ import { createStore } from "solid-js/store";
 import { TCalendarStateMethods, TContextStore } from "./CalendarContextTypes";
 import { CalendarEventsInterface } from "../data_provider/CalendarDataProviderTypes";
 
-// export const CalendarContext = createContext(new CalendarContextClass());
 const CalendarContext = createContext<[TContextStore, TCalendarStateMethods]>();
 
 export const CalendarProvider = (props: { children: JSX.Element }) => {
-  // const context = useCalendarContext();
-  // const [context_props] = splitProps(props, ['controller', 'data_provider', 'view', 'config']);
-
   const [store, set_store] = createStore<TContextStore>({ state: {} });
 
   const context: [TContextStore, TCalendarStateMethods] = [
@@ -74,22 +70,6 @@ export const CalendarProvider = (props: { children: JSX.Element }) => {
       },
     },
   ];
-
-  // context.initialize(context_props);
-  // props.controller.initialize(context);
-
-  // createEffect<PrevCreateEffectValues>((prev_values) => {
-  //   const new_values: PrevCreateEffectValues = {};
-  //   for (let action of Object.values(CalendarActions)) {
-  //     const new_value = context[action]();
-  //     const old_value = prev_values[action];
-  //     if (new_value !== old_value) {
-  //       CalendarController.observers[action]?.forEach(fn => fn(new_value));
-  //       new_values[action] = new_value;
-  //     };
-  //   };
-  //   return { ...prev_values, ...new_values }
-  // }, {});
 
   return (
     <CalendarContext.Provider value={context}>
