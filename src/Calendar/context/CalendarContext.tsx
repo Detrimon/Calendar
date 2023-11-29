@@ -55,6 +55,16 @@ export const CalendarProvider = (props: { children: JSX.Element }) => {
         set_store("state", "year", year);
       },
 
+      get_month() {
+        if (!store.state.month && store.state.month !== 0)
+          throw Error("CalendarProvider has not month in it store");
+        return store.state.month;
+      },
+
+      set_month(month: number) {
+        set_store("state", "month", month);
+      },
+
       get_selected_date() {
         if (!store.state.selected_date)
           throw Error("CalendarProvider has not selected_date in it store");

@@ -63,3 +63,8 @@ export function get_current_year() {
   let now = new Date();
   return now.getFullYear();
 }
+
+export function get_current_month() {
+  let now = new Date();
+  return now.getMonth();
+}
