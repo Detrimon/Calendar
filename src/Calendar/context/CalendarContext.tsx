@@ -3,14 +3,11 @@ import { JSX, createContext, useContext } from "solid-js";
 import { type TCalendarProps } from "../ui/CalendarTypes";
 import { createStore } from "solid-js/store";
 import { TCalendarStateMethods, TContextStore } from "./CalendarContextTypes";
+import { CalendarEventsInterface } from "../data_provider/CalendarDataProviderTypes";
 
-// export const CalendarContext = createContext(new CalendarContextClass());
 const CalendarContext = createContext<[TContextStore, TCalendarStateMethods]>();
 
 export const CalendarProvider = (props: { children: JSX.Element }) => {
-  // const context = useCalendarContext();
-  // const [context_props] = splitProps(props, ['controller', 'data_provider', 'view', 'config']);
-
   const [store, set_store] = createStore<TContextStore>({ state: {} });
 
   const context: [TContextStore, TCalendarStateMethods] = [
@@ -44,6 +41,10 @@ export const CalendarProvider = (props: { children: JSX.Element }) => {
         return store.view;
       },
 
+      get_calendar_mode() {
+        return this.get_view().get_mode();
+      },
+
       get_year() {
         if (!store.state.year)
           throw Error("CalendarProvider has not year in it store");
@@ -52,6 +53,16 @@ export const CalendarProvider = (props: { children: JSX.Element }) => {
 
       set_year(year: number) {
         set_store("state", "year", year);
+      },
+
+      get_month() {
+        if (!store.state.month && store.state.month !== 0)
+          throw Error("CalendarProvider has not month in it store");
+        return store.state.month;
+      },
+
+      set_month(month: number) {
+        set_store("state", "month", month);
       },
 
       get_selected_date() {
@@ -69,22 +80,6 @@ export const CalendarProvider = (props: { children: JSX.Element }) => {
       },
     },
   ];
-
-  // context.initialize(context_props);
-  // props.controller.initialize(context);
-
-  // createEffect<PrevCreateEffectValues>((prev_values) => {
-  //   const new_values: PrevCreateEffectValues = {};
-  //   for (let action of Object.values(CalendarActions)) {
-  //     const new_value = context[action]();
-  //     const old_value = prev_values[action];
-  //     if (new_value !== old_value) {
-  //       CalendarController.observers[action]?.forEach(fn => fn(new_value));
-  //       new_values[action] = new_value;
-  //     };
-  //   };
-  //   return { ...prev_values, ...new_values }
-  // }, {});
 
   return (
     <CalendarContext.Provider value={context}>
