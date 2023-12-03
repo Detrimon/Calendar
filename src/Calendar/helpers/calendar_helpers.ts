@@ -1,3 +1,4 @@
+import { ICalendarRepeatedEvent } from "../data_provider/CalendarDataProviderTypes";
 import { DAYS_IN_MONTH, DAYS_IN_WEEK, Month } from "../lib/constants";
 
 export function is_leap_year(year: number) {
@@ -68,3 +69,33 @@ export function get_current_month() {
   let now = new Date();
   return now.getMonth();
 }
+
+export function filter_by_rate(date: Date) {
+  return function (event: ICalendarRepeatedEvent) {
+    if (event.repeat_rate === "day") return true;
+
+    const copiedDate = new Date(event.event_start_date.getTime());
+    const date_timestamp = date.getTime();
+
+    let current = copiedDate.getTime();
+    const end = event.event_stop_date.getTime();
+
+    while (current <= end) {
+      if (current === date_timestamp) return true;
+
+      switch (event.repeat_rate) {
+        case "year":
+          copiedDate.setFullYear(copiedDate.getFullYear() + 1);
+          break;
+        case "month":
+          copiedDate.setMonth(copiedDate.getMonth() + 1);
+          break;
+        case "week":
+          copiedDate.setDate(copiedDate.getDate() + 7);
+          break;
+      };
+      current = copiedDate.getTime();
+    }
+    return false;
+  };
+};

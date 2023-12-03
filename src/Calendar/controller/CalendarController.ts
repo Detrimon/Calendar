@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 import { CalendarDataProvider } from "../data_provider/CalendarDataProvider";
 import { CalendarView } from "../ui/CalendarView/CalendarView";
 import { CalendarActions } from "../ui/CalendarTypes";
-import type { CalendarEventsInterface } from "../data_provider/CalendarDataProviderTypes";
+import type { TEventsTypesByDate } from "../data_provider/CalendarDataProviderTypes";
 import type { GUID, Observers } from "./CalendarControllerTypes";
 import { TCalendarStateMethods } from "../context/CalendarContextTypes";
 import { CalendarViewMode } from "../ui/CalendarView/CalendarViewTypes";
@@ -78,11 +78,11 @@ export class CalendarController {
     const context = this.get_context();
     const data_provider = this.get_data_provider();
 
-    const events = (await data_provider.get_events(
+    const events = (await data_provider.get_year_events(
       year
-    )) as CalendarEventsInterface[];
+    )) as TEventsTypesByDate;
     context.set_events(events);
-  }
+  };
 
   plus_year() {
     const context = this.get_context();

@@ -3,7 +3,7 @@ import { JSX, createContext, useContext } from "solid-js";
 import { type TCalendarProps } from "../ui/CalendarTypes";
 import { createStore } from "solid-js/store";
 import { TCalendarStateMethods, TContextStore } from "./CalendarContextTypes";
-import { CalendarEventsInterface } from "../data_provider/CalendarDataProviderTypes";
+import { TEventsTypesByDate } from "../data_provider/CalendarDataProviderTypes";
 
 const CalendarContext = createContext<[TContextStore, TCalendarStateMethods]>();
 
@@ -75,9 +75,15 @@ export const CalendarProvider = (props: { children: JSX.Element }) => {
         set_store("state", "selected_date", date);
       },
 
-      set_events(events: CalendarEventsInterface[]) {
+      set_events(events: TEventsTypesByDate) {
         set_store("state", "events", events);
       },
+
+      get_selected_date_events() {
+        if (!store.state.selected_date_events)
+          throw Error("CalendarProvider has not selected_date_events in it store");
+        return store.state.selected_date_events;
+      }
     },
   ];
 

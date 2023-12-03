@@ -1,6 +1,6 @@
 import { CalendarController } from "../controller/CalendarController";
 import { CalendarDataProvider } from "../data_provider/CalendarDataProvider";
-import { CalendarEventsInterface } from "../data_provider/CalendarDataProviderTypes";
+import { ICalendarDayEvent, TEventsTypesByDate } from "../data_provider/CalendarDataProviderTypes";
 import { TCalendarProps } from "../ui/CalendarTypes";
 import { CalendarView } from "../ui/CalendarView/CalendarView";
 import { CalendarViewMode } from "../ui/CalendarView/CalendarViewTypes";
@@ -24,7 +24,8 @@ export type TCalendarState = {
   year: number;
   month: number;
   selected_date: Date;
-  events: CalendarEventsInterface[];
+  selected_date_events: ICalendarDayEvent[];
+  events: TEventsTypesByDate;
 };
 
 export type TCalendarStateMethods = {
@@ -38,8 +39,9 @@ export type TCalendarStateMethods = {
   set_month(month: number): void;
   get_selected_date(): Date;
   set_selected_date(date: Date): void;
-  set_events(events: CalendarEventsInterface[]): void;
+  set_events(events: TEventsTypesByDate): void;
   get_calendar_mode(): CalendarViewMode;
+  get_selected_date_events(): ICalendarDayEvent[];
 };
 
 export type TContextStore = Partial<TCalendarProps> & {
