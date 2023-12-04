@@ -101,5 +101,27 @@
 }
 
 td{
+  position: relative;
   border: 1px solid transparent;
+}
+
+.td_tooltip{
+  display: none;
+  position: absolute;
+  bottom: 50%;
+  left: 0;
+  padding: 10px;
+  width: 150px;
+  text-align: left;
+  background-color: lightgray;
+  border-radius: 5px;
+}
+
+.show_tooltip{
+  display: block;
+}
+
+.tooltip_list_element{
+  list-style-type: "-";
+  font-size: 10px;
 }

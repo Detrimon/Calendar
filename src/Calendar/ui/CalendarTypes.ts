@@ -47,3 +47,7 @@ export type TChooseYearProps = {
   set_show_modal: Setter<boolean>
 };
 
+export type TTableMouseEvent = MouseEvent & {
+  currentTarget: HTMLTableSectionElement;
+  target: Element;
+};

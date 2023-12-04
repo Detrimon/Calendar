@@ -1,4 +1,4 @@
-import { For, Match, Show, Switch, batch, createSignal, mergeProps } from "solid-js";
+import { For, Match, Show, Switch, batch, createSignal, mergeProps, onCleanup, onMount } from "solid-js";
 
 import { DAYS_IN_WEEK, MONTHS, WEEKDAYS } from "../lib/constants";
 import { get_month_data, get_today } from "../helpers/calendar_helpers";
@@ -14,6 +14,7 @@ import type {
   TChooseYearEvent,
   TChooseYearProps,
   TSelectMouseOver,
+  TTableMouseEvent,
 } from "./CalendarTypes";
 import { CalendarController } from "../controller/CalendarController";
 import { CalendarDataProvider } from "../data_provider/CalendarDataProvider";
@@ -24,6 +25,7 @@ import { TCalendarStateMethods } from "../context/CalendarContextTypes";
 import { AppModel } from "../../mock/mock_events_data";
 
 import styles from "./Calendar.module.css";
+import { ICalendarDayEvent } from "../data_provider/CalendarDataProviderTypes";
 
 function get_default_props(
   initial_props: Partial<TCalendarProps>
@@ -346,13 +348,62 @@ const MonthItemHeader = (props: MonthItemHeader) => (
 );
 
 const MonthItemBody = (props: MonthItemBodyProps) => {
-  const [_, context] = useCalendarContext();
+  const [tooltip, set_tooltip] = createSignal<ICalendarDayEvent[]>([]);
 
+  const [_, context] = useCalendarContext();
   const select_day = (date: Date) => context.set_selected_date(date);
   const day_today = get_today().getTime();
 
+  let timeout: number;
+  let current_elem: Element | null = null;
+  let tbody_ref;
+  
+  function handle_mouse_over(e: TTableMouseEvent) {
+    e.stopPropagation();
+    if (current_elem) return;
+    let target = e.target.closest('td');
+    if (!target) return;
+    current_elem = target;
+
+    timeout = setTimeout(async () => {
+      const date = new Date(e.target.dataset.day);
+      const events = await context.get_controller().get_date_events(date);
+      if (events.length === 0) return;
+      set_tooltip(events);
+
+      target?.querySelector('[data-day-tooltip]')?.classList.add(styles.show_tooltip);
+    }, 500);
+  };
+
+  function handle_mouse_out(e: TTableMouseEvent) {
+    e.stopPropagation();
+    clearTimeout(timeout);
+
+    if (!current_elem) return;
+    let relatedTarget = e.relatedTarget;
+
+    while (relatedTarget) {
+      if (relatedTarget == current_elem) return;
+
+      relatedTarget = relatedTarget.parentNode;
+    };
+
+    current_elem = null;
+    clearTimeout(timeout);
+    e.target.querySelector('[data-day-tooltip]')?.classList.remove(styles.show_tooltip);
+   };
+
+  onCleanup(() => {
+    tbody_ref.removeEventListener('onmouseover',handle_mouse_over);
+    tbody_ref.removeEventListener('onmouseout',handle_mouse_out);
+  });
+
   return (
-    <tbody>
+    <tbody
+      ref={tbody_ref}
+      onMouseOver={handle_mouse_over}
+      onMouseOut={handle_mouse_out}
+    >
       <For each={props.month_dates}>
         {(week) => (
           <tr>
@@ -360,7 +411,9 @@ const MonthItemBody = (props: MonthItemBodyProps) => {
               {(day) => (
                 <Show when={day} fallback={<td></td>}>
                   <td
+                    data-day={day}
                     onClick={() => select_day(day)}
+                    class={styles.hide_tooltip}
                     classList={{
                       [styles.day_weekend]:
                         day.getDay() === 6 || day.getDay() === 0,
@@ -371,6 +424,18 @@ const MonthItemBody = (props: MonthItemBodyProps) => {
                     }}
                   >
                     {day.getDate()}
+                    <ul
+                      data-day-tooltip
+                      class={styles.td_tooltip}
+                    >
+                      <For each={tooltip()}>
+                        {event => (
+                          <li class={styles.tooltip_list_element}>
+                            {event.event_text}
+                          </li>
+                        )}
+                      </For>
+                    </ul>
                   </td>
                 </Show>
               )}

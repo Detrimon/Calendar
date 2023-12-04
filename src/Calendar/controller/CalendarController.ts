@@ -84,6 +84,11 @@ export class CalendarController {
     context.set_events(events);
   };
 
+  async get_date_events(date: Date) {
+    const data_provider = this.get_data_provider();
+    return await data_provider.get_date_events(date);
+  };
+
   plus_year() {
     const context = this.get_context();
     const next_year = context.get_year() + 1;
