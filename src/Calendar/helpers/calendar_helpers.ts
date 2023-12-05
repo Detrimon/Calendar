@@ -99,18 +99,3 @@ export function filter_by_rate(date: Date) {
     return false;
   };
 };
-
-
-export function popup_delay(elem: HTMLElement , cb:()=>void) {
-  let timeout: number;
-
-  elem.onmouseover = function (e) {
-      console.log('>>>e<<<',e);
-      
-        timeout = setTimeout(cb, 500);
-    };
-
-    elem.onmouseout = function() {
-        clearTimeout(timeout);
-    }
-};

@@ -106,19 +106,15 @@ td{
 }
 
 .td_tooltip{
-  display: none;
   position: absolute;
   bottom: 50%;
   left: 0;
   padding: 10px;
-  width: 150px;
+  width: 200px;
   text-align: left;
   background-color: lightgray;
   border-radius: 5px;
-}
-
-.show_tooltip{
-  display: block;
+  color: #000;
 }
 
 .tooltip_list_element{

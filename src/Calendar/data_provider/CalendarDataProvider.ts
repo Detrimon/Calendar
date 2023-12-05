@@ -14,8 +14,8 @@ export class CalendarDataProvider {
   };
 
   async get_year_events(year: number): Promise<TEventsTypesByDate>{
-    const events = await this.model.get_year_events(year);
-    const repeated_events = await this.model.get_year_repeated_events(year);
+    const [events, repeated_events] =
+      await Promise.all([this.model.get_year_events(year), this.model.get_year_repeated_events(year)]);
 
     const result = repeated_events.reduce<TEventsTypesByDate>((result_obj, repeated_event) => {
       let start_timestamp = Math.max(new Date(year, 0, 1).getTime(), repeated_event.event_start_date.getTime());
@@ -65,21 +65,18 @@ export class CalendarDataProvider {
   };
 
   async get_date_events(date: Date): Promise<ICalendarDayEvent[]>{
-    const date_events = await this.model.get_date_events(date);
-    const date_repeated_events = await this.model.get_date_repeated_events(date);
+    const [date_events, date_repeated_events] =
+      await Promise.all([this.model.get_date_events(date), this.model.get_date_repeated_events(date)]);
 
-    const result = date_repeated_events.reduce((acc, curr) => {
-      acc.push({
-        event_id: curr.event_id,
-        event_date: date,
-        event_type: curr.event_type,
-        event_text: curr.event_text,
-        event_end_time: curr.event_end_time,
-        event_start_time: curr.event_start_time,
-      });
-      return acc
-    }, date_events);
-
-    return result;
+    const repeated_events = date_repeated_events.map(event => ({
+      event_id: event.event_id,
+      event_date: date,
+      event_type: event.event_type,
+      event_text: event.event_text,
+      event_end_time: event.event_end_time,
+      event_start_time: event.event_start_time,
+    }));
+    
+    return [...repeated_events, ...date_events ];
   };
 };
