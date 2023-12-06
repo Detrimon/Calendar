@@ -1,3 +1,7 @@
+.calendar_container{
+  width: 1000px;
+}
+
 .calendar_header_container {
   position: relative;
   min-height: 51px;
@@ -29,6 +33,7 @@
   align-self: center;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 40px;
 }
 

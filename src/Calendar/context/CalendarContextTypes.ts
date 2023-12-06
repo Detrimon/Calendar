@@ -43,6 +43,7 @@ export type TCalendarStateMethods = {
   set_events(events: TEventsTypesByDate): void;
   get_calendar_mode(): CalendarViewMode;
   get_selected_date_events(): ICalendarDayEvent[];
+  set_selected_date_events(events: ICalendarDayEvent[]): void;
 };
 
 export type TContextStore = Partial<TCalendarProps> & {

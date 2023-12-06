@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 import { CalendarDataProvider } from "../data_provider/CalendarDataProvider";
 import { CalendarView } from "../ui/CalendarView/CalendarView";
 import { CalendarActions } from "../ui/CalendarTypes";
-import type { TEventsTypesByDate } from "../data_provider/CalendarDataProviderTypes";
+import type { ICalendarDayEvent, TEventsTypesByDate } from "../data_provider/CalendarDataProviderTypes";
 import type { GUID, Observers } from "./CalendarControllerTypes";
 import { TCalendarStateMethods } from "../context/CalendarContextTypes";
 import { CalendarViewMode } from "../ui/CalendarView/CalendarViewTypes";
@@ -48,8 +48,16 @@ export class CalendarController {
     this.context = context;
 
     createEffect(on(context.get_year, (year) => {
-      this.load_and_set_new_events(year);
+      this.load_and_set_events(year);
       this.notify(CalendarActions.GET_YEAR, year);
+    }, { defer: true }));
+
+    createEffect(on(context.get_selected_date, (date) => {
+      this.notify(CalendarActions.SELECTED_DATE, date);
+    }, { defer: true }));
+
+    createEffect(on(context.get_selected_date_events, (event_data) => {
+      this.notify(CalendarActions.GET_SELECTED_DATE_EVENTS, event_data);
     }, { defer: true }));
   };
 
@@ -74,7 +82,7 @@ export class CalendarController {
   }
 
   //! Нужно другое название функции?
-  async load_and_set_new_events(year: number) {
+  async load_and_set_events(year: number) {
     const context = this.get_context();
     const data_provider = this.get_data_provider();
 
@@ -82,6 +90,16 @@ export class CalendarController {
       year
     )) as TEventsTypesByDate;
     context.set_events(events);
+  };
+
+  async load_and_set_date_events(date: Date) {
+    const context = this.get_context();
+    const data_provider = this.get_data_provider();
+
+    const date_events = (await data_provider.get_date_events(
+      date
+    )) as ICalendarDayEvent[];
+    context.set_selected_date_events(date_events);
   };
 
   async get_date_events(date: Date) {

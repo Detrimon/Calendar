@@ -55,7 +55,7 @@ function initialize_settings(
 ): void {
   context.initialize(props);
   props.controller.initialize(context);
-  props.controller.load_and_set_new_events(context.get_year());
+  props.controller.load_and_set_events(context.get_year());
 };
 
 export const Calendar = (initial_props: Partial<TCalendarProps>) => {
@@ -84,10 +84,10 @@ const CalendarMain = (initial_props: Partial<TCalendarProps>) => {
 };
 
 const Year = () => (
-  <>
+  <div class={styles.calendar_container}>
     <CalendarYearHeader />
     <CalendarBody />
-  </>
+  </div>
 );
 
 const Months = () => {
@@ -150,7 +150,7 @@ const Months = () => {
   };
 
   return (
-    <>
+    <div class={styles.calendar_container}>
       <CalendarMonthsHeader />
       <div class={styles.calendar_months_wrapper}>
         <button onClick={slide_left} class={styles.calendar_header_button}>
@@ -171,7 +171,7 @@ const Months = () => {
           &#62;
         </button>
       </div>
-    </>
+    </div>
   );
 };
 
@@ -359,7 +359,10 @@ const MonthItemHeader = (props: MonthItemHeader) => (
 
 const MonthItemBody = (props: MonthItemBodyProps) => {
   const [_, context] = useCalendarContext();
-  const select_day = (date: Date) => context.set_selected_date(date);
+  const select_day = (date: Date) => {
+    context.set_selected_date(date);
+    context.get_controller().load_and_set_date_events(date);
+  };
   const day_today = get_today().getTime();
 
   let timeout: number;
