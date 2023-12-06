@@ -8,7 +8,12 @@ import { TEventsTypesByDate } from "../data_provider/CalendarDataProviderTypes";
 const CalendarContext = createContext<[TContextStore, TCalendarStateMethods]>();
 
 export const CalendarProvider = (props: { children: JSX.Element }) => {
-  const [store, set_store] = createStore<TContextStore>({ state: {} });
+  const [store, set_store] = createStore<TContextStore>({
+    state: {
+      selected_date_events: [],
+      events: {}
+    }
+  });
 
   const context: [TContextStore, TCalendarStateMethods] = [
     store,
@@ -79,10 +84,12 @@ export const CalendarProvider = (props: { children: JSX.Element }) => {
         set_store("state", "events", events);
       },
 
+      get_events() {
+        return store.state.events;
+      },
+
       get_selected_date_events() {
-        if (!store.state.selected_date_events)
-          throw Error("CalendarProvider has not selected_date_events in it store");
-        return store.state.selected_date_events;
+         return store.state.selected_date_events;
       }
     },
   ];

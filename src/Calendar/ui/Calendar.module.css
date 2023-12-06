@@ -121,3 +121,13 @@ td{
   list-style-type: "-";
   font-size: 10px;
 }
+
+.event_marker{
+  position: absolute;
+  bottom: 0;
+  right: 5px;
+  width: 5px;
+  height: 5px;
+  background-color: #f0f;
+  border-radius: 50%;
+}

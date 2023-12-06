@@ -5,10 +5,6 @@ export type EventsParams = {
   time_to: string;
 };
 
-export interface ICalendarEventsProvider{
-  get_events: (params: EventsParams) => ICalendarEvents
-};
-
 export interface ICalendarEvents {
   [date: string]: ICalendarDayEvent[]
 };

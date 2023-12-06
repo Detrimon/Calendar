@@ -10,7 +10,7 @@ import {
 } from "solid-js";
 import { render } from "solid-js/web";
 
-import { DAYS_IN_WEEK, MONTHS, WEEKDAYS } from "../lib/constants";
+import { DATE_POPUP_SHOW_DELAY_MS, DAYS_IN_WEEK, MONTHS, WEEKDAYS } from "../lib/constants";
 import { get_month_data, get_today } from "../helpers/calendar_helpers";
 import {
   CalendarProvider,
@@ -365,6 +365,8 @@ const MonthItemBody = (props: MonthItemBodyProps) => {
   let timeout: number;
   let current_td: HTMLTableCellElement | null;
   let tbody_ref;
+
+  const is_event = (date_string: string): boolean => !!context.get_events()[date_string];
   
   function handle_mouse_over(e: TTableMouseEvent) {
     if (current_td) return;
@@ -378,7 +380,7 @@ const MonthItemBody = (props: MonthItemBodyProps) => {
 
       if (events.length === 0) return;
       render(() => <EventsPopup events={events} />, current_td as HTMLTableCellElement);
-    }, 500);
+    }, DATE_POPUP_SHOW_DELAY_MS);
   };
 
   function handle_mouse_out() {
@@ -419,6 +421,9 @@ const MonthItemBody = (props: MonthItemBodyProps) => {
                     }}
                   >
                     {day.getDate()}
+                    <Show when={is_event(day.toLocaleString().substring(0, 10))}>
+                      <span class={styles.event_marker} />
+                    </Show>
                   </td>
                 </Show>
               )}

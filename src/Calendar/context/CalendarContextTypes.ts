@@ -20,10 +20,10 @@ export type TEventsParams = {
 };
 
 export type TCalendarState = {
-  events_params: TEventsParams;
-  year: number;
-  month: number;
-  selected_date: Date;
+  events_params?: TEventsParams;
+  year?: number;
+  month?: number;
+  selected_date?: Date;
   selected_date_events: ICalendarDayEvent[];
   events: TEventsTypesByDate;
 };
@@ -39,11 +39,12 @@ export type TCalendarStateMethods = {
   set_month(month: number): void;
   get_selected_date(): Date;
   set_selected_date(date: Date): void;
+  get_events(): TEventsTypesByDate;
   set_events(events: TEventsTypesByDate): void;
   get_calendar_mode(): CalendarViewMode;
   get_selected_date_events(): ICalendarDayEvent[];
 };
 
 export type TContextStore = Partial<TCalendarProps> & {
-  state: Partial<TCalendarState>;
+  state: TCalendarState;
 };
