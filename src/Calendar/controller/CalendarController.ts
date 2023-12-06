@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 import { CalendarDataProvider } from "../data_provider/CalendarDataProvider";
 import { CalendarView } from "../ui/CalendarView/CalendarView";
 import { CalendarActions } from "../ui/CalendarTypes";
-import type { ICalendarDayEvent, TEventsTypesByDate } from "../data_provider/CalendarDataProviderTypes";
+import type { HolidaysData, ICalendarDayEvent, TEventsTypesByDate } from "../data_provider/CalendarDataProviderTypes";
 import type { GUID, Observers } from "./CalendarControllerTypes";
 import { TCalendarStateMethods } from "../context/CalendarContextTypes";
 import { CalendarViewMode } from "../ui/CalendarView/CalendarViewTypes";
@@ -46,9 +46,10 @@ export class CalendarController {
     this.data_provider = context.get_data_provider();
     this.view = context.get_view();
     this.context = context;
-
+    
     createEffect(on(context.get_year, (year) => {
       this.load_and_set_events(year);
+      this.load_and_set_year_holidays(year);
       this.notify(CalendarActions.GET_YEAR, year);
     }, { defer: true }));
 
@@ -123,4 +124,14 @@ export class CalendarController {
     const view = this.get_view();
     view.set_mode(mode);
   };
-}
+
+  async load_and_set_year_holidays(year: number) {
+    const context = this.get_context();
+    const data_provider = this.get_data_provider();
+
+    const holidays = (await data_provider.get_year_holidays(
+      year
+    )) as HolidaysData;
+    context.set_holidays(holidays);
+  };
+};

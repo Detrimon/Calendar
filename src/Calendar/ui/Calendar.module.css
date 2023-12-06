@@ -78,6 +78,10 @@
   color: red;
 }
 
+.day_preholiday {
+  color: lightpink;
+}
+
 .day_today {
   background-color: lightgreen;
 }
@@ -133,6 +137,6 @@ td{
   right: 5px;
   width: 5px;
   height: 5px;
-  background-color: #f0f;
+  background-color: #000;
   border-radius: 50%;
 }

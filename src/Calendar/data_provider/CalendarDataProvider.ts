@@ -9,11 +9,6 @@ export class CalendarDataProvider {
     this.model = model
   }
 
-  // TODO написать логику запроса на сервер за государственными выходными
-  async get_holidays(year: number): Promise<Date[]>{
-    return [new Date()];
-  };
-
   async get_year_events(year: number): Promise<TEventsTypesByDate>{
     const [events, repeated_events] =
       await Promise.all([this.model.get_year_events(year), this.model.get_year_repeated_events(year)]);
@@ -80,5 +75,9 @@ export class CalendarDataProvider {
     }));
     
     return [...repeated_events, ...date_events ];
+  };
+
+  async get_year_holidays(year: number) {
+    return await this.model.get_year_holidays(year)
   };
 };

@@ -49,3 +49,13 @@ export type TEventsTypesByDate = {
   // В массиве типы событий для обозначения их в календаре разными цветными кружками
   [key: string]: TCalendarEventType[];
 };
+
+export type HolidaysData = {
+  holidays: string[];
+  preholidays: string[];
+};
+
+export type Holidays = {
+  [key: string]: HolidaysData
+};
+

@@ -56,6 +56,7 @@ function initialize_settings(
   context.initialize(props);
   props.controller.initialize(context);
   props.controller.load_and_set_events(context.get_year());
+  props.controller.load_and_set_year_holidays(context.get_year());
 };
 
 export const Calendar = (initial_props: Partial<TCalendarProps>) => {
@@ -359,10 +360,6 @@ const MonthItemHeader = (props: MonthItemHeader) => (
 
 const MonthItemBody = (props: MonthItemBodyProps) => {
   const [_, context] = useCalendarContext();
-  const select_day = (date: Date) => {
-    context.set_selected_date(date);
-    context.get_controller().load_and_set_date_events(date);
-  };
   const day_today = get_today().getTime();
 
   let timeout: number;
@@ -370,8 +367,10 @@ const MonthItemBody = (props: MonthItemBodyProps) => {
   let tbody_ref;
 
   const is_event = (date_string: string): boolean => !!context.get_events()[date_string];
+  const is_holiday = (date_string: string): boolean => context.get_holidays().holidays.includes(date_string);
+  const is_preholiday = (date_string: string): boolean => context.get_holidays().preholidays.includes(date_string);
   
-  function handle_mouse_over(e: TTableMouseEvent) {
+  const handle_mouse_over = (e: TTableMouseEvent) => {
     if (current_td) return;
     const target = e.target.closest('td');
     if (!target) return;
@@ -388,11 +387,16 @@ const MonthItemBody = (props: MonthItemBodyProps) => {
     }, DATE_POPUP_SHOW_DELAY_MS);
   };
 
-  function handle_mouse_out() {
+  const handle_mouse_out = () => {
     clearTimeout(timeout);
     if (!current_td) return;
     current_td.querySelector('[data-day-tooltip]')?.remove();
     current_td = null;
+  };
+
+  const select_day = (date: Date) => {
+    context.set_selected_date(date);
+    context.get_controller().load_and_set_date_events(date);
   };
 
   onCleanup(() => {
@@ -418,11 +422,12 @@ const MonthItemBody = (props: MonthItemBodyProps) => {
                     class={styles.hide_tooltip}
                     classList={{
                       [styles.day_weekend]:
-                        day.getDay() === 6 || day.getDay() === 0,
+                        day.getDay() === 6 || day.getDay() === 0 || is_holiday(format_date_to_string(day)),
                       [styles.day_selected]:
                         context.get_selected_date()?.getTime() ===
                         day.getTime(),
                       [styles.day_today]: day_today === day.getTime(),
+                      [styles.day_preholiday]: is_preholiday(format_date_to_string(day)),
                     }}
                   >
                     {day.getDate()}
