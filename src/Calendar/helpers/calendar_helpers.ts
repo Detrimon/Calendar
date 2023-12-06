@@ -99,3 +99,7 @@ export function filter_by_rate(date: Date) {
     return false;
   };
 };
+
+export function format_date_to_string(date: Date) {
+  return date.toLocaleString().substring(0, 10)
+};

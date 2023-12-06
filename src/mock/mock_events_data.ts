@@ -6,7 +6,7 @@ import {
   TCalendarEventType,
   TEventsTypesByDate,
 } from "../Calendar/data_provider/CalendarDataProviderTypes";
-import { filter_by_rate } from "../Calendar/helpers/calendar_helpers";
+import { filter_by_rate, format_date_to_string } from "../Calendar/helpers/calendar_helpers";
 
 export class AppModel{
   private events_data: ICalendarEvents
@@ -18,7 +18,7 @@ export class AppModel{
   };
 
   get_date_events(date: Date): Promise<ICalendarDayEvent[]> {
-    const day_string = date.toLocaleString().substring(0, 10);
+    const day_string = format_date_to_string(date);
 
     return new Promise((resolve) => {
       setTimeout(() => {

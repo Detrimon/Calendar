@@ -11,7 +11,7 @@ import {
 import { render } from "solid-js/web";
 
 import { DATE_POPUP_SHOW_DELAY_MS, DAYS_IN_WEEK, MONTHS, WEEKDAYS } from "../lib/constants";
-import { get_month_data, get_today } from "../helpers/calendar_helpers";
+import { format_date_to_string, get_month_data, get_today } from "../helpers/calendar_helpers";
 import {
   CalendarProvider,
   useCalendarContext,
@@ -421,7 +421,7 @@ const MonthItemBody = (props: MonthItemBodyProps) => {
                     }}
                   >
                     {day.getDate()}
-                    <Show when={is_event(day.toLocaleString().substring(0, 10))}>
+                    <Show when={is_event(format_date_to_string(day))}>
                       <span class={styles.event_marker} />
                     </Show>
                   </td>

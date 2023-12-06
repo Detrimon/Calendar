@@ -1,4 +1,5 @@
 import { AppModel } from "../../mock/mock_events_data";
+import { format_date_to_string } from "../helpers/calendar_helpers";
 import type { ICalendarDayEvent, TEventsTypesByDate } from "./CalendarDataProviderTypes";
 
 export class CalendarDataProvider {
@@ -23,7 +24,8 @@ export class CalendarDataProvider {
 
       while (start_timestamp <= stop_timestamp) {
         const current = new Date(start_timestamp);
-        const day_string = current.toLocaleString().substring(0, 10);
+        const day_string = format_date_to_string(current);
+        
         
         if (result_obj[day_string]) {
           result_obj[day_string].push(repeated_event.event_type);
