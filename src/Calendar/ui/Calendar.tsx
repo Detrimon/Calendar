@@ -375,10 +375,12 @@ const MonthItemBody = (props: MonthItemBodyProps) => {
     current_td = target;
   
     timeout = setTimeout(async () => {
+      const td = current_td;
       const date = new Date(e.target.dataset.day);
       const events = await context.get_controller().get_date_events(date);
 
-      if (events.length === 0) return;
+      if (current_td !== td || events.length === 0) return;
+     
       render(() => <EventsPopup events={events} />, current_td as HTMLTableCellElement);
     }, DATE_POPUP_SHOW_DELAY_MS);
   };
