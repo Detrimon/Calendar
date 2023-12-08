@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 import { CalendarDataProvider } from "../data_provider/CalendarDataProvider";
 import { CalendarView } from "../ui/CalendarView/CalendarView";
 import { CalendarActions } from "../ui/CalendarTypes";
-import type { CalendarEventsInterface } from "../data_provider/CalendarDataProviderTypes";
+import type { HolidaysData, ICalendarDayEvent, TEventsTypesByDate } from "../data_provider/CalendarDataProviderTypes";
 import type { GUID, Observers } from "./CalendarControllerTypes";
 import { TCalendarStateMethods } from "../context/CalendarContextTypes";
 import { CalendarViewMode } from "../ui/CalendarView/CalendarViewTypes";
@@ -46,10 +46,19 @@ export class CalendarController {
     this.data_provider = context.get_data_provider();
     this.view = context.get_view();
     this.context = context;
-
+    
     createEffect(on(context.get_year, (year) => {
-      this.load_and_set_new_events(year);
+      this.load_and_set_events(year);
+      this.load_and_set_year_holidays(year);
       this.notify(CalendarActions.GET_YEAR, year);
+    }, { defer: true }));
+
+    createEffect(on(context.get_selected_date, (date) => {
+      this.notify(CalendarActions.SELECTED_DATE, date);
+    }, { defer: true }));
+
+    createEffect(on(context.get_selected_date_events, (event_data) => {
+      this.notify(CalendarActions.GET_SELECTED_DATE_EVENTS, event_data);
     }, { defer: true }));
   };
 
@@ -74,15 +83,30 @@ export class CalendarController {
   }
 
   //! Нужно другое название функции?
-  async load_and_set_new_events(year: number) {
+  async load_and_set_events(year: number) {
     const context = this.get_context();
     const data_provider = this.get_data_provider();
 
-    const events = (await data_provider.get_events(
+    const events = (await data_provider.get_year_events(
       year
-    )) as CalendarEventsInterface[];
+    )) as TEventsTypesByDate;
     context.set_events(events);
-  }
+  };
+
+  async load_and_set_date_events(date: Date) {
+    const context = this.get_context();
+    const data_provider = this.get_data_provider();
+
+    const date_events = (await data_provider.get_date_events(
+      date
+    )) as ICalendarDayEvent[];
+    context.set_selected_date_events(date_events);
+  };
+
+  async get_date_events(date: Date) {
+    const data_provider = this.get_data_provider();
+    return await data_provider.get_date_events(date);
+  };
 
   plus_year() {
     const context = this.get_context();
@@ -100,4 +124,14 @@ export class CalendarController {
     const view = this.get_view();
     view.set_mode(mode);
   };
-}
+
+  async load_and_set_year_holidays(year: number) {
+    const context = this.get_context();
+    const data_provider = this.get_data_provider();
+
+    const holidays = (await data_provider.get_year_holidays(
+      year
+    )) as HolidaysData;
+    context.set_holidays(holidays);
+  };
+};

@@ -29,3 +29,5 @@ export const Month = {
   November: 10,
   December: 11,
 };
+
+export const DATE_POPUP_SHOW_DELAY_MS = 200;

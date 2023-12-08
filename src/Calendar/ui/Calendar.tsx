@@ -1,7 +1,17 @@
-import { For, Match, Show, Switch, batch, createSignal, mergeProps } from "solid-js";
+import {
+  For,
+  Match,
+  Show,
+  Switch,
+  batch,
+  createSignal,
+  mergeProps,
+  onCleanup
+} from "solid-js";
+import { render } from "solid-js/web";
 
-import { DAYS_IN_WEEK, MONTHS, WEEKDAYS } from "../lib/constants";
-import { get_month_data, get_today } from "../helpers/calendar_helpers";
+import { DATE_POPUP_SHOW_DELAY_MS, DAYS_IN_WEEK, MONTHS, WEEKDAYS } from "../lib/constants";
+import { format_date_to_string, get_month_data, get_today } from "../helpers/calendar_helpers";
 import {
   CalendarProvider,
   useCalendarContext,
@@ -14,6 +24,7 @@ import type {
   TChooseYearEvent,
   TChooseYearProps,
   TSelectMouseOver,
+  TTableMouseEvent,
 } from "./CalendarTypes";
 import { CalendarController } from "../controller/CalendarController";
 import { CalendarDataProvider } from "../data_provider/CalendarDataProvider";
@@ -21,6 +32,8 @@ import { CalendarView } from "./CalendarView/CalendarView";
 import { CalendarConfig } from "../config/CalendarConfig";
 import { CalendarViewMode } from "./CalendarView/CalendarViewTypes";
 import { TCalendarStateMethods } from "../context/CalendarContextTypes";
+import { ICalendarDayEvent } from "../data_provider/CalendarDataProviderTypes";
+import { AppModel } from "../../mock/mock_events_data";
 
 import styles from "./Calendar.module.css";
 
@@ -31,7 +44,7 @@ function get_default_props(
     controller: initial_props.controller ? null : new CalendarController(),
     data_provider: initial_props.data_provider
       ? null
-      : new CalendarDataProvider(),
+      : new CalendarDataProvider(new AppModel()),
     view: initial_props.view ? null : new CalendarView(),
     config: initial_props.config ? null : new CalendarConfig({}),
   } as TCalendarProps;
@@ -42,7 +55,8 @@ function initialize_settings(
 ): void {
   context.initialize(props);
   props.controller.initialize(context);
-  props.controller.load_and_set_new_events(context.get_year());
+  props.controller.load_and_set_events(context.get_year());
+  props.controller.load_and_set_year_holidays(context.get_year());
 };
 
 export const Calendar = (initial_props: Partial<TCalendarProps>) => {
@@ -71,10 +85,10 @@ const CalendarMain = (initial_props: Partial<TCalendarProps>) => {
 };
 
 const Year = () => (
-  <>
+  <div class={styles.calendar_container}>
     <CalendarYearHeader />
     <CalendarBody />
-  </>
+  </div>
 );
 
 const Months = () => {
@@ -137,7 +151,7 @@ const Months = () => {
   };
 
   return (
-    <>
+    <div class={styles.calendar_container}>
       <CalendarMonthsHeader />
       <div class={styles.calendar_months_wrapper}>
         <button onClick={slide_left} class={styles.calendar_header_button}>
@@ -158,7 +172,7 @@ const Months = () => {
           &#62;
         </button>
       </div>
-    </>
+    </div>
   );
 };
 
@@ -346,12 +360,56 @@ const MonthItemHeader = (props: MonthItemHeader) => (
 
 const MonthItemBody = (props: MonthItemBodyProps) => {
   const [_, context] = useCalendarContext();
-
-  const select_day = (date: Date) => context.set_selected_date(date);
   const day_today = get_today().getTime();
 
+  let timeout: number;
+  let current_td: HTMLTableCellElement | null;
+  let tbody_ref;
+
+  const is_event = (date_string: string): boolean => !!context.get_events()[date_string];
+  const is_holiday = (date_string: string): boolean => context.get_holidays().holidays.includes(date_string);
+  const is_preholiday = (date_string: string): boolean => context.get_holidays().preholidays.includes(date_string);
+  
+  const handle_mouse_over = (e: TTableMouseEvent) => {
+    if (current_td) return;
+    const target = e.target.closest('td');
+    if (!target) return;
+    current_td = target;
+  
+    timeout = setTimeout(async () => {
+      const td = current_td;
+      const date = new Date(e.target.dataset.day);
+      const events = await context.get_controller().get_date_events(date);
+
+      if (current_td !== td || events.length === 0) return;
+     
+      render(() => <EventsPopup events={events} />, current_td as HTMLTableCellElement);
+    }, DATE_POPUP_SHOW_DELAY_MS);
+  };
+
+  const handle_mouse_out = () => {
+    clearTimeout(timeout);
+    if (!current_td) return;
+    current_td.querySelector('[data-day-tooltip]')?.remove();
+    current_td = null;
+  };
+
+  const select_day = (date: Date) => {
+    context.set_selected_date(date);
+    context.get_controller().load_and_set_date_events(date);
+  };
+
+  onCleanup(() => {
+    tbody_ref.removeEventListener('onmouseover', handle_mouse_over);
+    tbody_ref.removeEventListener('onmouseout', handle_mouse_out);
+  });
+
   return (
-    <tbody>
+    <tbody
+      ref={tbody_ref}
+      onmouseover={handle_mouse_over}
+      onmouseout={handle_mouse_out}
+    >
       <For each={props.month_dates}>
         {(week) => (
           <tr>
@@ -359,17 +417,23 @@ const MonthItemBody = (props: MonthItemBodyProps) => {
               {(day) => (
                 <Show when={day} fallback={<td></td>}>
                   <td
+                    data-day={day}
                     onClick={() => select_day(day)}
+                    class={styles.hide_tooltip}
                     classList={{
                       [styles.day_weekend]:
-                        day.getDay() === 6 || day.getDay() === 0,
+                        day.getDay() === 6 || day.getDay() === 0 || is_holiday(format_date_to_string(day)),
                       [styles.day_selected]:
                         context.get_selected_date()?.getTime() ===
                         day.getTime(),
                       [styles.day_today]: day_today === day.getTime(),
+                      [styles.day_preholiday]: is_preholiday(format_date_to_string(day)),
                     }}
                   >
                     {day.getDate()}
+                    <Show when={is_event(format_date_to_string(day))}>
+                      <span class={styles.event_marker} />
+                    </Show>
                   </td>
                 </Show>
               )}
@@ -378,5 +442,22 @@ const MonthItemBody = (props: MonthItemBodyProps) => {
         )}
       </For>
     </tbody>
+  );
+};
+
+const EventsPopup = (props: { events: ICalendarDayEvent[] }) => {
+  return (
+    <ul
+      data-day-tooltip
+      class={styles.td_tooltip}
+    >
+      <For each={props.events}>
+        {event => (
+          <li class={styles.tooltip_list_element}>
+            {event.event_text}
+          </li>
+        )}
+      </For>
+    </ul>
   );
 };

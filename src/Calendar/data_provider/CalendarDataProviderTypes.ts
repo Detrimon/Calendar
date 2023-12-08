@@ -5,42 +5,57 @@ export type EventsParams = {
   time_to: string;
 };
 
-export interface ICalendarEventsProvider{
-  get_events: (params: EventsParams) => CalendarEventsInterface[]
-}
-
-export interface CalendarEventsInterface {
-  [date: string]: CalendarDayEventsInterface
+export interface ICalendarEvents {
+  [date: string]: ICalendarDayEvent[]
 };
 
-interface CalendarDayEventsInterface {
-  day_events: {
-    event_date: Date;
-    event_type: TCalendarEvent;
-    event_id: TCalendarEventID;
-    event_time: TCalendarEventTime;
-  };
+export interface ICalendarRepeatedEvents {
+  [event_id: TCalendarEventID]: ICalendarRepeatedEvent;
 };
 
-enum TCalendarEvent {
+export interface ICalendarDayEvent {
+  event_id: TCalendarEventID;
+  event_type: TCalendarEventType;
+  event_date: Date;
+  event_start_time: TCalendarEventTime;
+  event_end_time: TCalendarEventTime;
+  event_text: string;
+};
+
+export interface ICalendarRepeatedEvent {
+  event_id: TCalendarEventID;
+  event_start_date: Date;
+  event_stop_date: Date;
+  event_start_time: TCalendarEventTime;
+  event_end_time: TCalendarEventTime;
+  repeat_rate: TRepeatRate;
+  event_type: TCalendarEventType;
+  event_text: string;
+};
+
+export enum TCalendarEventType {
   EVENT_1 = "EVENT_1",
   EVENT_2 = "EVENT_2",
   EVENT_3 = "EVENT_3",
-}
-
+  EVENT_4 = "EVENT_4",
+  EVENT_5 = "EVENT_5",
+  EVENT_6 = "EVENT_6",
+};
+type TRepeatRate = 'year' | 'month' | 'week' | 'day';
 type TCalendarEventID = string;
-type TCalendarEventTime = number;
+type TCalendarEventTime = string;
 
-interface CalendarRepeatedEventsInterface {
-  [event_id: TCalendarEventID]: {
-    event_id: TCalendarEventID;
-    event_time: TCalendarEventTime;
-    repeat_rate: TRepeatRate;
-    event_from_date: Date;
-    event_from_time: TCalendarEventTime;
-    event_end_date: Date;
-    event_end_time: TCalendarEventTime;
-  };
-}
+export type TEventsTypesByDate = {
+  // В массиве типы событий для обозначения их в календаре разными цветными кружками
+  [key: string]: TCalendarEventType[];
+};
 
-type TRepeatRate = 'year' | 'month' | 'day' | 'hour' | 'min' | 'none';
+export type HolidaysData = {
+  holidays: string[];
+  preholidays: string[];
+};
+
+export type Holidays = {
+  [key: string]: HolidaysData
+};
+

@@ -1,3 +1,7 @@
+.calendar_container{
+  width: 1000px;
+}
+
 .calendar_header_container {
   position: relative;
   min-height: 51px;
@@ -29,6 +33,7 @@
   align-self: center;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 40px;
 }
 
@@ -73,6 +78,10 @@
   color: red;
 }
 
+.day_preholiday {
+  color: lightpink;
+}
+
 .day_today {
   background-color: lightgreen;
 }
@@ -101,5 +110,33 @@
 }
 
 td{
+  position: relative;
   border: 1px solid transparent;
+}
+
+.td_tooltip{
+  position: absolute;
+  bottom: 50%;
+  left: 0;
+  padding: 10px;
+  width: 200px;
+  text-align: left;
+  background-color: lightgray;
+  border-radius: 5px;
+  color: #000;
+}
+
+.tooltip_list_element{
+  list-style-type: "-";
+  font-size: 10px;
+}
+
+.event_marker{
+  position: absolute;
+  bottom: 0;
+  right: 5px;
+  width: 5px;
+  height: 5px;
+  background-color: #000;
+  border-radius: 50%;
 }

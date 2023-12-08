@@ -31,6 +31,7 @@ export type PrevCreateEffectValues = Partial<Record<CalendarActions, any>>;
 export enum CalendarActions{
   SELECTED_DATE = 'get_selected_date',
   GET_YEAR = 'get_year',
+  GET_SELECTED_DATE_EVENTS = 'get_selected_date_events'
 };
 
 export type TChooseYearEvent = MouseEvent & {
@@ -47,3 +48,7 @@ export type TChooseYearProps = {
   set_show_modal: Setter<boolean>
 };
 
+export type TTableMouseEvent = MouseEvent & {
+  currentTarget: HTMLTableSectionElement;
+  target: Element;
+};
