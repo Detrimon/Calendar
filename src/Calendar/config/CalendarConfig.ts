@@ -1,4 +1,4 @@
-import { get_current_month, get_current_year, get_today } from "../helpers/calendar_helpers";
+import { get_current_month, get_current_year, get_today } from "../../shared/lib/helpers";
 import { CalendarViewMode } from "../ui/CalendarView/CalendarViewTypes";
 import type { CalendarConfigProps } from "./CalendarConfigTypes";
 

@@ -1,9 +1,6 @@
+import { DAYS_IN_MONTH, DAYS_IN_WEEK, Month } from "../../shared/lib/constants";
+import { get_day_of_week, is_leap_year } from "../../shared/lib/helpers";
 import { ICalendarRepeatedEvent } from "../data_provider/CalendarDataProviderTypes";
-import { DAYS_IN_MONTH, DAYS_IN_WEEK, Month } from "../lib/constants";
-
-export function is_leap_year(year: number) {
-  return !(year % 4 || (!(year % 100) && year % 400));
-}
 
 export function get_days_in_month(date: Date) {
   const month = date.getMonth();
@@ -15,15 +12,7 @@ export function get_days_in_month(date: Date) {
   } else {
     return days_in_month;
   }
-}
-
-export function get_day_of_week(date: Date) {
-  const day_of_week = date.getDay();
-
-  if (day_of_week === 0) return 6;
-
-  return day_of_week - 1;
-}
+};
 
 export function get_month_data(year: number, month: number) {
   const result: Array<Date[]> = [];
@@ -42,33 +31,10 @@ export function get_month_data(year: number, month: number) {
         result[i][j] = new Date(year, month, day++);
       }
     }
-  }
+  };
 
   return result;
-}
-
-export function get_start_of_day(input_date: Date) {
-  let date = new Date(input_date);
-  date.setHours(0, 0, 0, 0);
-
-  return date;
-}
-
-export function get_today() {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  return today;
-}
-
-export function get_current_year() {
-  let now = new Date();
-  return now.getFullYear();
-}
-
-export function get_current_month() {
-  let now = new Date();
-  return now.getMonth();
-}
+};
 
 export function filter_by_rate(date: Date) {
   return function (event: ICalendarRepeatedEvent) {
@@ -98,8 +64,4 @@ export function filter_by_rate(date: Date) {
     }
     return false;
   };
-};
-
-export function format_date_to_string(date: Date) {
-  return date.toLocaleString().substring(0, 10)
 };

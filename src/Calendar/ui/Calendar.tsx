@@ -5,14 +5,25 @@ import {
   Show,
   Switch,
   batch,
-  createSignal,
   mergeProps,
   onCleanup
 } from "solid-js";
 import { render } from "solid-js/web";
 
-import { DATE_POPUP_SHOW_DELAY_MS, DAYS_IN_WEEK, MONTHS, WEEKDAYS } from "../lib/constants";
-import { format_date_to_string, get_month_data, get_today } from "../helpers/calendar_helpers";
+import {
+  CHOOSE_MONTH,
+  CHOOSE_YEAR,
+  DATE_POPUP_SHOW_DELAY_MS,
+  MODE_BUTTONS_TEXT
+} from "../lib/constants";
+import {
+  DAYS_IN_WEEK,
+  MONTHS,
+  WEEKDAYS_SHORT
+} from "../../shared/lib/constants";
+import { get_month_data} from "../helpers/calendar_helpers";
+import { get_current_month, get_current_year, get_today } from "../../shared/lib/helpers";
+import { format_date_to_string } from "../../shared/lib/helpers";
 import {
   CalendarProvider,
   useCalendarContext,
@@ -22,9 +33,6 @@ import type {
   MonthItemHeader,
   MonthItemProps,
   TCalendarProps,
-  TChooseYearEvent,
-  TChooseYearProps,
-  TSelectMouseOver,
 } from "./CalendarTypes";
 import { CalendarController } from "../controller/CalendarController";
 import { CalendarDataProvider } from "../data_provider/CalendarDataProvider";
@@ -159,9 +167,11 @@ const Months = () => {
         </button>
         <Switch>
           <Match when={context.get_calendar_mode() === CalendarViewMode.MONTHS}>
-            <MonthItem {...get_left_month_item_props()} />
-            <MonthItem {...get_middle_month_item_props()} />
-            <MonthItem {...get_right_month_item_props()} />
+            <div class={styles.calendar_months_row}>
+              <MonthItem {...get_left_month_item_props()} />
+              <MonthItem {...get_middle_month_item_props()} />
+              <MonthItem {...get_right_month_item_props()} />
+            </div>
           </Match>
           <Match when={context.get_calendar_mode() === CalendarViewMode.MONTH}>
             <MonthItem {...get_middle_month_item_props()} />
@@ -176,81 +186,25 @@ const Months = () => {
   );
 };
 
-const CalendarYearHeader = () => {
-  const [show_modal, set_show_modal] = createSignal(false);
+const CalendarYearHeader = () => (
+  <div class={styles.calendar_header_container}>
+    <CalendarHeaderButtons />
+    <p>{CHOOSE_YEAR}</p>
+    <ChooseYearSelect />
+  </div>
+);
 
-  return (
-    <div class={styles.calendar_header_container}>
-      <CalendarHeaderButtons />
-      <p>Выберите год</p>
-      <Show
-        when={show_modal()}
-        fallback={<ChooseYearSelect set_show_modal={set_show_modal} />}
-      >
-        <ChooseYearModal set_show_modal={set_show_modal} />
-      </Show>
-    </div>
-  );
-};
+const CalendarMonthsHeader = () => (
+  <div class={styles.calendar_header_container}>
+    <CalendarHeaderButtons />
+    <p>{CHOOSE_YEAR}</p>
+    <ChooseYearSelect />
+    <p>{CHOOSE_MONTH}</p>
+    <ChooseMonthSelect />
+  </div>
+);
 
-const CalendarMonthsHeader = () => {
-  const [show_modal, set_show_modal] = createSignal(false);
-
-  return (
-    <div class={styles.calendar_header_container}>
-      <CalendarHeaderButtons />
-      <p>Выберите год</p>
-      <Show
-        when={show_modal()}
-        fallback={<ChooseYearSelect set_show_modal={set_show_modal} />}
-      >
-        <ChooseYearModal set_show_modal={set_show_modal} />
-      </Show>
-      <p>Выберите месяц</p>
-      <ChooseMonthSelect />
-    </div>
-  );
-};
-
-const ChooseYearModal = (props: TChooseYearProps) => {
-  const [_, context] = useCalendarContext();
-  const year = context.get_year();
-  const [current_year, set_current_year] = createSignal(year);
-
-  const plus_year = () => set_current_year(prev => prev + 1);
-  const minus_year = () => set_current_year(prev => prev - 1);
-
-  const choose_year = (e: TChooseYearEvent) => {
-    const target = e.target;
-    if (target.tagName !== "LI") return;
-    const value = target.textContent as string;
-
-    batch(() => {
-      context.set_year(+value);
-      props.set_show_modal(false);
-    });
-  };
-
-  return (
-    <div
-      onMouseLeave={() => props.set_show_modal(false)}
-      class={styles.choose_year_wrapper}>
-      <button onClick={minus_year} class={styles.calendar_header_button}>
-        &#60;
-      </button>
-      <ul class={styles.choose_year_list} onClick={(e) => choose_year(e)}>
-        <li>{current_year() - 1}</li>
-        <li>{current_year()}</li>
-        <li>{current_year() + 1}</li>
-      </ul>
-      <button onClick={plus_year} class={styles.calendar_header_button}>
-        &#62;
-      </button>
-    </div>
-  );
-};
-
-const ChooseYearSelect = (props: TChooseYearProps) => {
+const ChooseYearSelect = () => {
   const [_, context] = useCalendarContext();
   let timer_id: number;
 
@@ -261,14 +215,9 @@ const ChooseYearSelect = (props: TChooseYearProps) => {
   
   const clear_interval = () => clearInterval(timer_id);
   const handle_change_year = (value: string) => context.set_year(+value);
-  const handle_mouse_over = (event: TSelectMouseOver) => {
-    if (event.relatedTarget && event.relatedTarget.tagName === "LI") return;
-    timer_id = setTimeout(() => props.set_show_modal(true), 800);
-  };
-  
+
   return (
     <select
-      onMouseOver={handle_mouse_over}
       onMouseOut={clear_interval}
       onClick={clear_interval}
       onChange={(event) => handle_change_year(event.target.value)}
@@ -308,12 +257,12 @@ const CalendarHeaderButtons = () => {
 
   return (
     <div class={styles.calendar_button_container}>
-      <button onClick={set_year_mode}>Year</button>
-      <button onClick={set_months_mode}>3 Months</button>
-      <button onClick={set_month_mode}>Month</button>
+      <button onClick={set_year_mode}>{MODE_BUTTONS_TEXT.YEAR}</button>
+      <button onClick={set_months_mode}>{MODE_BUTTONS_TEXT.MONTHS}</button>
+      <button onClick={set_month_mode}>{MODE_BUTTONS_TEXT.MONTH}</button>
     </div>
-  )
-}
+  );
+};
 
 const CalendarBody = () => {
   const [_, context] = useCalendarContext();
@@ -334,25 +283,48 @@ const CalendarBody = () => {
   );
 };
 
-const MonthItem = (props: MonthItemProps) => (
-  <div class={styles.month_item_container}>
-    <table>
-      <MonthItemHeader month_name={props.month} year={props.year}/>
-      <MonthItemBody month_dates={props.month_dates} />
-    </table>
-  </div>
-);
+const MonthItem = (props: MonthItemProps) => {
+  const [_, context] = useCalendarContext();
+
+  const is_current = () =>
+    MONTHS[get_current_month()] === props.month && get_current_year() === (props.year || context.get_year());
+
+  return (
+    <div
+      class={styles.month_item_container}
+      classList={{
+        [styles.month_item_selected_container]: is_current()
+      }}
+    >
+      <table>
+        <MonthItemHeader is_current={is_current} month_name={props.month} year={props.year} />
+        <MonthItemBody month_dates={props.month_dates} />
+      </table>
+    </div>
+  );
+};
 
 const MonthItemHeader = (props: MonthItemHeader) => (
   <thead class={styles.month_item_header_container}>
     <tr>
-      <th colspan={DAYS_IN_WEEK} class={styles.month_title}>
+      <th
+        colspan={DAYS_IN_WEEK}
+        class={styles.month_title}
+        classList={{
+          [styles.selected_month_title]: props.is_current()
+        }}
+      >
         {props.month_name} {props.year}
       </th>
     </tr>
     <tr>
-      <For each={WEEKDAYS}>
-        {(week_day) => <th class={styles.week_day}>{week_day}</th>}
+      <For each={WEEKDAYS_SHORT}>
+        {(week_day, i) => <th
+          class={styles.week_day}
+          classList={{
+            [styles.day_holiday]: i() >= 5,
+          }}
+        >{week_day}</th>}
       </For>
     </tr>
   </thead>
@@ -420,10 +392,15 @@ const MonthItemBody = (props: MonthItemBodyProps) => {
 const DayItem = (props : {day: Date}) => {
   const [_, context] = useCalendarContext();
 
-  const day_today = get_today().getTime();
-  const is_event = (date_string: string): boolean => !!context.get_events()[date_string];
-  const is_holiday = (date_string: string): boolean => context.get_holidays().holidays.includes(date_string);
-  const is_preholiday = (date_string: string): boolean => context.get_holidays().preholidays.includes(date_string);
+  const get_today_date_string = () => format_date_to_string(props.day);
+
+  const is_day_today = () => get_today().getTime() === props.day.getTime();
+  const is_event = () => !!context.get_events()[get_today_date_string()];
+  const is_become_working = () => context.get_holidays()?.become_working.includes(get_today_date_string());
+  const is_holiday = () =>
+    props.day.getDay() === 6 || props.day.getDay() === 0 || context.get_holidays()?.holidays.includes(get_today_date_string());
+  const is_preholiday = () => context.get_holidays()?.preholidays.includes(get_today_date_string());
+  const is_selected = () => context.get_selected_date().getTime() === props.day.getTime() && !is_day_today();
 
   const select_day = (date: Date) => {
     context.set_selected_date(date);
@@ -436,19 +413,14 @@ const DayItem = (props : {day: Date}) => {
       onClick={() => select_day(props.day)}
       class={styles.hide_tooltip}
       classList={{
-        [styles.day_weekend]:
-          props.day.getDay() === 6 || props.day.getDay() === 0 || is_holiday(format_date_to_string(props.day)),
-        [styles.day_selected]:
-          context.get_selected_date()?.getTime() ===
-          props.day.getTime(),
-        [styles.day_today]: day_today === props.day.getTime(),
-        [styles.day_preholiday]: is_preholiday(format_date_to_string(props.day)),
+        [styles.day_holiday]: is_holiday() && !is_become_working(),
+        [styles.day_selected]: is_selected(),
+        [styles.day_today]: is_day_today(),
+        [styles.day_preholiday]: is_preholiday(),
+        [styles.include_event]: is_event(), 
       }}
     >
       {props.day.getDate()}
-      <Show when={is_event(format_date_to_string(props.day))}>
-        <span class={styles.event_marker} />
-      </Show>
     </td>
   );
 };

@@ -1,3 +1,14 @@
+:root{
+  --selected_color: #f89e30;
+  --holiday_color: #f00;
+  --preholiday_color: #ffb6c1;
+  --base_dark_color: #000;
+  --base_light_color: #fff;
+  --secondary_color: #007bc4;
+  --secondary_dark_color: #3c649d;
+  --grey_light_color: #b1b1b1;
+}
+
 #root {
   display: flex;
   flex-direction: column;
@@ -10,7 +21,6 @@
 
 .container{
   display: flex;
-  align-items: center;
   justify-content: space-between;
   gap: 15px;
 }

@@ -1,5 +1,5 @@
 import { AppModel } from "../../mock/mock_events_data";
-import { format_date_to_string } from "../helpers/calendar_helpers";
+import { format_date_to_string } from "../../shared/lib/helpers";
 import type { ICalendarDayEvent, TEventsTypesByDate } from "./CalendarDataProviderTypes";
 
 export class CalendarDataProvider {
