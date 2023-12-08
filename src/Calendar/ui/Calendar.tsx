@@ -1,5 +1,6 @@
 import {
   For,
+  JSX,
   Match,
   Show,
   Switch,
@@ -24,7 +25,6 @@ import type {
   TChooseYearEvent,
   TChooseYearProps,
   TSelectMouseOver,
-  TTableMouseEvent,
 } from "./CalendarTypes";
 import { CalendarController } from "../controller/CalendarController";
 import { CalendarDataProvider } from "../data_provider/CalendarDataProvider";
@@ -360,17 +360,12 @@ const MonthItemHeader = (props: MonthItemHeader) => (
 
 const MonthItemBody = (props: MonthItemBodyProps) => {
   const [_, context] = useCalendarContext();
-  const day_today = get_today().getTime();
 
   let timeout: number;
   let current_td: HTMLTableCellElement | null;
-  let tbody_ref;
-
-  const is_event = (date_string: string): boolean => !!context.get_events()[date_string];
-  const is_holiday = (date_string: string): boolean => context.get_holidays().holidays.includes(date_string);
-  const is_preholiday = (date_string: string): boolean => context.get_holidays().preholidays.includes(date_string);
+  let tbody_ref: HTMLTableSectionElement;
   
-  const handle_mouse_over = (e: TTableMouseEvent) => {
+  const handle_mouse_over: JSX.EventHandler<HTMLTableSectionElement, MouseEvent > = (e) => {
     if (current_td) return;
     const target = e.target.closest('td');
     if (!target) return;
@@ -394,11 +389,6 @@ const MonthItemBody = (props: MonthItemBodyProps) => {
     current_td = null;
   };
 
-  const select_day = (date: Date) => {
-    context.set_selected_date(date);
-    context.get_controller().load_and_set_date_events(date);
-  };
-
   onCleanup(() => {
     tbody_ref.removeEventListener('onmouseover', handle_mouse_over);
     tbody_ref.removeEventListener('onmouseout', handle_mouse_out);
@@ -406,7 +396,7 @@ const MonthItemBody = (props: MonthItemBodyProps) => {
 
   return (
     <tbody
-      ref={tbody_ref}
+      ref={tbody_ref!}
       onmouseover={handle_mouse_over}
       onmouseout={handle_mouse_out}
     >
@@ -416,25 +406,7 @@ const MonthItemBody = (props: MonthItemBodyProps) => {
             <For each={week}>
               {(day) => (
                 <Show when={day} fallback={<td></td>}>
-                  <td
-                    data-day={day}
-                    onClick={() => select_day(day)}
-                    class={styles.hide_tooltip}
-                    classList={{
-                      [styles.day_weekend]:
-                        day.getDay() === 6 || day.getDay() === 0 || is_holiday(format_date_to_string(day)),
-                      [styles.day_selected]:
-                        context.get_selected_date()?.getTime() ===
-                        day.getTime(),
-                      [styles.day_today]: day_today === day.getTime(),
-                      [styles.day_preholiday]: is_preholiday(format_date_to_string(day)),
-                    }}
-                  >
-                    {day.getDate()}
-                    <Show when={is_event(format_date_to_string(day))}>
-                      <span class={styles.event_marker} />
-                    </Show>
-                  </td>
+                  <DayItem day={day}/>
                 </Show>
               )}
             </For>
@@ -442,6 +414,42 @@ const MonthItemBody = (props: MonthItemBodyProps) => {
         )}
       </For>
     </tbody>
+  );
+};
+
+const DayItem = (props : {day: Date}) => {
+  const [_, context] = useCalendarContext();
+
+  const day_today = get_today().getTime();
+  const is_event = (date_string: string): boolean => !!context.get_events()[date_string];
+  const is_holiday = (date_string: string): boolean => context.get_holidays().holidays.includes(date_string);
+  const is_preholiday = (date_string: string): boolean => context.get_holidays().preholidays.includes(date_string);
+
+  const select_day = (date: Date) => {
+    context.set_selected_date(date);
+    context.get_controller().load_and_set_date_events(date);
+  };
+
+  return (
+    <td
+      data-day={props.day}
+      onClick={() => select_day(props.day)}
+      class={styles.hide_tooltip}
+      classList={{
+        [styles.day_weekend]:
+          props.day.getDay() === 6 || props.day.getDay() === 0 || is_holiday(format_date_to_string(props.day)),
+        [styles.day_selected]:
+          context.get_selected_date()?.getTime() ===
+          props.day.getTime(),
+        [styles.day_today]: day_today === props.day.getTime(),
+        [styles.day_preholiday]: is_preholiday(format_date_to_string(props.day)),
+      }}
+    >
+      {props.day.getDate()}
+      <Show when={is_event(format_date_to_string(props.day))}>
+        <span class={styles.event_marker} />
+      </Show>
+    </td>
   );
 };
 
