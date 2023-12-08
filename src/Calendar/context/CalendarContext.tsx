@@ -14,7 +14,8 @@ export const CalendarProvider = (props: { children: JSX.Element }) => {
       events: {},
       holidays: {
         holidays: [],
-        preholidays: []
+        preholidays: [],
+        become_working: []
       }
     }
   });

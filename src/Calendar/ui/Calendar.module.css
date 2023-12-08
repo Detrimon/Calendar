@@ -1,5 +1,6 @@
 .calendar_container{
-  width: 1000px;
+  width: 930px;
+  flex-shrink: 0;
 }
 
 .calendar_header_container {
@@ -34,7 +35,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 40px;
+  gap: 10px;
+}
+
+.calendar_months_row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
 }
 
 .calendar_month_wrapper {
@@ -48,21 +56,27 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: space-around;
-  gap: 20px;
+  column-gap: 20px;
+  row-gap: 10px;
 }
 
 .month_item_container {
   flex: 0 0 20%;
   text-align: center;
   min-height: 200px;
+  border: 2px solid transparent;
+}
+
+.month_item_selected_container {
+  border: 2px solid var(--selected_color);
+  border-radius: 15px;
 }
 
 .month_item_header_container {
   color: white;
   display: table-caption;
-  border: 1px solid blue;
-  background: blue;
   border-radius: 8px;
+  color: var(--secondary_color);
 }
 
 .month_title {
@@ -70,35 +84,33 @@
   text-transform: uppercase;
 }
 
-.week_day {
-  padding: 0 10px;
+.selected_month_title{
+  color: var(--selected_color)
 }
 
-.day_weekend {
-  color: red;
+.week_day {
+  padding: 0 10px;
+  color: var(--base_dark_color);
+}
+
+.day_holiday {
+  color: var(--holiday_color);
 }
 
 .day_preholiday {
-  color: lightpink;
+  color: var(--preholiday_color);
 }
 
 .day_today {
-  background-color: lightgreen;
+  border-radius: 10px;
+  background-color: var(--selected_color);
+  color: var(--base_light_color);
 }
 
 .day_selected {
-  border: 1px solid black;
-}
-
-.choose_year_wrapper{
-  position: absolute;
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  padding: 5px;
-  border: 1px solid #000;
-  border-radius: 3px;
-  background-color: lightgray;
+  border-radius: 10px;
+  background-color: var(--secondary_color);
+  color: var(--base_light_color)
 }
 
 .choose_year_list{
@@ -131,12 +143,8 @@ td{
   font-size: 10px;
 }
 
-.event_marker{
-  position: absolute;
-  bottom: 0;
-  right: 5px;
-  width: 5px;
-  height: 5px;
-  background-color: #000;
-  border-radius: 50%;
+.include_event{
+  border: 1px solid var(--secondary_color);
+  border-radius: 10px;
+  cursor: pointer;
 }

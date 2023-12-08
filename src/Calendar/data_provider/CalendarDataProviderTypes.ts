@@ -53,6 +53,7 @@ export type TEventsTypesByDate = {
 export type HolidaysData = {
   holidays: string[];
   preholidays: string[];
+  become_working: string[];
 };
 
 export type Holidays = {

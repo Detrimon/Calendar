@@ -1,5 +1,6 @@
 import {
   Holidays,
+  HolidaysData,
   ICalendarDayEvent,
   ICalendarEvents,
   ICalendarRepeatedEvent,
@@ -7,7 +8,8 @@ import {
   TCalendarEventType,
   TEventsTypesByDate,
 } from "../Calendar/data_provider/CalendarDataProviderTypes";
-import { filter_by_rate, format_date_to_string } from "../Calendar/helpers/calendar_helpers";
+import { filter_by_rate } from "../Calendar/helpers/calendar_helpers";
+import { format_date_to_string } from "../shared/lib/helpers";
 
 export class AppModel{
   private events_data: ICalendarEvents
@@ -190,7 +192,7 @@ export const mock_repeated_data: ICalendarRepeatedEvents = {
   },
 };
 
-const holidays_2022 = {
+const holidays_2022: HolidaysData = {
   "holidays": [
     "02.01.2022",
     "03.01.2022",
@@ -315,10 +317,11 @@ const holidays_2022 = {
     "22.02.2022",
     "05.03.2022",
     "03.11.2022"
-  ]
+  ],
+  "become_working": []
 };
 
-const holidays_2023 = {
+const holidays_2023: HolidaysData = {
   "holidays": [
     "01.01.2023",
     "02.01.2023",
@@ -443,10 +446,11 @@ const holidays_2023 = {
     "22.02.2023",
     "07.03.2023",
     "03.11.2023"
-  ]
+  ],
+  "become_working": []
 };
 
-const holidays_2024 = {
+const holidays_2024: HolidaysData = {
   "holidays": [
     "01.01.2024",
     "02.01.2024",
@@ -573,6 +577,10 @@ const holidays_2024 = {
     "08.05.2024",
     "11.06.2024",
     "02.11.2024"
+  ],
+  "become_working": [
+    "27.04.2024",
+    "28.12.2024"
   ]
 };
 
