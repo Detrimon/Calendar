@@ -9,6 +9,65 @@ export class CalendarDataProvider {
     this.model = model
   }
 
+  // async get_year_events(year: number): Promise<TEventsTypesByDate>{
+  //   const events = await this.model.get_all_events();
+
+  //   const events_obj: TEventsTypesByDate = {};
+    
+  //   events.forEach(event => {
+  //     if (event.attributes.is_periodic) {
+  //       let start_timestamp = Math.max(new Date(year, 0, 1).getTime(), event.attributes.start_date.getTime());
+  //       let stop_timestamp: number;
+
+  //       if (event.attributes.end_date) {
+  //         stop_timestamp = Math.min(new Date(year, 11, 31).getTime(), event.attributes.end_date?.getTime());
+  //       } else {
+  //         stop_timestamp = new Date(year, 11, 31).getTime();
+  //       };
+
+  //       while (start_timestamp <= stop_timestamp) {
+  //         const current = new Date(start_timestamp);
+  //         const day_string = format_date_to_string(current);
+        
+  //         if (events_obj[day_string]) {
+  //           events_obj[day_string].push(event.attributes.type);
+  //         } else {
+  //           events_obj[day_string] = [event.attributes.type];
+  //         };
+
+  //         switch (event.attributes.repeat_rate) {
+  //           case "DAY":
+  //             current.setDate(current.getDate() + 1);
+  //             break;
+  //           case "WEEK":
+  //             current.setDate(current.getDate() + 7);
+  //             break;
+  //           case "MONTH":
+  //             current.setMonth(current.getMonth() + 1);
+  //             break;
+  //           case "YEAR":
+  //             current.setFullYear(current.getFullYear() + 1);
+  //             break;
+  //         };
+  //         start_timestamp = current.getTime();
+  //       };
+  //     } else {
+  //       const date_string = format_date_to_string(event.attributes.start_date);
+  //       if (events_obj[date_string]) {
+  //         events_obj[date_string] = [...events_obj[date_string], event.attributes.type];
+  //       } else {
+  //         events_obj[date_string] = [event.attributes.type];
+  //       };
+  //     };
+  //   });
+
+  //   for (let event_key of Object.keys(events_obj)) {
+  //     events_obj[event_key] = Array.from(new Set(events_obj[event_key]))
+  //   };
+
+  //   return events_obj;
+  // };
+
   async get_year_events(year: number): Promise<TEventsTypesByDate>{
     const [events, repeated_events] =
       await Promise.all([this.model.get_year_events(year), this.model.get_year_repeated_events(year)]);
@@ -21,7 +80,6 @@ export class CalendarDataProvider {
         const current = new Date(start_timestamp);
         const day_string = format_date_to_string(current);
         
-        
         if (result_obj[day_string]) {
           result_obj[day_string].push(repeated_event.event_type);
           result_obj[day_string] = Array.from(new Set(result_obj[day_string]));
@@ -30,16 +88,16 @@ export class CalendarDataProvider {
         };
 
         switch (repeated_event.repeat_rate) {
-          case "day":
+          case "DAY":
             current.setDate(current.getDate() + 1);
             break;
-          case "week":
+          case "WEEK":
             current.setDate(current.getDate() + 7);
             break;
-          case "month":
+          case "MONTH":
             current.setMonth(current.getMonth() + 1);
             break;
-          case "year":
+          case "YEAR":
             current.setFullYear(current.getFullYear() + 1);
             break;
         }

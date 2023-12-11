@@ -38,7 +38,7 @@ export function get_month_data(year: number, month: number) {
 
 export function filter_by_rate(date: Date) {
   return function (event: ICalendarRepeatedEvent) {
-    if (event.repeat_rate === "day") return true;
+    if (event.repeat_rate === "DAY") return true;
 
     const copiedDate = new Date(event.event_start_date.getTime());
     const date_timestamp = date.getTime();
@@ -50,13 +50,13 @@ export function filter_by_rate(date: Date) {
       if (current === date_timestamp) return true;
 
       switch (event.repeat_rate) {
-        case "year":
+        case "YEAR":
           copiedDate.setFullYear(copiedDate.getFullYear() + 1);
           break;
-        case "month":
+        case "MONTH":
           copiedDate.setMonth(copiedDate.getMonth() + 1);
           break;
-        case "week":
+        case "WEEK":
           copiedDate.setDate(copiedDate.getDate() + 7);
           break;
       };

@@ -5,6 +5,29 @@ export type EventsParams = {
   time_to: string;
 };
 
+// export type TCalendarEventAttributes = {
+//   username: string,
+//   usergroup: string,
+//   type: TCalendarEventType,
+//   title: string,
+//   is_periodic: boolean,
+//   repeat_rate: TRepeatRate,
+//   repeat_rate_custom: null,
+//   start_date: Date,
+//   end_date: Date | null,
+//   start_time: string,
+//   end_time: string | null,
+//   createdAt: Date,
+//   updatedAt: Date,
+//   is_active: boolean,
+//   uuid: string
+// }
+
+// export type TCalendarEvents = {
+//   id: TCalendarEventID,
+//   attributes: TCalendarEventAttributes
+// }
+
 export interface ICalendarEvents {
   [date: string]: ICalendarDayEvent[]
 };
@@ -34,16 +57,23 @@ export interface ICalendarRepeatedEvent {
 };
 
 export enum TCalendarEventType {
-  EVENT_1 = "EVENT_1",
-  EVENT_2 = "EVENT_2",
-  EVENT_3 = "EVENT_3",
-  EVENT_4 = "EVENT_4",
-  EVENT_5 = "EVENT_5",
-  EVENT_6 = "EVENT_6",
+  SC= "SmetComission"
 };
-type TRepeatRate = 'year' | 'month' | 'week' | 'day';
-type TCalendarEventID = string;
-type TCalendarEventTime = string;
+// export type TRepeatRate = 'year' | 'month' | 'week' | 'day';
+
+export enum TRepeatRate {
+  NONE = "NONE",
+  YEAR = "YEAR",
+  MONTH = "MONTH",
+  WEEK = "WEEK",
+  DAY = "DAY",
+  HOUR = "HOUR",
+  CUSTOM = "CUSTOM"
+};
+
+
+export type TCalendarEventID = string;
+export type TCalendarEventTime = string;
 
 export type TEventsTypesByDate = {
   // В массиве типы событий для обозначения их в календаре разными цветными кружками

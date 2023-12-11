@@ -6,7 +6,10 @@ import {
   ICalendarRepeatedEvent,
   ICalendarRepeatedEvents,
   TCalendarEventType,
+  // TCalendarEventID,
+  // TCalendarEvents,
   TEventsTypesByDate,
+  TRepeatRate,
 } from "../Calendar/data_provider/CalendarDataProviderTypes";
 import { filter_by_rate } from "../Calendar/helpers/calendar_helpers";
 import { format_date_to_string } from "../shared/lib/helpers";
@@ -19,6 +22,48 @@ export class AppModel{
     this.events_data = mock_events_data;
     this.repeated_events_data = mock_repeated_data;
   };
+
+  //! Когда будем использовать параметр year в запросе - убрать "?"
+  async get_all_events(year?: number): Promise<TCalendarEvents[]> {
+    const token = import.meta.env.VITE_BEARER_TOKEN;
+
+    try {
+      const response = await fetch("https://rcgpnspn01.inlinegroup.ru/api/calendar-events/", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json;charset=utf-8",
+          Authorization: token
+        }
+      });
+
+      if (response.ok) {
+        const events = await response.json();
+
+        console.log('before', events);
+        
+
+        events.data.forEach(event => {
+          event.attributes.start_date = new Date(Date.parse(event.attributes.start_date));
+
+          if (event.attributes.end_date) {
+            event.attributes.end_date = new Date(Date.parse(event.attributes.end_date));
+          };
+        });
+
+        return events.data as TCalendarEvents[];
+      } else {
+        console.error("Ошибка HTTP: " + response.status);
+        return [];
+      };
+    } catch (error) {
+      console.error(error);
+      return [];
+    };
+  };
+
+  // async get_date_events(date: Date, event_id) {
+
+  // }
 
   get_date_events(date: Date): Promise<ICalendarDayEvent[]> {
     const day_string = format_date_to_string(date);
@@ -100,11 +145,14 @@ export class AppModel{
   };
 };
 
+
+
+
 export const mock_events_data: ICalendarEvents = {
   "14.12.2023": [
     {
       event_date: new Date(2023, 11, 14),
-      event_type: TCalendarEventType.EVENT_1,
+      event_type: TCalendarEventType.SC,
       event_id: "event_id_1",
       event_start_time: "11.30",
       event_end_time: "12.30",
@@ -112,7 +160,7 @@ export const mock_events_data: ICalendarEvents = {
     },
     {
       event_date: new Date(2023, 11, 14),
-      event_type: TCalendarEventType.EVENT_2,
+      event_type: TCalendarEventType.SC,
       event_id: "event_id_2",
       event_start_time: "10.30",
       event_end_time: "11.30",
@@ -122,7 +170,7 @@ export const mock_events_data: ICalendarEvents = {
   "15.12.2023": [
     {
       event_date: new Date(2023, 11, 15),
-      event_type: TCalendarEventType.EVENT_2,
+      event_type: TCalendarEventType.SC,
       event_id: "event_id_3",
       event_start_time: "13.30",
       event_end_time: "14.30",
@@ -130,7 +178,7 @@ export const mock_events_data: ICalendarEvents = {
     },
     {
       event_date: new Date(2023, 11, 15),
-      event_type: TCalendarEventType.EVENT_3,
+      event_type: TCalendarEventType.SC,
       event_id: "event_id_4",
       event_start_time: "15.30",
       event_end_time: "16.00",
@@ -140,7 +188,7 @@ export const mock_events_data: ICalendarEvents = {
   "16.12.2023": [
     {
       event_date: new Date(2023, 11, 16),
-      event_type: TCalendarEventType.EVENT_1,
+      event_type: TCalendarEventType.SC,
       event_id: "event_id_5",
       event_start_time: "17.00",
       event_end_time: "18.00",
@@ -152,8 +200,8 @@ export const mock_events_data: ICalendarEvents = {
 export const mock_repeated_data: ICalendarRepeatedEvents = {
   "event_id_10": {
     event_id: "event_id_10",
-    event_type: TCalendarEventType.EVENT_4,
-    repeat_rate: "month",
+    event_type: TCalendarEventType.SC,
+    repeat_rate: TRepeatRate.MONTH,
     event_start_date: new Date(2022, 2, 16),
     event_stop_date: new Date(2023, 11, 16),
     event_start_time: "14.30",
@@ -162,8 +210,8 @@ export const mock_repeated_data: ICalendarRepeatedEvents = {
   },
   "event_id_15": {
     event_id: "event_id_15",
-    event_type: TCalendarEventType.EVENT_5,
-    repeat_rate: "week",
+    event_type: TCalendarEventType.SC,
+    repeat_rate: TRepeatRate.WEEK,
     event_start_date: new Date(2023, 4, 1),
     event_stop_date: new Date(2023, 11, 1),
     event_start_time: "14.30",
@@ -172,8 +220,8 @@ export const mock_repeated_data: ICalendarRepeatedEvents = {
   },
   "event_id_25": {
     event_id: "event_id_25",
-    event_type: TCalendarEventType.EVENT_6,
-    repeat_rate: "year",
+    event_type: TCalendarEventType.SC,
+    repeat_rate: TRepeatRate.YEAR,
     event_start_date: new Date(2023, 9, 1),
     event_stop_date: new Date(2025, 11, 1),
     event_start_time: "14.30",
@@ -182,8 +230,8 @@ export const mock_repeated_data: ICalendarRepeatedEvents = {
   },
   "event_id_35": {
     event_id: "event_id_35",
-    event_type: TCalendarEventType.EVENT_6,
-    repeat_rate: "month",
+    event_type: TCalendarEventType.SC,
+    repeat_rate: TRepeatRate.MONTH,
     event_start_date: new Date(2021, 9, 1),
     event_stop_date: new Date(2025, 11, 1),
     event_start_time: "14.30",
@@ -589,3 +637,8 @@ const holidays: Holidays = {
   2023: holidays_2023,
   2024: holidays_2024,
 };
+
+
+const test = new AppModel();
+
+test.get_all_events()
