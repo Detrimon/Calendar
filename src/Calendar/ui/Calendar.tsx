@@ -417,7 +417,7 @@ const DayItem = (props : {day: Date}) => {
         [styles.day_selected]: is_selected(),
         [styles.day_today]: is_day_today(),
         [styles.day_preholiday]: is_preholiday(),
-        [styles.include_event]: is_event(), 
+        [styles.include_event]: !is_holiday() && is_event() && !is_day_today(), 
       }}
     >
       {props.day.getDate()}

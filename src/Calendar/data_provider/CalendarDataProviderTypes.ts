@@ -64,8 +64,8 @@ export type TEventAttributes = {
   createdAt: Date,
   data_type: TCalendarEventType,
   date: Date,
-  smet_comission?: TSmetComission,
-  smet_comission_id?: "ed145682-5c9a-4ca6-a994-2a5680cc3db6"
+  smet_comission: TSmetComission,
+  smet_comission_id: string
   title: string,
   updatedAt: Date,
   uuid: TCalendarEventID
@@ -78,10 +78,8 @@ export type TCalendarEvents = {
 
 export type TEventTasks = {
   id: TEventTasksID,
-  attributes: TEventAttributes
+  attributes: Partial<TEventAttributes>
 };
-
-//!===========================================
 
 export interface ICalendarEvents {
   [date: string]: ICalendarDayEvent[]
@@ -111,9 +109,8 @@ export interface ICalendarRepeatedEvent {
   event_text: string;
 };
 
-export type TEventsTypesByDate = {
-  // В массиве типы событий для обозначения их в календаре разными цветными кружками
-  [key: string]: TCalendarEventType[];
+export type TEventsByDate = {
+  [key: string]: true;
 };
 
 export type HolidaysData = {

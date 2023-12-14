@@ -8,11 +8,12 @@ import {
   TCalendarEventType,
   TCalendarEventID,
   TCalendarEvents,
-  TEventsTypesByDate,
+  TEventsByDate,
   TRepeatRate,
 } from "../Calendar/data_provider/CalendarDataProviderTypes";
 import { filter_by_rate } from "../Calendar/helpers/calendar_helpers";
-import { format_date_to_reversed_string, format_date_to_string } from "../shared/lib/helpers";
+import { create_query_string, format_date_to_reversed_string, format_date_to_string } from "../shared/lib/helpers";
+import { TQueryParams } from "../shared/types";
 
 const token = import.meta.env.VITE_BEARER_TOKEN;
 
@@ -25,10 +26,24 @@ export class AppModel{
     this.repeated_events_data = mock_repeated_data;
   };
 
-  //! Когда будем использовать параметр year в запросе - убрать "?"
-  async get_all_events(year?: number): Promise<TCalendarEvents[]> {
+  async get_all_events(year: number): Promise<TCalendarEvents[]> {
+    const start_year = format_date_to_reversed_string(new Date(year, 0, 1));
+    const end_year = format_date_to_reversed_string(new Date(year, 11, 31));
+
+    const query_params: TQueryParams = {
+      root_path: 'https://rcgpnspn01.inlinegroup.ru/api/calendar-events?',
+      filters: {
+        username: { value: 'INGUTEV', rel: '$eq' },
+        is_active: { value: true, rel: '$eq' },
+        start_date: { value: end_year, rel: '$lte' },
+        end_date: { value: start_year, rel: '$gte' }
+      },
+      fields: ['is_periodic', 'repeat_rate', 'repeat_rate_custom', 'start_date', 'end_date']
+    };
+
     try {
-      const response = await fetch("https://rcgpnspn01.inlinegroup.ru/api/calendar-events/", {
+      const response = await fetch(
+        create_query_string(query_params), {
         method: "GET",
         headers: {
           "Content-Type": "application/json;charset=utf-8",
@@ -38,9 +53,6 @@ export class AppModel{
 
       if (response.ok) {
         const events = await response.json();
-
-        console.log('year', events.data);
-        
 
         events.data.forEach(event => {
           event.attributes.start_date = new Date(Date.parse(event.attributes.start_date));
@@ -61,42 +73,42 @@ export class AppModel{
     };
   };
 
-  async get_date_events1(date: Date) {
-    const date_string = format_date_to_reversed_string(date);
+  // async get_date_events(date: Date) {
+  //   const date_string = format_date_to_reversed_string(date);
 
-    try {
-      const response = await fetch(`https://rcgpnspn01.inlinegroup.ru/api/event-tasks?filters[date]=${date_string}&populate=*`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json;charset=utf-8",
-          Authorization: token
-        }
-      });
+  //   try {
+  //     const response = await fetch(`https://rcgpnspn01.inlinegroup.ru/api/event-tasks?filters[date]=${date_string}&populate=*`, {
+  //       method: "GET",
+  //       headers: {
+  //         "Content-Type": "application/json;charset=utf-8",
+  //         Authorization: token
+  //       }
+  //     });
 
-      if (response.ok) {
-        const events = await response.json();
+  //     if (response.ok) {
+  //       const events = await response.json();
 
-        console.log('events', events);
+  //       console.log('events', events);
         
 
-        // events.data.forEach(event => {
-        //   event.attributes.start_date = new Date(Date.parse(event.attributes.start_date));
+  //       // events.data.forEach(event => {
+  //       //   event.attributes.start_date = new Date(Date.parse(event.attributes.start_date));
 
-        //   if (event.attributes.end_date) {
-        //     event.attributes.end_date = new Date(Date.parse(event.attributes.end_date));
-        //   };
-        // });
+  //       //   if (event.attributes.end_date) {
+  //       //     event.attributes.end_date = new Date(Date.parse(event.attributes.end_date));
+  //       //   };
+  //       // });
 
-        // return events.data as TCalendarEvents[];
-      } else {
-        console.error("Ошибка HTTP: " + response.status);
-        return [];
-      };
-    } catch (error) {
-      console.error(error);
-      return [];
-    };
-  };
+  //       // return events.data as TCalendarEvents[];
+  //     } else {
+  //       console.error("Ошибка HTTP: " + response.status);
+  //       return [];
+  //     };
+  //   } catch (error) {
+  //     console.error(error);
+  //     return [];
+  //   };
+  // };
 
   get_date_events(date: Date): Promise<ICalendarDayEvent[]> {
     const day_string = format_date_to_string(date);
@@ -132,43 +144,6 @@ export class AppModel{
     });
   };
 
-  get_year_events(year: number): Promise<TEventsTypesByDate> {
-    const data = this.events_data;
-    const result: TEventsTypesByDate = {};
-
-    for (let event_key of Object.keys(data)) {
-      if (+event_key.slice(.4) === year) {
-        const event_types = data[event_key].map(event => event.event_type);
-        result[event_key] = event_types;
-      }
-    };
-
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(result);
-      }, 500);
-    });
-  };
-
-  get_year_repeated_events(year: number): Promise<ICalendarRepeatedEvent[]>{
-    const data = this.repeated_events_data;
-    const result: ICalendarRepeatedEvent[] = [];
-    
-    for (let event_key of Object.keys(data)) {
-      const start_year = data[event_key].event_start_date.getFullYear();
-      const stop_year = data[event_key].event_stop_date.getFullYear();
-      if (year >= start_year && year <= stop_year) {
-        result.push(data[event_key])
-      };
-    };
-
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(result);
-      }, 500);
-    });
-  };
-
   get_year_holidays(year: number) {
     return new Promise((resolve) => {
       setTimeout(() => {
@@ -179,95 +154,95 @@ export class AppModel{
 };
 
 export const mock_events_data: ICalendarEvents = {
-  "14.12.2023": [
-    {
-      event_date: new Date(2023, 11, 14),
-      event_type: TCalendarEventType.SC,
-      event_id: "event_id_1",
-      event_start_time: "11.30",
-      event_end_time: "12.30",
-      event_text: 'Описание event`a №1'
-    },
-    {
-      event_date: new Date(2023, 11, 14),
-      event_type: TCalendarEventType.SC,
-      event_id: "event_id_2",
-      event_start_time: "10.30",
-      event_end_time: "11.30",
-      event_text: 'Описание event`a №2'
-    },
-  ],
-  "15.12.2023": [
-    {
-      event_date: new Date(2023, 11, 15),
-      event_type: TCalendarEventType.SC,
-      event_id: "event_id_3",
-      event_start_time: "13.30",
-      event_end_time: "14.30",
-      event_text: 'Описание event`a №3'
-    },
-    {
-      event_date: new Date(2023, 11, 15),
-      event_type: TCalendarEventType.SC,
-      event_id: "event_id_4",
-      event_start_time: "15.30",
-      event_end_time: "16.00",
-      event_text: 'Описание event`a №4'
-    },
-  ],
-  "16.12.2023": [
-    {
-      event_date: new Date(2023, 11, 16),
-      event_type: TCalendarEventType.SC,
-      event_id: "event_id_5",
-      event_start_time: "17.00",
-      event_end_time: "18.00",
-      event_text: 'Описание event`a №5'
-    }
-  ],
+  // "14.12.2023": [
+  //   {
+  //     event_date: new Date(2023, 11, 14),
+  //     event_type: TCalendarEventType.SC,
+  //     event_id: "event_id_1",
+  //     event_start_time: "11.30",
+  //     event_end_time: "12.30",
+  //     event_text: 'Описание event`a №1'
+  //   },
+  //   {
+  //     event_date: new Date(2023, 11, 14),
+  //     event_type: TCalendarEventType.SC,
+  //     event_id: "event_id_2",
+  //     event_start_time: "10.30",
+  //     event_end_time: "11.30",
+  //     event_text: 'Описание event`a №2'
+  //   },
+  // ],
+  // "15.12.2023": [
+  //   {
+  //     event_date: new Date(2023, 11, 15),
+  //     event_type: TCalendarEventType.SC,
+  //     event_id: "event_id_3",
+  //     event_start_time: "13.30",
+  //     event_end_time: "14.30",
+  //     event_text: 'Описание event`a №3'
+  //   },
+  //   {
+  //     event_date: new Date(2023, 11, 15),
+  //     event_type: TCalendarEventType.SC,
+  //     event_id: "event_id_4",
+  //     event_start_time: "15.30",
+  //     event_end_time: "16.00",
+  //     event_text: 'Описание event`a №4'
+  //   },
+  // ],
+  // "16.12.2023": [
+  //   {
+  //     event_date: new Date(2023, 11, 16),
+  //     event_type: TCalendarEventType.SC,
+  //     event_id: "event_id_5",
+  //     event_start_time: "17.00",
+  //     event_end_time: "18.00",
+  //     event_text: 'Описание event`a №5'
+  //   }
+  // ],
 };
 
 export const mock_repeated_data: ICalendarRepeatedEvents = {
-  "event_id_10": {
-    event_id: "event_id_10",
-    event_type: TCalendarEventType.SC,
-    repeat_rate: TRepeatRate.MONTH,
-    event_start_date: new Date(2022, 2, 16),
-    event_stop_date: new Date(2023, 11, 16),
-    event_start_time: "14.30",
-    event_end_time: "15.30",
-    event_text: "Описание повторяющегося event`а  с id_10",
-  },
-  "event_id_15": {
-    event_id: "event_id_15",
-    event_type: TCalendarEventType.SC,
-    repeat_rate: TRepeatRate.WEEK,
-    event_start_date: new Date(2023, 4, 1),
-    event_stop_date: new Date(2023, 11, 1),
-    event_start_time: "14.30",
-    event_end_time: "15.30",
-    event_text: "Описание повторяющегося event`а с id_15",
-  },
-  "event_id_25": {
-    event_id: "event_id_25",
-    event_type: TCalendarEventType.SC,
-    repeat_rate: TRepeatRate.YEAR,
-    event_start_date: new Date(2023, 9, 1),
-    event_stop_date: new Date(2025, 11, 1),
-    event_start_time: "14.30",
-    event_end_time: "15.30",
-    event_text: "Описание повторяющегося event`а с id_25",
-  },
-  "event_id_35": {
-    event_id: "event_id_35",
-    event_type: TCalendarEventType.SC,
-    repeat_rate: TRepeatRate.MONTH,
-    event_start_date: new Date(2021, 9, 1),
-    event_stop_date: new Date(2025, 11, 1),
-    event_start_time: "14.30",
-    event_end_time: "15.30",
-    event_text: "Описание повторяющегося event`а с id_35",
-  },
+  // "event_id_10": {
+  //   event_id: "event_id_10",
+  //   event_type: TCalendarEventType.SC,
+  //   repeat_rate: TRepeatRate.MONTH,
+  //   event_start_date: new Date(2022, 2, 16),
+  //   event_stop_date: new Date(2023, 11, 16),
+  //   event_start_time: "14.30",
+  //   event_end_time: "15.30",
+  //   event_text: "Описание повторяющегося event`а  с id_10",
+  // },
+  // "event_id_15": {
+  //   event_id: "event_id_15",
+  //   event_type: TCalendarEventType.SC,
+  //   repeat_rate: TRepeatRate.WEEK,
+  //   event_start_date: new Date(2023, 4, 1),
+  //   event_stop_date: new Date(2023, 11, 1),
+  //   event_start_time: "14.30",
+  //   event_end_time: "15.30",
+  //   event_text: "Описание повторяющегося event`а с id_15",
+  // },
+  // "event_id_25": {
+  //   event_id: "event_id_25",
+  //   event_type: TCalendarEventType.SC,
+  //   repeat_rate: TRepeatRate.YEAR,
+  //   event_start_date: new Date(2023, 9, 1),
+  //   event_stop_date: new Date(2025, 11, 1),
+  //   event_start_time: "14.30",
+  //   event_end_time: "15.30",
+  //   event_text: "Описание повторяющегося event`а с id_25",
+  // },
+  // "event_id_35": {
+  //   event_id: "event_id_35",
+  //   event_type: TCalendarEventType.SC,
+  //   repeat_rate: TRepeatRate.MONTH,
+  //   event_start_date: new Date(2021, 9, 1),
+  //   event_stop_date: new Date(2025, 11, 1),
+  //   event_start_time: "14.30",
+  //   event_end_time: "15.30",
+  //   event_text: "Описание повторяющегося event`а с id_35",
+  // },
 };
 
 const holidays_2022: HolidaysData = {
@@ -667,8 +642,3 @@ const holidays: Holidays = {
   2023: holidays_2023,
   2024: holidays_2024,
 };
-
-const test = new AppModel();
-
-test.get_all_events()
-test.get_date_events1(new Date(2023, 11, 14))

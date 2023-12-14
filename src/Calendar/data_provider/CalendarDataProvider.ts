@@ -1,6 +1,6 @@
 import { AppModel } from "../../mock/mock_events_data";
 import { format_date_to_string } from "../../shared/lib/helpers";
-import type { ICalendarDayEvent, TEventsTypesByDate } from "./CalendarDataProviderTypes";
+import type { ICalendarDayEvent, TEventsByDate } from "./CalendarDataProviderTypes";
 
 export class CalendarDataProvider {
   private model: AppModel
@@ -9,18 +9,18 @@ export class CalendarDataProvider {
     this.model = model
   }
 
-  async get_year_events(year: number): Promise<TEventsTypesByDate>{
-    const events = await this.model.get_all_events();
+  async get_year_events(year: number): Promise<TEventsByDate>{
+    const events = await this.model.get_all_events(year);
 
-    const events_obj: TEventsTypesByDate = {};
+    const events_obj: TEventsByDate = {};
 
     events.forEach(event => {
       const attributes = event.attributes;
-      
-      if (attributes.is_periodic) {
-        let start_timestamp = Math.max(new Date(year, 0, 1).getTime(), attributes.start_date.getTime());
-        let stop_timestamp: number;
 
+      if (attributes.is_periodic) {
+        let start_timestamp: number = attributes.start_date.getTime();
+
+        let stop_timestamp: number;
         if (attributes.end_date) {
           stop_timestamp = Math.min(new Date(year, 11, 31).getTime(), attributes.end_date?.getTime());
         } else {
@@ -30,12 +30,8 @@ export class CalendarDataProvider {
         while (start_timestamp <= stop_timestamp) {
           const current = new Date(start_timestamp);
           const day_string = format_date_to_string(current);
-        
-          if (events_obj[day_string]) {
-            events_obj[day_string].push(attributes.type);
-          } else {
-            events_obj[day_string] = [attributes.type];
-          };
+
+          events_obj[day_string] = true;
 
           switch (attributes.repeat_rate) {
             case "DAY":
@@ -55,71 +51,12 @@ export class CalendarDataProvider {
         };
       } else {
         const date_string = format_date_to_string(attributes.start_date);
-        if (events_obj[date_string]) {
-          events_obj[date_string] = [...events_obj[date_string], attributes.type];
-        } else {
-          events_obj[date_string] = [attributes.type];
-        };
+          events_obj[date_string] = true;
       };
     });
 
-    for (let event_key of Object.keys(events_obj)) {
-      events_obj[event_key] = Array.from(new Set(events_obj[event_key]))
-    };
-
     return events_obj;
   };
-
-  // async get_year_events(year: number): Promise<TEventsTypesByDate>{
-  //   const [events, repeated_events] =
-  //     await Promise.all([this.model.get_year_events(year), this.model.get_year_repeated_events(year)]);
-
-  //   const result = repeated_events.reduce<TEventsTypesByDate>((result_obj, repeated_event) => {
-  //     let start_timestamp = Math.max(new Date(year, 0, 1).getTime(), repeated_event.event_start_date.getTime());
-  //     const stop_timestamp = Math.min(new Date(year, 11, 31).getTime(), repeated_event.event_stop_date.getTime());
-
-  //     while (start_timestamp <= stop_timestamp) {
-  //       const current = new Date(start_timestamp);
-  //       const day_string = format_date_to_string(current);
-        
-  //       if (result_obj[day_string]) {
-  //         result_obj[day_string].push(repeated_event.event_type);
-  //         result_obj[day_string] = Array.from(new Set(result_obj[day_string]));
-  //       } else {
-  //         result_obj[day_string] = [repeated_event.event_type];
-  //       };
-
-  //       switch (repeated_event.repeat_rate) {
-  //         case "DAY":
-  //           current.setDate(current.getDate() + 1);
-  //           break;
-  //         case "WEEK":
-  //           current.setDate(current.getDate() + 7);
-  //           break;
-  //         case "MONTH":
-  //           current.setMonth(current.getMonth() + 1);
-  //           break;
-  //         case "YEAR":
-  //           current.setFullYear(current.getFullYear() + 1);
-  //           break;
-  //       }
-  //       start_timestamp = current.getTime();
-  //     };
-
-  //     return result_obj;
-  //   }, {});
-
-  //   for (let event_key of Object.keys(events)) {
-  //     if (result[event_key]) {
-  //       const merged_array = [...result[event_key], ...events[event_key]];
-  //       result[event_key] = Array.from(new Set(merged_array));
-  //     } else {
-  //       result[event_key] = events[event_key];
-  //     };
-  //   };
-    
-  //   return result
-  // };
 
   async get_date_events(date: Date): Promise<ICalendarDayEvent[]>{
     const [date_events, date_repeated_events] =
