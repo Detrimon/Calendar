@@ -4,6 +4,8 @@ import {
   Match,
   Show,
   Switch,
+  batch,
+  createSignal,
   mergeProps,
   onCleanup
 } from "solid-js";
@@ -42,6 +44,7 @@ import { CalendarConfig } from "../config/CalendarConfig";
 import { CalendarViewMode } from "./CalendarView/CalendarViewTypes";
 import type { TCalendarStateMethods } from "../context/CalendarContextTypes";
 import { CalendarDataAdapter } from "../data_adapter/CalendarDataAdapter";
+import { PlaningModal } from "./PlaningModal/PlaningModal";
 
 import styles from "./Calendar.module.css";
 
@@ -76,6 +79,7 @@ export const Calendar = (initial_props: Partial<TCalendarProps>) => {
 };
 
 const CalendarMain = (initial_props: Partial<TCalendarProps>) => {
+  const [showModal, setShowModal] = createSignal(true);
   const [_, context] = useCalendarContext();
   const default_props = get_default_props(initial_props);
   const props = mergeProps(default_props, initial_props) as Required<TCalendarProps>;
@@ -83,12 +87,20 @@ const CalendarMain = (initial_props: Partial<TCalendarProps>) => {
   initialize_settings(props, context);
 
   return (
-    <Show
-      when={context.get_calendar_mode() === CalendarViewMode.YEAR}
-      fallback={<Months />}
-    >
-      <Year />
-    </Show>
+    <>
+      <PlaningModal
+        show={showModal()}
+        onModalHide={() => {
+          setShowModal(!showModal());
+        }}
+      />
+      <Show
+        when={context.get_calendar_mode() === CalendarViewMode.YEAR}
+        fallback={<Months />}
+      >
+        <Year />
+      </Show>
+    </>
   );
 };
 
