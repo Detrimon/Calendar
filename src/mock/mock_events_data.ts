@@ -6,13 +6,15 @@ import {
   ICalendarRepeatedEvent,
   ICalendarRepeatedEvents,
   TCalendarEventType,
-  // TCalendarEventID,
-  // TCalendarEvents,
+  TCalendarEventID,
+  TCalendarEvents,
   TEventsTypesByDate,
   TRepeatRate,
 } from "../Calendar/data_provider/CalendarDataProviderTypes";
 import { filter_by_rate } from "../Calendar/helpers/calendar_helpers";
-import { format_date_to_string } from "../shared/lib/helpers";
+import { format_date_to_reversed_string, format_date_to_string } from "../shared/lib/helpers";
+
+const token = import.meta.env.VITE_BEARER_TOKEN;
 
 export class AppModel{
   private events_data: ICalendarEvents
@@ -25,8 +27,6 @@ export class AppModel{
 
   //! Когда будем использовать параметр year в запросе - убрать "?"
   async get_all_events(year?: number): Promise<TCalendarEvents[]> {
-    const token = import.meta.env.VITE_BEARER_TOKEN;
-
     try {
       const response = await fetch("https://rcgpnspn01.inlinegroup.ru/api/calendar-events/", {
         method: "GET",
@@ -39,7 +39,7 @@ export class AppModel{
       if (response.ok) {
         const events = await response.json();
 
-        console.log('before', events);
+        console.log('year', events.data);
         
 
         events.data.forEach(event => {
@@ -61,9 +61,42 @@ export class AppModel{
     };
   };
 
-  // async get_date_events(date: Date, event_id) {
+  async get_date_events1(date: Date) {
+    const date_string = format_date_to_reversed_string(date);
 
-  // }
+    try {
+      const response = await fetch(`https://rcgpnspn01.inlinegroup.ru/api/event-tasks?filters[date]=${date_string}&populate=*`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json;charset=utf-8",
+          Authorization: token
+        }
+      });
+
+      if (response.ok) {
+        const events = await response.json();
+
+        console.log('events', events);
+        
+
+        // events.data.forEach(event => {
+        //   event.attributes.start_date = new Date(Date.parse(event.attributes.start_date));
+
+        //   if (event.attributes.end_date) {
+        //     event.attributes.end_date = new Date(Date.parse(event.attributes.end_date));
+        //   };
+        // });
+
+        // return events.data as TCalendarEvents[];
+      } else {
+        console.error("Ошибка HTTP: " + response.status);
+        return [];
+      };
+    } catch (error) {
+      console.error(error);
+      return [];
+    };
+  };
 
   get_date_events(date: Date): Promise<ICalendarDayEvent[]> {
     const day_string = format_date_to_string(date);
@@ -144,9 +177,6 @@ export class AppModel{
     });
   };
 };
-
-
-
 
 export const mock_events_data: ICalendarEvents = {
   "14.12.2023": [
@@ -638,7 +668,7 @@ const holidays: Holidays = {
   2024: holidays_2024,
 };
 
-
 const test = new AppModel();
 
 test.get_all_events()
+test.get_date_events1(new Date(2023, 11, 14))

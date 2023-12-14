@@ -2,6 +2,10 @@ export function format_date_to_string(date: Date) {
   return date.toLocaleString().substring(0, 10)
 };
 
+export function format_date_to_reversed_string(date: Date, separator: string = '-') {
+  return date.toLocaleDateString().split('.').reverse().join(separator);
+};
+
 export function format_date_to_string_with_words(date: Date) {
   const date_options: Intl.DateTimeFormatOptions = {
     day: 'numeric',
