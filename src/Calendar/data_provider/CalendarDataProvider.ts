@@ -1,6 +1,6 @@
 import { AppModel } from "../../mock/mock_events_data";
 import { format_date_to_string } from "../../shared/lib/helpers";
-import type { ICalendarDayEvent, TEventsByDate } from "./CalendarDataProviderTypes";
+import type { TDateTask, TEventsByDate } from "./CalendarDataProviderTypes";
 
 export class CalendarDataProvider {
   private model: AppModel
@@ -58,20 +58,8 @@ export class CalendarDataProvider {
     return events_obj;
   };
 
-  async get_date_events(date: Date): Promise<ICalendarDayEvent[]>{
-    const [date_events, date_repeated_events] =
-      await Promise.all([this.model.get_date_events(date), this.model.get_date_repeated_events(date)]);
-
-    const repeated_events = date_repeated_events.map(event => ({
-      event_id: event.event_id,
-      event_date: date,
-      event_type: event.event_type,
-      event_text: event.event_text,
-      event_end_time: event.event_end_time,
-      event_start_time: event.event_start_time,
-    }));
-    
-    return [...repeated_events, ...date_events ];
+  async get_date_tasks(date: Date): Promise<TDateTask[]>{
+    return await this.model.get_date_tasks(date);
   };
 
   async get_year_holidays(year: number) {

@@ -1,4 +1,4 @@
-export const DATE_POPUP_SHOW_DELAY_MS = 200;
+export const DATE_POPUP_SHOW_DELAY_MS = 500;
 
 export const CHOOSE_YEAR = 'Выберите год';
 export const CHOOSE_MONTH = 'Выберите месяц';

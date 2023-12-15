@@ -81,32 +81,22 @@ export type TEventTasks = {
   attributes: Partial<TEventAttributes>
 };
 
-export interface ICalendarEvents {
-  [date: string]: ICalendarDayEvent[]
-};
+export type TDateTaskAttributes = {
+  uuid: string,
+    title: string,
+    start_time: string,
+    plan_item_number: string,
+    createdAt: Date,
+    updatedAt: Date,
+    event_task_id: string
+}
 
-export interface ICalendarRepeatedEvents {
-  [event_id: TCalendarEventID]: ICalendarRepeatedEvent;
-};
-
-export interface ICalendarDayEvent {
-  event_id: TCalendarEventID;
-  event_type: TCalendarEventType;
-  event_date: Date;
-  event_start_time: TCalendarEventTime;
-  event_end_time: TCalendarEventTime;
-  event_text: string;
-};
-
-export interface ICalendarRepeatedEvent {
-  event_id: TCalendarEventID;
-  event_start_date: Date;
-  event_stop_date: Date;
-  event_start_time: TCalendarEventTime;
-  event_end_time: TCalendarEventTime;
-  repeat_rate: TRepeatRate;
-  event_type: TCalendarEventType;
-  event_text: string;
+export type TDateTask = {
+  title: string,
+  tasks: {
+    id: TEventTasksID,
+    attributes: TDateTaskAttributes
+  }[]
 };
 
 export type TEventsByDate = {
@@ -115,7 +105,6 @@ export type TEventsByDate = {
 
 export type HolidaysData = {
   holidays: string[];
-  preholidays: string[];
   become_working: string[];
 };
 

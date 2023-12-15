@@ -40,7 +40,6 @@ import { CalendarView } from "./CalendarView/CalendarView";
 import { CalendarConfig } from "../config/CalendarConfig";
 import { CalendarViewMode } from "./CalendarView/CalendarViewTypes";
 import { TCalendarStateMethods } from "../context/CalendarContextTypes";
-import { ICalendarDayEvent } from "../data_provider/CalendarDataProviderTypes";
 import { AppModel } from "../../mock/mock_events_data";
 
 import styles from "./Calendar.module.css";
@@ -346,11 +345,16 @@ const MonthItemBody = (props: MonthItemBodyProps) => {
     timeout = setTimeout(async () => {
       const td = current_td;
       const date = new Date(e.target.dataset.day);
-      const events = await context.get_controller().get_date_events(date);
+      const date_tasks = await context.get_controller().get_date_tasks(date);
 
-      if (current_td !== td || events.length === 0) return;
+      if (current_td !== td || date_tasks.length === 0) return;
+      const events_count = date_tasks.reduce((acc, curr) => {
+       
+        acc += curr.tasks.length
+        return acc
+      }, 0)
      
-      render(() => <EventsPopup events={events} />, current_td as HTMLTableCellElement);
+      render(() => <EventsPopup events_count={events_count} />, current_td as HTMLTableCellElement);
     }, DATE_POPUP_SHOW_DELAY_MS);
   };
 
@@ -399,12 +403,11 @@ const DayItem = (props : {day: Date}) => {
   const is_become_working = () => context.get_holidays()?.become_working.includes(get_today_date_string());
   const is_holiday = () =>
     props.day.getDay() === 6 || props.day.getDay() === 0 || context.get_holidays()?.holidays.includes(get_today_date_string());
-  const is_preholiday = () => context.get_holidays()?.preholidays.includes(get_today_date_string());
   const is_selected = () => context.get_selected_date().getTime() === props.day.getTime() && !is_day_today();
 
   const select_day = (date: Date) => {
     context.set_selected_date(date);
-    context.get_controller().load_and_set_date_events(date);
+    context.get_controller().load_and_set_date_tasks(date);
   };
 
   return (
@@ -416,7 +419,6 @@ const DayItem = (props : {day: Date}) => {
         [styles.day_holiday]: is_holiday() && !is_become_working(),
         [styles.day_selected]: is_selected(),
         [styles.day_today]: is_day_today(),
-        [styles.day_preholiday]: is_preholiday(),
         [styles.include_event]: !is_holiday() && is_event() && !is_day_today(), 
       }}
     >
@@ -425,19 +427,11 @@ const DayItem = (props : {day: Date}) => {
   );
 };
 
-const EventsPopup = (props: { events: ICalendarDayEvent[] }) => {
-  return (
-    <ul
-      data-day-tooltip
-      class={styles.td_tooltip}
-    >
-      <For each={props.events}>
-        {event => (
-          <li class={styles.tooltip_list_element}>
-            {event.event_text}
-          </li>
-        )}
-      </For>
-    </ul>
-  );
-};
+const EventsPopup = (props: { events_count: number }) => (
+  <p
+    class={styles.td_tooltip}
+    data-day-tooltip
+  >
+    На дату запланировано задач: {props.events_count}
+  </p>
+);
