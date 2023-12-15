@@ -40,7 +40,7 @@ import { CalendarView } from "./CalendarView/CalendarView";
 import { CalendarConfig } from "../config/CalendarConfig";
 import { CalendarViewMode } from "./CalendarView/CalendarViewTypes";
 import { TCalendarStateMethods } from "../context/CalendarContextTypes";
-import { AppModel } from "../../mock/mock_events_data";
+import { Adapter } from "../../mock/mock_events_data";
 
 import styles from "./Calendar.module.css";
 
@@ -51,7 +51,7 @@ function get_default_props(
     controller: initial_props.controller ? null : new CalendarController(),
     data_provider: initial_props.data_provider
       ? null
-      : new CalendarDataProvider(new AppModel()),
+      : new CalendarDataProvider(new Adapter()),
     view: initial_props.view ? null : new CalendarView(),
     config: initial_props.config ? null : new CalendarConfig({}),
   } as TCalendarProps;

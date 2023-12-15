@@ -1,16 +1,16 @@
-import { AppModel } from "../../mock/mock_events_data";
 import { format_date_to_string } from "../../shared/lib/helpers";
+import { IAdapter } from "../ui/CalendarTypes";
 import type { TDateTask, TEventsByDate } from "./CalendarDataProviderTypes";
 
 export class CalendarDataProvider {
-  private model: AppModel
+  private adapter: IAdapter
 
-  constructor(model: AppModel) {
-    this.model = model
+  constructor(adapter: IAdapter) {
+    this.adapter = adapter
   }
 
   async get_year_events(year: number): Promise<TEventsByDate>{
-    const events = await this.model.get_all_events(year);
+    const events = await this.adapter.get_all_events(year);
 
     const events_obj: TEventsByDate = {};
 
@@ -59,10 +59,10 @@ export class CalendarDataProvider {
   };
 
   async get_date_tasks(date: Date): Promise<TDateTask[]>{
-    return await this.model.get_date_tasks(date);
+    return await this.adapter.get_date_tasks(date);
   };
 
   async get_year_holidays(year: number) {
-    return await this.model.get_year_holidays(year)
+    return await this.adapter.get_year_holidays(year)
   };
 };

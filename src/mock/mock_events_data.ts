@@ -3,13 +3,15 @@ import {
   HolidaysData,
   TCalendarEvents,
   TDateTask,
+  TTaskElement,
 } from "../Calendar/data_provider/CalendarDataProviderTypes";
+import { IAdapter } from "../Calendar/ui/CalendarTypes";
 import { create_query_string, format_date_to_reversed_string } from "../shared/lib/helpers";
 import { TQueryParams } from "../shared/types";
 
 const token = import.meta.env.VITE_BEARER_TOKEN;
 
-export class AppModel{
+export class Adapter implements IAdapter{
   async get_all_events(year: number): Promise<TCalendarEvents[]> {
     const start_year = format_date_to_reversed_string(new Date(year, 0, 1));
     const end_year = format_date_to_reversed_string(new Date(year, 11, 31));
@@ -71,10 +73,11 @@ export class AppModel{
 
       if (response.ok) {
         const tasks = await response.json();
+
         const tasks_data = await Promise.all(tasks.data.map(task => this.get_task_data(task.attributes.uuid)));
         const day_tasks = tasks.data.map((task, i: number) => ({
           title: task.attributes.title,
-          tasks: tasks_data[i].data
+          tasks: tasks_data[i]
         }));
 
         return day_tasks as TDateTask[];
@@ -86,10 +89,20 @@ export class AppModel{
       console.error(error);
       return [];
     };
-  };;
-  async get_task_data(uuid: string) {
+  };
+
+  async get_task_data(uuid: string): Promise<TTaskElement[]> {
+    const query_params: TQueryParams = {
+      root_path: 'https://rcgpnspn01.inlinegroup.ru/api/event-tasks-smet-comissions?',
+      filters: {
+        event_task_id: { value: uuid, rel: '$in' },
+      },
+      fields: []
+    };
+
     try {
-      const response = await fetch(`https://rcgpnspn01.inlinegroup.ru/api/event-tasks-smet-comissions?filters[event_task_id][$in]=${uuid}`, {
+      const response = await fetch(
+        create_query_string(query_params), {
         method: "GET",
         headers: {
           "Content-Type": "application/json;charset=utf-8",
@@ -98,7 +111,8 @@ export class AppModel{
       });
 
       if (response.ok) {
-        return await response.json();
+        const result = await response.json();
+        return result.data as TTaskElement[]
       } else {
         console.error("Ошибка HTTP: " + response.status);
         return [];
@@ -109,7 +123,7 @@ export class AppModel{
     };
   }
 
-  get_year_holidays(year: number) {
+  get_year_holidays(year: number): Promise<HolidaysData> {
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve(holidays[year]);

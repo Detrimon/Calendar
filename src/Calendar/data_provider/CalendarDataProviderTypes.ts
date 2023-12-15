@@ -83,20 +83,22 @@ export type TEventTasks = {
 
 export type TDateTaskAttributes = {
   uuid: string,
-    title: string,
-    start_time: string,
-    plan_item_number: string,
-    createdAt: Date,
-    updatedAt: Date,
-    event_task_id: string
-}
+  title: string,
+  start_time: string,
+  plan_item_number: string,
+  createdAt: Date,
+  updatedAt: Date,
+  event_task_id: string
+};
+
+export type TTaskElement = {
+  id: TEventTasksID,
+  attributes: TDateTaskAttributes
+};
 
 export type TDateTask = {
   title: string,
-  tasks: {
-    id: TEventTasksID,
-    attributes: TDateTaskAttributes
-  }[]
+  tasks: TTaskElement[]
 };
 
 export type TEventsByDate = {
