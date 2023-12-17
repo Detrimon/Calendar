@@ -1,7 +1,7 @@
 import { JSX, createContext, useContext } from "solid-js";
+import { createStore } from "solid-js/store";
 
 import { type TCalendarProps } from "../ui/CalendarTypes";
-import { createStore } from "solid-js/store";
 import { TCalendarStateMethods, TContextStore } from "./CalendarContextTypes";
 import { HolidaysData, TDateTask, TEventsByDate } from "../data_provider/CalendarDataProviderTypes";
 

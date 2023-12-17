@@ -1,13 +1,12 @@
 import { For, Match, Switch, createSignal } from 'solid-js';
 
-import { CalendarActions } from '../Calendar/ui/CalendarTypes';
+import { CalendarActions, TDateTask } from '../Calendar';
 import { format_date_to_string_with_words } from '../shared/lib/helpers';
-import { TDateTask } from '../Calendar/data_provider/CalendarDataProviderTypes';
 import { TAsideEvents } from './AsideEventsTypes';
 import { NO_SCHEDULED_TASKS } from './lib/constants';
+import { Task } from './ui/Task/Task';
 
 import styles from './AsideEvents.module.css';
-import { Task } from './ui/Task/Task';
 
 export const AsideEvents = (props: TAsideEvents) => {
   const [tasks, set_tasks] = createSignal<TDateTask[]>([]);

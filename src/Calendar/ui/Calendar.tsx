@@ -4,7 +4,6 @@ import {
   Match,
   Show,
   Switch,
-  batch,
   mergeProps,
   onCleanup
 } from "solid-js";
@@ -14,7 +13,9 @@ import {
   CHOOSE_MONTH,
   CHOOSE_YEAR,
   DATE_POPUP_SHOW_DELAY_MS,
-  MODE_BUTTONS_TEXT
+  EVENTS_POPUP_TEXT,
+  MODE_BUTTONS_TEXT,
+  YEAR_MODIFIER
 } from "../lib/constants";
 import {
   DAYS_IN_WEEK,
@@ -40,7 +41,7 @@ import { CalendarView } from "./CalendarView/CalendarView";
 import { CalendarConfig } from "../config/CalendarConfig";
 import { CalendarViewMode } from "./CalendarView/CalendarViewTypes";
 import { TCalendarStateMethods } from "../context/CalendarContextTypes";
-import { Adapter } from "../../mock/mock_events_data";
+import { CalendarDataAdapter } from "../data_adapter/CalendarDataAdapter";
 
 import styles from "./Calendar.module.css";
 
@@ -51,7 +52,7 @@ function get_default_props(
     controller: initial_props.controller ? null : new CalendarController(),
     data_provider: initial_props.data_provider
       ? null
-      : new CalendarDataProvider(new Adapter()),
+      : new CalendarDataProvider(new CalendarDataAdapter()),
     view: initial_props.view ? null : new CalendarView(),
     config: initial_props.config ? null : new CalendarConfig({}),
   } as TCalendarProps;
@@ -100,6 +101,7 @@ const Year = () => (
 
 const Months = () => {
   const [_, context] = useCalendarContext();
+  const controller = context.get_controller();
  
   const get_middle_month_item_props = () => ({
     month: MONTHS[context.get_month()],
@@ -131,31 +133,8 @@ const Months = () => {
     };
   };
 
-  const slide_right = () => {
-    let new_month_number = context.get_month() + 1;
-
-    if (new_month_number > 11) {
-      batch(() => {
-        context.set_year(context.get_year() + 1);
-        context.set_month(0);
-      });
-    } else {
-      context.set_month(new_month_number);
-    };
-  };
-
-  const slide_left = () => {
-    let new_month_number = context.get_month() - 1;
-
-    if (new_month_number < 0) {
-      batch(() => {
-        context.set_year(context.get_year() - 1);
-        context.set_month(11);
-      });
-    } else {
-      context.set_month(new_month_number);
-    };
-  };
+  const slide_right = () => controller.slide_right_handler();
+  const slide_left = () => controller.slide_left_handler();
 
   return (
     <div class={styles.calendar_container}>
@@ -164,6 +143,7 @@ const Months = () => {
         <button onClick={slide_left} class={styles.calendar_header_button}>
           &#60;
         </button>
+
         <Switch>
           <Match when={context.get_calendar_mode() === CalendarViewMode.MONTHS}>
             <div class={styles.calendar_months_row}>
@@ -205,21 +185,23 @@ const CalendarMonthsHeader = () => (
 
 const ChooseYearSelect = () => {
   const [_, context] = useCalendarContext();
+  const controller = context.get_controller();
+
   let timer_id: number;
 
   const years = [];
-  for (let i = context.get_year() - 10; i <= context.get_year() + 10; i++) {
+  for (let i = context.get_year() - YEAR_MODIFIER; i <= context.get_year() + YEAR_MODIFIER; i++) {
     years.push(i)
   };
   
   const clear_interval = () => clearInterval(timer_id);
-  const handle_change_year = (value: string) => context.set_year(+value);
+  const change_year_handler = (value: string) => controller.set_context_year(+value);
 
   return (
     <select
       onMouseOut={clear_interval}
       onClick={clear_interval}
-      onChange={(event) => handle_change_year(event.target.value)}
+      onChange={(event) => change_year_handler(event.target.value)}
       class={styles.calendar_header_select}
       value={context.get_year()}
     >
@@ -230,14 +212,13 @@ const ChooseYearSelect = () => {
 
 const ChooseMonthSelect = () => {
   const [_, context] = useCalendarContext();
-  const handle_change_year = (value: string) => {
-    const new_month_number = MONTHS.findIndex(name => name === value);
-    context.set_month(new_month_number)
-  };
+  const controller = context.get_controller();
+
+  const change_month_handler = (value: string) => controller.change_month_handler(value);
   
   return (
     <select
-      onChange={(event) => handle_change_year(event.target.value)}
+      onChange={(event) => change_month_handler(event.target.value)}
       class={styles.calendar_header_select}
       value={MONTHS[context.get_month()]}
     >
@@ -331,6 +312,7 @@ const MonthItemHeader = (props: MonthItemHeader) => (
 
 const MonthItemBody = (props: MonthItemBodyProps) => {
   const [_, context] = useCalendarContext();
+  const controller = context.get_controller();
 
   let timeout: number;
   let current_td: HTMLTableCellElement | null;
@@ -345,7 +327,7 @@ const MonthItemBody = (props: MonthItemBodyProps) => {
     timeout = setTimeout(async () => {
       const td = current_td;
       const date = new Date(e.target.dataset.day);
-      const date_tasks = await context.get_controller().get_date_tasks(date);
+      const date_tasks = await controller.get_date_tasks(date);
 
       if (current_td !== td || date_tasks.length === 0) return;
       const events_count = date_tasks.reduce((acc, curr) => {
@@ -395,6 +377,7 @@ const MonthItemBody = (props: MonthItemBodyProps) => {
 
 const DayItem = (props : {day: Date}) => {
   const [_, context] = useCalendarContext();
+  const controller = context.get_controller();
 
   const get_today_date_string = () => format_date_to_string(props.day);
 
@@ -405,15 +388,12 @@ const DayItem = (props : {day: Date}) => {
     props.day.getDay() === 6 || props.day.getDay() === 0 || context.get_holidays()?.holidays.includes(get_today_date_string());
   const is_selected = () => context.get_selected_date().getTime() === props.day.getTime() && !is_day_today();
 
-  const select_day = (date: Date) => {
-    context.set_selected_date(date);
-    context.get_controller().load_and_set_date_tasks(date);
-  };
+  const select_day_handler = (date: Date) => controller.select_day_handler(date);
 
   return (
     <td
       data-day={props.day}
-      onClick={() => select_day(props.day)}
+      onClick={() => select_day_handler(props.day)}
       class={styles.hide_tooltip}
       classList={{
         [styles.day_holiday]: is_holiday() && !is_become_working(),
@@ -432,6 +412,6 @@ const EventsPopup = (props: { events_count: number }) => (
     class={styles.td_tooltip}
     data-day-tooltip
   >
-    На дату запланировано задач: {props.events_count}
+    {EVENTS_POPUP_TEXT} {props.events_count}
   </p>
 );

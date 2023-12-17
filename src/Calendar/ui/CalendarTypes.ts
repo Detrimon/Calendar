@@ -4,7 +4,7 @@ import { CalendarConfig } from "../config/CalendarConfig";
 import { CalendarView } from "./CalendarView/CalendarView";
 import { TCalendarEvents, TDateTask, TTaskElement, HolidaysData } from "../data_provider/CalendarDataProviderTypes";
 
-export interface IAdapter{
+export interface ICalendarDataAdapter{
   get_all_events(year: number): Promise<TCalendarEvents[]>
   get_date_tasks(date: Date): Promise<TDateTask[]>
   get_task_data(uuid: string): Promise<TTaskElement[]>

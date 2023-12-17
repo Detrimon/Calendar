@@ -1,5 +1,5 @@
 import { createSignal, Show, For } from "solid-js";
-import { TDateTask } from "../../../Calendar/data_provider/CalendarDataProviderTypes";
+import { TDateTask } from "../../../Calendar"; 
 
 import styles from "./Task.module.css";
 
@@ -9,7 +9,7 @@ export const Task = (props: { task: TDateTask }) => {
   const handle_title_click = () => set_show(prev => !prev);
 
   return (
-    <>
+    <div>
       <h4
         class={styles.task_title}
         onClick={handle_title_click}
@@ -29,6 +29,6 @@ export const Task = (props: { task: TDateTask }) => {
           </For>
         </ul>
       </Show>
-    </>
+    </div>
   );
 };
