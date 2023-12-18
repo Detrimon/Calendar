@@ -1,10 +1,3 @@
-export type EventsParams = {
-  date_from: Date;
-  date_to: Date;
-  time_from: string;
-  time_to: string;
-};
-
 export type TEventTasksID = number;
 export type TCalendarEventID = string;
 export type TCalendarEventTime = string;

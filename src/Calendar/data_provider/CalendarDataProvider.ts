@@ -1,11 +1,11 @@
 import { format_date_to_string } from "../../shared/lib/helpers";
-import { IAdapter } from "../ui/CalendarTypes";
+import { ICalendarDataAdapter } from "../ui/CalendarTypes";
 import type { TDateTask, TEventsByDate } from "./CalendarDataProviderTypes";
 
 export class CalendarDataProvider {
-  private adapter: IAdapter
+  private adapter: ICalendarDataAdapter
 
-  constructor(adapter: IAdapter) {
+  constructor(adapter: ICalendarDataAdapter) {
     this.adapter = adapter
   }
 

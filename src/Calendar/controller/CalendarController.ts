@@ -29,20 +29,6 @@ export class CalendarController {
     this.data_provider = context.get_data_provider();
     this.view = context.get_view();
     this.context = context;
-    
-    // createEffect(on(context.get_year, (year) => {
-    //   this.load_and_set_events(year);
-    //   this.load_and_set_year_holidays(year);
-    //   this.notify(CalendarActions.GET_YEAR, year);
-    // }, { defer: true }));
-
-    // createEffect(on(context.get_selected_date, (date) => {
-    //   this.notify(CalendarActions.SELECTED_DATE, date);
-    // }, { defer: true }));
-
-    // createEffect(on(context.get_selected_date_tasks, (event_data) => {
-    //   this.notify(CalendarActions.GET_SELECTED_DATE_EVENTS, event_data);
-    // }, { defer: true }));
   };
   
   get_context() {

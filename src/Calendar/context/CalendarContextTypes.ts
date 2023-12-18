@@ -12,15 +12,7 @@ export type TStore = {
   state: TCalendarState;
 };
 
-export type TEventsParams = {
-  date_from: Date;
-  date_to: Date;
-  time_from: string;
-  time_to: string;
-};
-
 export type TCalendarState = {
-  events_params?: TEventsParams;
   year?: number;
   month?: number;
   selected_date?: Date;

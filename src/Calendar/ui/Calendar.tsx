@@ -53,7 +53,7 @@ function get_default_props(
     data_provider: initial_props.data_provider
       ? null
       : new CalendarDataProvider(new CalendarDataAdapter()),
-    view: initial_props.view ? null : new CalendarView(),
+    view: initial_props.view ? null : new CalendarView({mode: CalendarViewMode.YEAR}),
     config: initial_props.config ? null : new CalendarConfig({}),
   } as TCalendarProps;
 };
