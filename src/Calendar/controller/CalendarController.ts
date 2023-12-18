@@ -1,13 +1,14 @@
+import { batch } from "solid-js";
 import { v4 as uuidv4 } from "uuid";
+
 import { CalendarDataProvider } from "../data_provider/CalendarDataProvider";
 import { CalendarView } from "../ui/CalendarView/CalendarView";
 import { CalendarActions } from "../ui/CalendarTypes";
-import type { HolidaysData, TDateTask, TEventsByDate } from "../data_provider/CalendarDataProviderTypes";
-import type { GUID, Observers } from "./CalendarControllerTypes";
-import { TCalendarStateMethods } from "../context/CalendarContextTypes";
-import { CalendarViewMode } from "../ui/CalendarView/CalendarViewTypes";
-import { batch } from "solid-js";
+import type { TCalendarStateMethods } from "../context/CalendarContextTypes";
+import type { CalendarViewMode } from "../ui/CalendarView/CalendarViewTypes";
 import { MONTHS } from "../../shared/lib/constants";
+import type { THolidaysData, TDateTask, TEventsByDate } from "../data_provider/CalendarDataProviderTypes";
+import type { GUID, Observers } from "./CalendarControllerTypes";
 
 export class CalendarController {
   data_provider: CalendarDataProvider | null;
@@ -93,7 +94,7 @@ export class CalendarController {
 
     const holidays = (await data_provider.get_year_holidays(
       year
-    )) as HolidaysData;
+    )) as THolidaysData;
     this.set_context_holidays(holidays);
   };
 
@@ -176,7 +177,7 @@ export class CalendarController {
     this.notify(CalendarActions.GET_SELECTED_DATE_EVENTS, tasks);
   }
 
-  set_context_holidays(holidays: HolidaysData) {
+  set_context_holidays(holidays: THolidaysData) {
     const context = this.get_context();
     context.set_holidays(holidays);
   }

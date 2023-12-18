@@ -1,7 +1,7 @@
 import { holidays } from "../../mock/mock_holidays_data";
 import { format_date_to_reversed_string, create_query_string } from "../../shared/lib/helpers";
-import { TQueryParams } from "../../shared/types";
-import { TCalendarEvents, TDateTask, TTaskElement, HolidaysData } from "../data_provider/CalendarDataProviderTypes";
+import type { TQueryParams } from "../../shared/types";
+import type { TCalendarEvents, TDateTask, TTaskElement, THolidaysData } from "../data_provider/CalendarDataProviderTypes";
 import { ICalendarDataAdapter } from "../ui/CalendarTypes";
 
 const token = import.meta.env.VITE_BEARER_TOKEN;
@@ -118,7 +118,7 @@ export class CalendarDataAdapter implements ICalendarDataAdapter{
     };
   }
 
-  get_year_holidays(year: number): Promise<HolidaysData> {
+  get_year_holidays(year: number): Promise<THolidaysData> {
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve(holidays[year]);

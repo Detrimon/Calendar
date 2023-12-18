@@ -1,5 +1,5 @@
 import { format_date_to_string } from "../../shared/lib/helpers";
-import { ICalendarDataAdapter } from "../ui/CalendarTypes";
+import type { ICalendarDataAdapter } from "../ui/CalendarTypes";
 import type { TDateTask, TEventsByDate } from "./CalendarDataProviderTypes";
 
 export class CalendarDataProvider {

@@ -1,6 +1,5 @@
 import { DAYS_IN_MONTH, DAYS_IN_WEEK, Month } from "../../shared/lib/constants";
 import { get_day_of_week, is_leap_year } from "../../shared/lib/helpers";
-import { ICalendarRepeatedEvent } from "../data_provider/CalendarDataProviderTypes";
 
 export function get_days_in_month(date: Date) {
   const month = date.getMonth();
@@ -34,34 +33,4 @@ export function get_month_data(year: number, month: number) {
   };
 
   return result;
-};
-
-export function filter_by_rate(date: Date) {
-  return function (event: ICalendarRepeatedEvent) {
-    if (event.repeat_rate === "DAY") return true;
-
-    const copiedDate = new Date(event.event_start_date.getTime());
-    const date_timestamp = date.getTime();
-
-    let current = copiedDate.getTime();
-    const end = event.event_stop_date.getTime();
-
-    while (current <= end) {
-      if (current === date_timestamp) return true;
-
-      switch (event.repeat_rate) {
-        case "YEAR":
-          copiedDate.setFullYear(copiedDate.getFullYear() + 1);
-          break;
-        case "MONTH":
-          copiedDate.setMonth(copiedDate.getMonth() + 1);
-          break;
-        case "WEEK":
-          copiedDate.setDate(copiedDate.getDate() + 7);
-          break;
-      };
-      current = copiedDate.getTime();
-    }
-    return false;
-  };
 };

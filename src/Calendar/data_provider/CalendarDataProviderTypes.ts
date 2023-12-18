@@ -98,12 +98,12 @@ export type TEventsByDate = {
   [key: string]: true;
 };
 
-export type HolidaysData = {
+export type THolidaysData = {
   holidays: string[];
   become_working: string[];
 };
 
 export type Holidays = {
-  [key: string]: HolidaysData
+  [key: string]: THolidaysData
 };
 

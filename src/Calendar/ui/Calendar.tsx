@@ -40,7 +40,7 @@ import { CalendarDataProvider } from "../data_provider/CalendarDataProvider";
 import { CalendarView } from "./CalendarView/CalendarView";
 import { CalendarConfig } from "../config/CalendarConfig";
 import { CalendarViewMode } from "./CalendarView/CalendarViewTypes";
-import { TCalendarStateMethods } from "../context/CalendarContextTypes";
+import type { TCalendarStateMethods } from "../context/CalendarContextTypes";
 import { CalendarDataAdapter } from "../data_adapter/CalendarDataAdapter";
 
 import styles from "./Calendar.module.css";
@@ -323,7 +323,7 @@ const MonthItemBody = (props: MonthItemBodyProps) => {
     const target = e.target.closest('td');
     if (!target) return;
 
-    const date_string = format_date_to_string(new Date(target.dataset.day));
+    const date_string = format_date_to_string(new Date(target.dataset.day as string));
     if (!context.get_events()[date_string]) {
       return;
     };

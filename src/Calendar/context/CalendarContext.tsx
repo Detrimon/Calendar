@@ -1,9 +1,9 @@
 import { JSX, createContext, useContext } from "solid-js";
 import { createStore } from "solid-js/store";
 
-import { type TCalendarProps } from "../ui/CalendarTypes";
 import { TCalendarStateMethods, TContextStore } from "./CalendarContextTypes";
-import { HolidaysData, TDateTask, TEventsByDate } from "../data_provider/CalendarDataProviderTypes";
+import { type TCalendarProps } from "../ui/CalendarTypes";
+import type { THolidaysData, TDateTask, TEventsByDate } from "../data_provider/CalendarDataProviderTypes";
 
 const CalendarContext = createContext<[TContextStore, TCalendarStateMethods]>();
 
@@ -104,7 +104,7 @@ export const CalendarProvider = (props: { children: JSX.Element }) => {
         return store.state.holidays;
       },
 
-      set_holidays(holidays: HolidaysData) {
+      set_holidays(holidays: THolidaysData) {
         set_store("state", "holidays", holidays);
       }
     },

@@ -1,6 +1,6 @@
-import { Holidays, HolidaysData } from "../Calendar/data_provider/CalendarDataProviderTypes";
+import { Holidays, THolidaysData } from "../Calendar/data_provider/CalendarDataProviderTypes";
 
-const holidays_2022: HolidaysData = {
+const holidays_2022: THolidaysData = {
   "holidays": [
     "02.01.2022",
     "03.01.2022",
@@ -124,7 +124,7 @@ const holidays_2022: HolidaysData = {
   "become_working": []
 };
 
-const holidays_2023: HolidaysData = {
+const holidays_2023: THolidaysData = {
   "holidays": [
     "01.01.2023",
     "02.01.2023",
@@ -248,7 +248,7 @@ const holidays_2023: HolidaysData = {
   "become_working": []
 };
 
-const holidays_2024: HolidaysData = {
+const holidays_2024: THolidaysData = {
   "holidays": [
     "01.01.2024",
     "02.01.2024",
