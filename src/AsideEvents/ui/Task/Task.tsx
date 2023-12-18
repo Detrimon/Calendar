@@ -1,10 +1,10 @@
 import { createSignal, Show, For } from "solid-js";
-import { TDateTask } from "../../../Calendar"; 
+import { TTaskProps } from "../../AsideEventsTypes";
 
 import styles from "./Task.module.css";
 
-export const Task = (props: { task: TDateTask }) => {
-  const [show, set_show] = createSignal(false);
+export const Task = (props: TTaskProps) => {
+  const [show, set_show] = createSignal(props.order() === 0);
 
   const handle_title_click = () => set_show(prev => !prev);
 

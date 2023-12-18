@@ -29,7 +29,7 @@ export const AsideEvents = (props: TAsideEvents) => {
           </Match>
           <Match when={tasks().length !== 0}>
             <For each={tasks()}>{
-              (task) => <Task task={task} />
+              (task, i) => <Task task={task} order={i} />
             }</For>
           </Match>
         </Switch>
