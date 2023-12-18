@@ -39,7 +39,7 @@
   margin-right: 10px;
   width: 15px;
   height: 15px;
-  background: url('../../../shared/assets/icons/calendar-svg.svg') no-repeat;
+  background: url('../shared/assets/icons/calendar-svg.svg') no-repeat;
 }
 
 .header_close_button{

@@ -1,13 +1,9 @@
-import { Component, Show } from "solid-js";
+import { Show } from "solid-js";
+import { TPlaningModalProps } from "./PlaningModalTypes";
 
 import styles from "./PlaningModal.module.css";
 
-type TPlaningModalProps = {
-  show: boolean;
-  onModalHide: () => void;
-}
-
-export const PlaningModal: Component<TPlaningModalProps> = (props) => {
+export const PlaningModal = (props: TPlaningModalProps) => {
   
   return (
     <Show when={props.show}>
@@ -25,5 +21,5 @@ export const PlaningModal: Component<TPlaningModalProps> = (props) => {
         </div>
       </div>
     </Show>
-  )
+  );
 };

@@ -43,7 +43,7 @@ import { CalendarConfig } from "../config/CalendarConfig";
 import { CalendarViewMode } from "./CalendarView/CalendarViewTypes";
 import type { TCalendarStateMethods } from "../context/CalendarContextTypes";
 import { CalendarDataAdapter } from "../data_adapter/CalendarDataAdapter";
-import { PlaningModal } from "./PlaningModal/PlaningModal";
+import { PlaningModal } from "../../PlaningModal";
 
 import styles from "./Calendar.module.css";
 

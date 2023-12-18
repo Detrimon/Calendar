@@ -11,7 +11,3 @@ enum REPEAT_EVERY{
   MONTH = "ежемесячно",
   YEAR = "ежегодно"
 }
-
-enum LIMITS{
-  
-}
