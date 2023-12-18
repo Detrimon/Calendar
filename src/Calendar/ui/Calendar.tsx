@@ -4,7 +4,6 @@ import {
   Match,
   Show,
   Switch,
-  batch,
   createSignal,
   mergeProps,
   onCleanup
