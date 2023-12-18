@@ -18,7 +18,7 @@ export type TCalendarProps = {
   config?: CalendarConfig
 };
 
-export type MonthItemHeader = {
+export type TMonthItemHeaderProps = {
   month_name: string
   is_current: () => boolean
   year?: number

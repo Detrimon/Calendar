@@ -32,7 +32,7 @@ import {
 } from "../context/CalendarContext";
 import type {
   MonthItemBodyProps,
-  MonthItemHeader,
+  TMonthItemHeaderProps,
   MonthItemProps,
   TCalendarProps,
 } from "./CalendarTypes";
@@ -295,7 +295,7 @@ const MonthItem = (props: MonthItemProps) => {
   );
 };
 
-const MonthItemHeader = (props: MonthItemHeader) => (
+const MonthItemHeader = (props: TMonthItemHeaderProps) => (
   <thead class={styles.month_item_header_container}>
     <tr>
       <th

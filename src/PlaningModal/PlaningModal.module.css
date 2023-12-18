@@ -51,3 +51,9 @@
   background-color: transparent;
   cursor: pointer;
 }
+
+.row_wrapper{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
