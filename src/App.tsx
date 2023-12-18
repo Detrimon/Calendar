@@ -3,15 +3,16 @@ import { CalendarDataProvider } from "./Calendar/data_provider/CalendarDataProvi
 import { CalendarController } from "./Calendar/controller/CalendarController";
 import { CalendarView } from "./Calendar/ui/CalendarView/CalendarView";
 import { CalendarConfig } from "./Calendar/config/CalendarConfig";
-import { AppModel } from "./mock/mock_events_data";
+import { CalendarDataAdapter } from "./Calendar/data_adapter/CalendarDataAdapter";
 import { AsideEvents } from "./AsideEvents/AsideEvents";
+import { CalendarViewMode } from "./Calendar";
 
 import "./App.css";
 
 export const App = () => {
-  const calendar_data_provider = new CalendarDataProvider(new AppModel())
+  const calendar_data_provider = new CalendarDataProvider(new CalendarDataAdapter())
   const calendar_controller = new CalendarController()
-  const calendar_view = new CalendarView()
+  const calendar_view = new CalendarView({mode: CalendarViewMode.MONTHS}) // Если не передавать mode - будет year
   const calendar_config = new CalendarConfig({}) // Если конфиг дефолтный - можно не делать
   
   return (

@@ -97,10 +97,6 @@
   color: var(--holiday_color);
 }
 
-.day_preholiday {
-  color: var(--preholiday_color);
-}
-
 .day_today {
   border-radius: 10px;
   background-color: var(--selected_color);

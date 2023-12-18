@@ -2,6 +2,14 @@ import { CalendarController } from "../controller/CalendarController";
 import { CalendarDataProvider } from "../data_provider/CalendarDataProvider";
 import { CalendarConfig } from "../config/CalendarConfig";
 import { CalendarView } from "./CalendarView/CalendarView";
+import { TCalendarEvents, TDateTask, TTaskElement, THolidaysData } from "../data_provider/CalendarDataProviderTypes";
+
+export interface ICalendarDataAdapter{
+  get_all_events(year: number): Promise<TCalendarEvents[]>
+  get_date_tasks(date: Date): Promise<TDateTask[]>
+  get_task_data(uuid: string): Promise<TTaskElement[]>
+  get_year_holidays(year: number): Promise<THolidaysData>
+}
 
 export type TCalendarProps = {
   data_provider: CalendarDataProvider

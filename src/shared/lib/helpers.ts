@@ -1,5 +1,11 @@
+import { TQueryParams } from "../types";
+
 export function format_date_to_string(date: Date) {
   return date.toLocaleString().substring(0, 10)
+};
+
+export function format_date_to_reversed_string(date: Date, separator: string = '-') {
+  return date.toLocaleDateString().split('.').reverse().join(separator);
 };
 
 export function format_date_to_string_with_words(date: Date) {
@@ -47,4 +53,16 @@ export function get_current_year() {
 export function get_current_month() {
   let now = new Date();
   return now.getMonth();
+};
+
+export const create_query_string = (query_params: TQueryParams) => {
+  let result: string = query_params.root_path;
+      
+  for (let [key, value] of Object.entries(query_params.filters)) {
+    result += `filters[${key}][${value.rel}]=${value.value}&`
+  };
+  query_params.fields = query_params.fields.map(param => `fields=${param}`);
+  result += query_params.fields.join('&');
+      
+  return result;
 };

@@ -1,0 +1,35 @@
+.task_elem {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--secondary_dark_color);
+}
+
+.task_title {
+  text-align: center;
+  font-size: 14px;
+  margin: 0;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--secondary_dark_color);
+  cursor: pointer;
+}
+
+.task_list {
+  padding: 0;
+  list-style: none;
+}
+
+.task_elem_time {
+  color: var(--secondary_dark_color);
+  padding: 0 12px 0 0;
+}
+
+.task_elem_text {
+  padding: 0 8px 0 0;
+}
+
+.task_elem_text,
+.task_elem_time {
+  margin: 0;
+}

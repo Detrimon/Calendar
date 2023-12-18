@@ -1,20 +1,19 @@
 import { JSX, createContext, useContext } from "solid-js";
-
-import { type TCalendarProps } from "../ui/CalendarTypes";
 import { createStore } from "solid-js/store";
+
 import { TCalendarStateMethods, TContextStore } from "./CalendarContextTypes";
-import { HolidaysData, ICalendarDayEvent, TEventsTypesByDate } from "../data_provider/CalendarDataProviderTypes";
+import { type TCalendarProps } from "../ui/CalendarTypes";
+import type { THolidaysData, TDateTask, TEventsByDate } from "../data_provider/CalendarDataProviderTypes";
 
 const CalendarContext = createContext<[TContextStore, TCalendarStateMethods]>();
 
 export const CalendarProvider = (props: { children: JSX.Element }) => {
   const [store, set_store] = createStore<TContextStore>({
     state: {
-      selected_date_events: [],
+      selected_date_tasks: [],
       events: {},
       holidays: {
         holidays: [],
-        preholidays: [],
         become_working: []
       }
     }
@@ -89,23 +88,23 @@ export const CalendarProvider = (props: { children: JSX.Element }) => {
         return store.state.events;
       },
 
-      set_events(events: TEventsTypesByDate) {
+      set_events(events: TEventsByDate) {
         set_store("state", "events", events);
       },
 
-      get_selected_date_events() {
-        return store.state.selected_date_events;
+      get_selected_date_tasks() {
+        return store.state.selected_date_tasks;
       },
 
-      set_selected_date_events(events: ICalendarDayEvent[]) {
-        set_store("state", "selected_date_events", events)
+      set_selected_date_tasks(tasks: TDateTask[]) {
+        set_store("state", "selected_date_tasks", tasks)
       },
 
       get_holidays() {
         return store.state.holidays;
       },
 
-      set_holidays(holidays: HolidaysData) {
+      set_holidays(holidays: THolidaysData) {
         set_store("state", "holidays", holidays);
       }
     },
