@@ -322,6 +322,11 @@ const MonthItemBody = (props: MonthItemBodyProps) => {
     if (current_td) return;
     const target = e.target.closest('td');
     if (!target) return;
+
+    const date_string = format_date_to_string(new Date(target.dataset.day));
+    if (!context.get_events()[date_string]) {
+      return;
+    };
     current_td = target;
   
     timeout = setTimeout(async () => {
@@ -329,7 +334,7 @@ const MonthItemBody = (props: MonthItemBodyProps) => {
       const date = new Date(e.target.dataset.day);
       const date_tasks = await controller.get_date_tasks(date);
 
-      if (current_td !== td || date_tasks.length === 0) return;
+      if (current_td !== td) return;
       const events_count = date_tasks.reduce((acc, curr) => {
        
         acc += curr.tasks.length
