@@ -21,7 +21,7 @@ import {
 import {
   DAYS_IN_WEEK,
   MONTHS,
-  WEEKDAYS_SHORT
+  WEEKDAYS_SHORT_LIST
 } from "../../shared/lib/constants";
 import { get_month_data} from "../helpers/calendar_helpers";
 import { get_current_month, get_current_year, get_today } from "../../shared/lib/helpers";
@@ -309,7 +309,7 @@ const MonthItemHeader = (props: TMonthItemHeaderProps) => (
       </th>
     </tr>
     <tr>
-      <For each={WEEKDAYS_SHORT}>
+      <For each={WEEKDAYS_SHORT_LIST}>
         {(week_day, i) => <th
           class={styles.week_day}
           classList={{
