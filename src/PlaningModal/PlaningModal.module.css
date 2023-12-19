@@ -130,11 +130,22 @@
 
 .form input[type="date"],
 .form input[type="time"] {
-  color: var(--grey_light_color);
-  background-color: transparent;
-  border: 1px solid var(--grey_light_color);
+  padding-left: 4px;
+  color: var(--secondary_color);
+  background-color: rgba(0, 124, 196, 0.055);
+  border: 1px solid var(--secondary_color);
   border-radius: 3px;
   outline: none;
+}
+
+/* Изменение значка на input[type="time"] */
+.form input[type="time"]::-webkit-calendar-picker-indicator {
+  background: url('../shared/assets/icons/arrow-down.svg') no-repeat;
+}
+
+/* Изменение цвета значка на input[type="date"] */
+.form input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(40%) sepia(99%) saturate(4267%) hue-rotate(183deg) brightness(90%) contrast(101%);
 }
 
 /* Убираю стрелки */

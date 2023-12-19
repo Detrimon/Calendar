@@ -16,14 +16,15 @@ import {
 import { WEEKDAYS_SHORT } from "../shared/lib/constants";
 
 import styles from "./PlaningModal.module.css";
+import { get_time_period_options } from "./helpers/planing_modal_helpers";
 
 export const PlaningModal = (props: TPlaningModalProps) => {
   const [form, set_form] = createStore({
     is_allday_meeting: false,
     is_repeated: false,
     time_period: {
-      start: "",
-      end: ""
+      start: "09:00",
+      end: "09:30"
     },
     repeat_rate: REPEAT_EVERY,
     repeat_rate_custom: {
@@ -65,15 +66,26 @@ export const PlaningModal = (props: TPlaningModalProps) => {
             <div class={styles.row_wrapper}>
               <span>{TIME_PERIOD}</span>
               <div class={styles.buttons_wrapper}>
-                с <input type="time" name="time" />
-                по <input type="time" name="time" />
+
+                <span>с</span>
+                <input list="time_variants" min="09:00" max="18:00" type="time" name="time" />
+                <datalist id="time_variants">
+                  {get_time_period_options().map(option => <option value={option}/>)}
+                </datalist>
+
+                <span>по</span>
+                <input list="time_variants"  min="09:00" max="18:00" type="time" name="time" />
+                <datalist id="time_variants">
+                  {get_time_period_options().map(option => <option value={option}/>)}
+                </datalist>
+                
               </div>
             </div>
             <div class={styles.row_wrapper}>
               <span>{REPEAT}</span>
-              <div class={styles.buttons_wrapper}>
+              <div>
                 <button classList={{ [styles.button]: true, [styles.button_colored]: true }}>Да</button>
-                <button classList={{ [styles.button]: true, [styles.button_colored]: true }}>Нет</button>
+                <button classList={{ [styles.button]: true, [styles.button_colored]: false }}>Нет</button>
               </div>
             </div>
 
