@@ -18,8 +18,24 @@ import { WEEKDAYS_SHORT } from "../shared/lib/constants";
 import styles from "./PlaningModal.module.css";
 
 export const PlaningModal = (props: TPlaningModalProps) => {
-  const [form, setForm] = createStore({
-    is_allday_meeting: false
+  const [form, set_form] = createStore({
+    is_allday_meeting: false,
+    is_repeated: false,
+    time_period: {
+      start: "",
+      end: ""
+    },
+    repeat_rate: REPEAT_EVERY,
+    repeat_rate_custom: {
+      repeat_every_week_row: 1,
+      week_days: [WEEKDAYS_SHORT.FR, WEEKDAYS_SHORT.MO]
+    },
+    repeat_limits: {
+      start_date: '',
+      is_infinitely: true,
+      end_date: '',
+      finish_after_repeats: 10,
+    }
   });
 
   const submit_handler = (e) => {
