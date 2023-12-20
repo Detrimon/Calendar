@@ -3,6 +3,10 @@
   padding: 0;
 }
 
+fieldset{
+  border: none;
+}
+
 .container {
   position: fixed;
   top: 0;
@@ -58,6 +62,7 @@
   display: flex;
   flex-direction: column;
   gap: 5px;
+  color: var(--secondary_color);
 }
 
 .row_wrapper{
@@ -83,15 +88,19 @@
   background-color: var(--secondary_color);
 }
 
+.repeat_params{
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
 .fieldset_header{
   text-align: left;
-  color: var(--secondary_color);
 }
 
 .fieldset_content{
   padding: 0 5px;
   font-size: 12px;
-  color: var(--secondary_color);
   border: 1px solid var(--secondary_color);
   border-radius: 3px;
   background-color: rgba(0, 124, 196, 0.055);
@@ -106,6 +115,10 @@
 
 .fieldset_inputs_wrapper:first-child{
   border-bottom: 1px solid var(--secondary_color);
+}
+
+.disabled .fieldset_inputs_wrapper:first-child{
+  border-color: var(--grey_light_color);
 }
 
 .fieldset_content label{
@@ -203,4 +216,12 @@
   position: absolute;
   right: 4px;
   top: 5px;
+}
+
+.form .disabled,
+.form .disabled input,
+.form .disabled fieldset{
+  color: var(--grey_light_color);
+  border-color: var(--grey_light_color);
+  background-color: transparent;
 }
