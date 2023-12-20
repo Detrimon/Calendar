@@ -13,23 +13,24 @@ import {
   SAVE, START_DATE,
   TIME_PERIOD
 } from "./lib/constants";
-import { WEEKDAYS_SHORT } from "../shared/lib/constants";
+import { FORM_STORE, REPEAT_RATE_DAYS, WEEKDAYS_SHORT } from "../shared/lib/constants";
+import { get_time_period_options } from "./helpers/planing_modal_helpers";
+import { TRepeatRate } from "../Calendar";
 
 import styles from "./PlaningModal.module.css";
-import { get_time_period_options } from "./helpers/planing_modal_helpers";
 
 export const PlaningModal = (props: TPlaningModalProps) => {
-  const [form, set_form] = createStore({
+  const [form, set_form] = createStore<FORM_STORE>({
     is_allday_meeting: false,
     is_repeated: true,
     time_period: {
       start: "",
       end: ""
     },
-    repeat_rate: REPEAT_EVERY,
+    repeat_rate: TRepeatRate.WEEK,
     repeat_rate_custom: {
       repeat_every_week_row: 1,
-      week_days: [WEEKDAYS_SHORT.FR, WEEKDAYS_SHORT.MO]
+      week_days: ["monday", "thursday"]
     },
     repeat_limits: {
       start_date: '',
@@ -48,6 +49,15 @@ export const PlaningModal = (props: TPlaningModalProps) => {
     });
   };
   const set_time_period_end = (new_value: string) => set_form('time_period', 'end', new_value);
+  const set_repeat_rate = (new_value: TRepeatRate) => set_form('repeat_rate', new_value);
+  const set_repeat_every_week_row = (new_value: number) => set_form('repeat_rate_custom', 'repeat_every_week_row', new_value < 0 ? 0 : new_value);
+  const change_repeat_week_days = (new_value: REPEAT_RATE_DAYS) => {
+    if (form.repeat_rate_custom.week_days.includes(new_value)) {
+      set_form('repeat_rate_custom', 'week_days', form.repeat_rate_custom.week_days.filter(day => day !== new_value));
+    } else {
+      set_form('repeat_rate_custom', 'week_days', [...form.repeat_rate_custom.week_days, new_value]);
+    }
+  };
 
   const submit_handler = (e) => {
     e.preventDefault()
@@ -111,7 +121,7 @@ export const PlaningModal = (props: TPlaningModalProps) => {
                   onChange={(e) => set_time_period_end(e.target.value)}
                 />
                 <datalist id="time_end_variants">
-                  {get_time_period_options({ start: form.time_period.start || undefined}).map(option => <option value={option} />)}
+                  {get_time_period_options({ start: form.time_period.start || undefined }).map(option => <option value={option} />)}
                 </datalist>
                 
               </fieldset>
@@ -140,53 +150,91 @@ export const PlaningModal = (props: TPlaningModalProps) => {
             >
               <h5 class={styles.fieldset_header}>{REPEAT_CYCLE}</h5>
 
-              <fieldset class={styles.fieldset_content}>
+              <fieldset class={styles.fieldset_content} >
 
-                <div class={styles.fieldset_inputs_wrapper}>
+                <fieldset class={styles.fieldset_inputs_wrapper} onChange={(e) => set_repeat_rate(e.target.value)}>
                   Повторять:
                   <label>
-                    <input type="radio" name="repeat_cycle" value="every_day" checked />
+                    <input type="radio" name="repeat_cycle" value={TRepeatRate.DAY} checked={form.repeat_rate === TRepeatRate.DAY} />
                     {REPEAT_EVERY.DAY}
                   </label>
                   <label>
-                    <input type="radio" name="repeat_cycle" value="every_week" />
+                    <input type="radio" name="repeat_cycle" value={TRepeatRate.WEEK} checked={form.repeat_rate === TRepeatRate.WEEK} />
                     {REPEAT_EVERY.WEEK}
                   </label>
                   <label>
-                    <input type="radio" name="repeat_cycle" value="every_month" />
+                    <input type="radio" name="repeat_cycle" value={TRepeatRate.MONTH} checked={form.repeat_rate === TRepeatRate.MONTH} />
                     {REPEAT_EVERY.MONTH}
                   </label>
                   <label>
-                    <input type="radio" name="repeat_cycle" value="every_year" />
+                    <input type="radio" name="repeat_cycle" value={TRepeatRate.YEAR} checked={form.repeat_rate === TRepeatRate.YEAR} />
                     {REPEAT_EVERY.YEAR}
                   </label>
-                </div>
+                </fieldset>
 
-                <div class={styles.fieldset_inputs_wrapper}>
+                <fieldset class={styles.fieldset_inputs_wrapper}>
                   Повторять каждую
-                  <input class={styles.fieldset_input_number} type="number" />
+                  <input
+                    class={styles.fieldset_input_number}
+                    type="number"
+                    required
+                    value={form.repeat_rate_custom.repeat_every_week_row}
+                    onChange={(e) => set_repeat_every_week_row(+e.target.value)}
+                  />
                   неделю в след. дни:
-                  <label>
-                    <input type="checkbox" name="repeat_cycle" value="every_day" checked />
-                    {WEEKDAYS_SHORT.MO}
-                  </label>
-                  <label>
-                    <input type="checkbox" name="repeat_cycle" value="every_week" />
-                    {WEEKDAYS_SHORT.TU}
-                  </label>
-                  <label>
-                    <input type="checkbox" name="repeat_cycle" value="every_month" />
-                    {WEEKDAYS_SHORT.WE}
-                  </label>
-                  <label>
-                    <input type="checkbox" name="repeat_cycle" value="every_year" />
-                    {WEEKDAYS_SHORT.TH}
-                  </label>
-                  <label>
-                    <input type="checkbox" name="repeat_cycle" value="every_year" />
-                    {WEEKDAYS_SHORT.FR}
-                  </label>
-                </div>
+
+                  <fieldset
+                    class={styles.week_days_wrapper}
+                    onChange={(e)=> change_repeat_week_days(e.target.value)}
+                  >
+                    <label>
+                      <input
+                        type="checkbox"
+                        name="repeat_week_days"
+                        value="monday"
+                        checked={form.repeat_rate_custom.week_days.includes("monday")}
+                        required={form.repeat_rate_custom.week_days.length === 0} />
+                      {WEEKDAYS_SHORT.MON}
+                    </label>
+                    <label>
+                      <input
+                        type="checkbox"
+                        name="repeat_week_days"
+                        value="tuesday"
+                        checked={form.repeat_rate_custom.week_days.includes("tuesday")}
+                        required={form.repeat_rate_custom.week_days.length === 0} />
+                      {WEEKDAYS_SHORT.TUE}
+                    </label>
+                    <label>
+                      <input
+                        type="checkbox"
+                        name="repeat_week_days"
+                        value="wednesday"
+                        checked={form.repeat_rate_custom.week_days.includes("wednesday")}
+                        required={form.repeat_rate_custom.week_days.length === 0} />
+                      {WEEKDAYS_SHORT.WED}
+                    </label>
+                    <label>
+                      <input
+                        type="checkbox"
+                        name="repeat_week_days"
+                        value="thursday"
+                        checked={form.repeat_rate_custom.week_days.includes("thursday")}
+                        required={form.repeat_rate_custom.week_days.length === 0} />
+                      {WEEKDAYS_SHORT.THU}
+                    </label>
+                    <label>
+                      <input
+                        type="checkbox"
+                        name="repeat_week_days"
+                        value="friday"
+                        checked={form.repeat_rate_custom.week_days.includes("friday")}
+                        required={form.repeat_rate_custom.week_days.length === 0} />
+                      {WEEKDAYS_SHORT.FRI}
+                    </label>
+                    
+                  </fieldset>
+                </fieldset>
 
               </fieldset>
 

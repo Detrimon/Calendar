@@ -25,7 +25,7 @@ fieldset{
 
 .modal{
   position: relative;
-  width: 500px;
+  width: 510px;
   border-radius: 5px;
   background-color: var(--base_light_color);
   padding: 15px;
@@ -111,6 +111,7 @@ fieldset{
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 5px;
 }
 
 .fieldset_inputs_wrapper:first-child{
@@ -119,6 +120,13 @@ fieldset{
 
 .disabled .fieldset_inputs_wrapper:first-child{
   border-color: var(--grey_light_color);
+}
+
+.week_days_wrapper{
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
 }
 
 .fieldset_content label{
