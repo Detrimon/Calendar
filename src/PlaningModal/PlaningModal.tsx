@@ -56,7 +56,7 @@ export const PlaningModal = (props: TPlaningModalProps) => {
   const set_finish_after_repeats =
     (new_value: number) => set_form('repeat_limits', 'finish_repeats_quantity', new_value);
   const set_repeat_every_week_row =
-    (new_value: number) => set_form('repeat_rate_custom', 'repeat_every_week_row', new_value < 0 ? 0 : new_value);
+    (new_value: number) => set_form('repeat_rate_custom', 'repeat_every_week_row', new_value);
   const change_repeat_week_days = (new_value: REPEAT_RATE_DAYS) => {
     if (form.repeat_rate_custom.week_days.includes(new_value)) {
       set_form('repeat_rate_custom', 'week_days', form.repeat_rate_custom.week_days.filter(day => day !== new_value));
@@ -189,6 +189,7 @@ export const PlaningModal = (props: TPlaningModalProps) => {
                     class={styles.fieldset_input_number}
                     type="number"
                     required
+                    min='1'
                     value={form.repeat_rate_custom.repeat_every_week_row}
                     onChange={(e) => set_repeat_every_week_row(+e.target.value)}
                   />
@@ -304,6 +305,7 @@ export const PlaningModal = (props: TPlaningModalProps) => {
                     <input
                       class={styles.fieldset_input_number}
                       type="number"
+                      min='1'
                       value={form.repeat_limits.is_repeats_quantity ? form.repeat_limits.finish_repeats_quantity : ''}
                       onChange={(e)=> set_finish_after_repeats(+e.target.value)}
                     />
