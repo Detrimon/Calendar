@@ -1,7 +1,7 @@
 import { Show, batch } from "solid-js";
 import { createStore } from "solid-js/store";
 
-import { FORM_STORE, TPlaningModalProps } from "./PlaningModalTypes";
+import { TPlaningModalProps } from "./PlaningModalTypes";
 import {
   ALLDAY_MEETING,
   CANCEL, END_DATE,
@@ -18,53 +18,48 @@ import { get_time_period_options } from "./helpers/planing_modal_helpers";
 import { TRepeatRate } from "../Calendar";
 
 import styles from "./PlaningModal.module.css";
+import { IPlaningModal } from "./config/PlaningModalTypes";
 
 export const PlaningModal = (props: TPlaningModalProps) => {
-  const [form, set_form] = createStore<FORM_STORE>({
+  const [form, set_form] = createStore<IPlaningModal>({
     is_allday_meeting: false,
     is_repeated: true,
-    time_period: {
-      start: "",
-      end: ""
-    },
+    time_start: "",
+    time_end: "",
     repeat_rate: TRepeatRate.WEEK,
-    repeat_rate_custom: {
-      repeat_every_week_row: 1,
-      week_days: ["monday", "thursday"]
-    },
-    repeat_limits: {
-      start_date: '',
-      is_infinitely: false,
-      end_date: '',
-      is_repeats_quantity: true,
-      finish_repeats_quantity: 10,
-    }
+    repeat_every_week_row: 1,
+    repeat_week_days: ["monday", "thursday"],
+    start_date: '',
+    end_date: '',
+    is_repeat_infinitely: false,
+    is_repeats_quantity: true,
+    finish_repeats_quantity: 10,
   });
 
   const change_repeated_status = (new_value: boolean) => set_form('is_repeated', new_value);
   const change_allday_meeting_status = (new_value: boolean) => set_form('is_allday_meeting', new_value);
   const set_time_period_start = (new_value: string) => {
     batch(() => {
-      set_form('time_period', 'start', new_value);
-      set_form('time_period', 'end', '');
+      set_form('time_start', new_value);
+      set_form('time_end', '');
     });
   };
-  const set_time_period_end = (new_value: string) => set_form('time_period', 'end', new_value);
+  const set_time_period_end = (new_value: string) => set_form('time_end', new_value);
   const set_repeat_rate = (new_value: TRepeatRate) => set_form('repeat_rate', new_value);
-  const toggle_is_repeats_quantity = () => set_form('repeat_limits', 'is_repeats_quantity', prev => !prev);
+  const toggle_is_repeats_quantity = () => set_form('is_repeats_quantity', prev => !prev);
   
   const set_finish_after_repeats =
-    (new_value: number) => set_form('repeat_limits', 'finish_repeats_quantity', new_value);
+    (new_value: number) => set_form('finish_repeats_quantity', new_value);
   const set_repeat_every_week_row =
-    (new_value: number) => set_form('repeat_rate_custom', 'repeat_every_week_row', new_value);
+    (new_value: number) => set_form('repeat_every_week_row', new_value);
   const change_repeat_week_days = (new_value: REPEAT_RATE_DAYS) => {
-    if (form.repeat_rate_custom.week_days.includes(new_value)) {
-      set_form('repeat_rate_custom', 'week_days', form.repeat_rate_custom.week_days.filter(day => day !== new_value));
+    if (form.repeat_week_days.includes(new_value)) {
+      set_form('repeat_week_days', form.repeat_week_days.filter(day => day !== new_value));
     } else {
-      set_form('repeat_rate_custom', 'week_days', [...form.repeat_rate_custom.week_days, new_value]);
+      set_form('repeat_week_days', [...form.repeat_week_days, new_value]);
     }
   };
-  const set_is_infinitely = (new_value: boolean) => set_form('repeat_limits', 'is_infinitely', new_value);
+  const set_is_infinitely = (new_value: boolean) => set_form('is_repeat_infinitely', new_value);
 
   const submit_handler = (e) => {
     e.preventDefault()
@@ -114,7 +109,7 @@ export const PlaningModal = (props: TPlaningModalProps) => {
                   list="time_start_variants"
                   type="time"
                   name="time"
-                  value={!form.is_allday_meeting ? form.time_period.start : ''}
+                  value={!form.is_allday_meeting ? form.time_start : ''}
                   onChange={(e) => set_time_period_start(e.target.value)}
                 />
                 <datalist id="time_start_variants">
@@ -126,11 +121,11 @@ export const PlaningModal = (props: TPlaningModalProps) => {
                   list="time_end_variants"
                   type="time"
                   name="time"
-                  value={!form.is_allday_meeting ? form.time_period.end : ''}
+                  value={!form.is_allday_meeting ? form.time_end : ''}
                   onChange={(e) => set_time_period_end(e.target.value)}
                 />
                 <datalist id="time_end_variants">
-                  {get_time_period_options({ start: form.time_period.start || undefined }).map(option => <option value={option} />)}
+                  {get_time_period_options({ start: form.time_start || undefined }).map(option => <option value={option} />)}
                 </datalist>
                 
               </fieldset>
@@ -190,7 +185,7 @@ export const PlaningModal = (props: TPlaningModalProps) => {
                     type="number"
                     required
                     min='1'
-                    value={form.repeat_rate_custom.repeat_every_week_row}
+                    value={form.repeat_every_week_row}
                     onChange={(e) => set_repeat_every_week_row(+e.target.value)}
                   />
                   неделю в след. дни:
@@ -204,8 +199,8 @@ export const PlaningModal = (props: TPlaningModalProps) => {
                         type="checkbox"
                         name="repeat_week_days"
                         value="monday"
-                        checked={form.repeat_rate_custom.week_days.includes("monday")}
-                        required={form.repeat_rate_custom.week_days.length === 0} />
+                        checked={form.repeat_week_days.includes("monday")}
+                        required={form.repeat_week_days.length === 0} />
                       {WEEKDAYS_SHORT.MON}
                     </label>
                     <label>
@@ -213,8 +208,8 @@ export const PlaningModal = (props: TPlaningModalProps) => {
                         type="checkbox"
                         name="repeat_week_days"
                         value="tuesday"
-                        checked={form.repeat_rate_custom.week_days.includes("tuesday")}
-                        required={form.repeat_rate_custom.week_days.length === 0} />
+                        checked={form.repeat_week_days.includes("tuesday")}
+                        required={form.repeat_week_days.length === 0} />
                       {WEEKDAYS_SHORT.TUE}
                     </label>
                     <label>
@@ -222,8 +217,8 @@ export const PlaningModal = (props: TPlaningModalProps) => {
                         type="checkbox"
                         name="repeat_week_days"
                         value="wednesday"
-                        checked={form.repeat_rate_custom.week_days.includes("wednesday")}
-                        required={form.repeat_rate_custom.week_days.length === 0} />
+                        checked={form.repeat_week_days.includes("wednesday")}
+                        required={form.repeat_week_days.length === 0} />
                       {WEEKDAYS_SHORT.WED}
                     </label>
                     <label>
@@ -231,8 +226,8 @@ export const PlaningModal = (props: TPlaningModalProps) => {
                         type="checkbox"
                         name="repeat_week_days"
                         value="thursday"
-                        checked={form.repeat_rate_custom.week_days.includes("thursday")}
-                        required={form.repeat_rate_custom.week_days.length === 0} />
+                        checked={form.repeat_week_days.includes("thursday")}
+                        required={form.repeat_week_days.length === 0} />
                       {WEEKDAYS_SHORT.THU}
                     </label>
                     <label>
@@ -240,8 +235,8 @@ export const PlaningModal = (props: TPlaningModalProps) => {
                         type="checkbox"
                         name="repeat_week_days"
                         value="friday"
-                        checked={form.repeat_rate_custom.week_days.includes("friday")}
-                        required={form.repeat_rate_custom.week_days.length === 0} />
+                        checked={form.repeat_week_days.includes("friday")}
+                        required={form.repeat_week_days.length === 0} />
                       {WEEKDAYS_SHORT.FRI}
                     </label>
                     
@@ -263,7 +258,7 @@ export const PlaningModal = (props: TPlaningModalProps) => {
                       type="radio"
                       name="end_date_variant"
                       value="infinitely"
-                      checked={form.repeat_limits.is_infinitely}
+                      checked={form.is_repeat_infinitely}
                       onChange={(e)=> set_is_infinitely(e.target.checked)}
                     />
                     {INFINITELY}
@@ -273,7 +268,7 @@ export const PlaningModal = (props: TPlaningModalProps) => {
                       type="radio"
                       name="end_date_variant"
                       value="by_end_date"
-                      checked={!form.repeat_limits.is_infinitely}
+                      checked={!form.is_repeat_infinitely}
                       onChange={(e)=> set_is_infinitely(!e.target.checked)}
                     />
                     {END_DATE}
@@ -282,8 +277,8 @@ export const PlaningModal = (props: TPlaningModalProps) => {
                     type="date"
                     name="end_date"
                     required
-                    disabled={form.repeat_limits.is_infinitely}
-                    classList={{ [styles.disabled]: form.repeat_limits.is_infinitely }}
+                    disabled={form.is_repeat_infinitely}
+                    classList={{ [styles.disabled]: form.is_repeat_infinitely }}
                   />
                 </div>
 
@@ -293,20 +288,20 @@ export const PlaningModal = (props: TPlaningModalProps) => {
                       type="checkbox"
                       name="end_after_repeat"
                       value="end_after_repeat"
-                      checked={form.repeat_limits.is_repeats_quantity}
+                      checked={form.is_repeats_quantity}
                       onChange={toggle_is_repeats_quantity}
                     />
                     Завершить после
                   </label>
                   <label
                     class={styles.repeat_number_label}
-                    classList={{ [styles.disabled]: !form.repeat_limits.is_repeats_quantity}}
+                    classList={{ [styles.disabled]: !form.is_repeats_quantity}}
                   >
                     <input
                       class={styles.fieldset_input_number}
                       type="number"
                       min='1'
-                      value={form.repeat_limits.is_repeats_quantity ? form.repeat_limits.finish_repeats_quantity : ''}
+                      value={form.is_repeats_quantity ? form.finish_repeats_quantity : ''}
                       onChange={(e)=> set_finish_after_repeats(+e.target.value)}
                     />
                     повторений
