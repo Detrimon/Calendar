@@ -1,7 +1,7 @@
 import { Show, batch } from "solid-js";
 import { createStore } from "solid-js/store";
 
-import { TPlaningModalProps } from "./PlaningModalTypes";
+import { FORM_STORE, TPlaningModalProps } from "./PlaningModalTypes";
 import {
   ALLDAY_MEETING,
   CANCEL, END_DATE,
@@ -13,7 +13,7 @@ import {
   SAVE, START_DATE,
   TIME_PERIOD
 } from "./lib/constants";
-import { FORM_STORE, REPEAT_RATE_DAYS, WEEKDAYS_SHORT } from "../shared/lib/constants";
+import { REPEAT_RATE_DAYS, WEEKDAYS_SHORT } from "../shared/lib/constants";
 import { get_time_period_options } from "./helpers/planing_modal_helpers";
 import { TRepeatRate } from "../Calendar";
 
@@ -34,9 +34,10 @@ export const PlaningModal = (props: TPlaningModalProps) => {
     },
     repeat_limits: {
       start_date: '',
-      is_infinitely: true,
+      is_infinitely: false,
       end_date: '',
-      finish_after_repeats: 10,
+      is_repeats_quantity: true,
+      finish_repeats_quantity: 10,
     }
   });
 
@@ -50,7 +51,12 @@ export const PlaningModal = (props: TPlaningModalProps) => {
   };
   const set_time_period_end = (new_value: string) => set_form('time_period', 'end', new_value);
   const set_repeat_rate = (new_value: TRepeatRate) => set_form('repeat_rate', new_value);
-  const set_repeat_every_week_row = (new_value: number) => set_form('repeat_rate_custom', 'repeat_every_week_row', new_value < 0 ? 0 : new_value);
+  const toggle_is_repeats_quantity = () => set_form('repeat_limits', 'is_repeats_quantity', prev => !prev);
+  
+  const set_finish_after_repeats =
+    (new_value: number) => set_form('repeat_limits', 'finish_repeats_quantity', new_value);
+  const set_repeat_every_week_row =
+    (new_value: number) => set_form('repeat_rate_custom', 'repeat_every_week_row', new_value < 0 ? 0 : new_value);
   const change_repeat_week_days = (new_value: REPEAT_RATE_DAYS) => {
     if (form.repeat_rate_custom.week_days.includes(new_value)) {
       set_form('repeat_rate_custom', 'week_days', form.repeat_rate_custom.week_days.filter(day => day !== new_value));
@@ -58,6 +64,7 @@ export const PlaningModal = (props: TPlaningModalProps) => {
       set_form('repeat_rate_custom', 'week_days', [...form.repeat_rate_custom.week_days, new_value]);
     }
   };
+  const set_is_infinitely = (new_value: boolean) => set_form('repeat_limits', 'is_infinitely', new_value);
 
   const submit_handler = (e) => {
     e.preventDefault()
@@ -69,7 +76,7 @@ export const PlaningModal = (props: TPlaningModalProps) => {
         <div class={styles.modal}>
           <h5 class={styles.header}>
             Заголовок
-            <button class={styles.header_close_button}>
+            <button type="button" class={styles.header_close_button}>
               &#10006;
             </button>
           </h5>
@@ -80,11 +87,13 @@ export const PlaningModal = (props: TPlaningModalProps) => {
               <span>{ALLDAY_MEETING}</span>
               <div>
                 <button
+                  type="button" 
                   class={styles.button}
                   classList={{ [styles.button_colored]: form.is_allday_meeting }}
                   onClick={() => change_allday_meeting_status(true)}
                 >Да</button>
                 <button
+                  type="button" 
                   class={styles.button}
                   classList={{ [styles.button_colored]: !form.is_allday_meeting }}
                   onClick={() => change_allday_meeting_status(false)}
@@ -131,11 +140,13 @@ export const PlaningModal = (props: TPlaningModalProps) => {
               <span>{REPEAT}</span>
               <div>
                 <button
+                  type="button" 
                   class={styles.button}
                   classList={{ [styles.button_colored]: form.is_repeated }}
                   onClick={() => change_repeated_status(true)}
                 >Да</button>
                 <button
+                  type="button" 
                   class={styles.button}
                   classList={{ [styles.button_colored]: !form.is_repeated }}
                   onClick={() => change_repeated_status(false)}
@@ -185,7 +196,7 @@ export const PlaningModal = (props: TPlaningModalProps) => {
 
                   <fieldset
                     class={styles.week_days_wrapper}
-                    onChange={(e)=> change_repeat_week_days(e.target.value)}
+                    onChange={(e) => change_repeat_week_days(e.target.value)}
                   >
                     <label>
                       <input
@@ -244,24 +255,58 @@ export const PlaningModal = (props: TPlaningModalProps) => {
                 <div class={styles.fieldset_inputs_wrapper}>
                   <label>
                     {START_DATE}
-                    <input type="date" name="start_date" />
+                    <input type="date" name="start_date" required/>
                   </label>
                   <label>
-                    <input type="radio" name="end_date_variant" value="every_week" checked />
+                    <input
+                      type="radio"
+                      name="end_date_variant"
+                      value="infinitely"
+                      checked={form.repeat_limits.is_infinitely}
+                      onChange={(e)=> set_is_infinitely(e.target.checked)}
+                    />
                     {INFINITELY}
                   </label>
                   <label>
-                    <input type="radio" name="end_date_variant" value="every_month" />
+                    <input
+                      type="radio"
+                      name="end_date_variant"
+                      value="by_end_date"
+                      checked={!form.repeat_limits.is_infinitely}
+                      onChange={(e)=> set_is_infinitely(!e.target.checked)}
+                    />
                     {END_DATE}
                   </label>
-                  <input type="date" name="end_date" />
+                  <input
+                    type="date"
+                    name="end_date"
+                    required
+                    disabled={form.repeat_limits.is_infinitely}
+                    classList={{ [styles.disabled]: form.repeat_limits.is_infinitely }}
+                  />
                 </div>
 
                 <div class={styles.fieldset_inputs_wrapper}>
                   <label>
-                    <input type="radio" name="end_date_variant" value="every_month" />
+                    <input
+                      type="checkbox"
+                      name="end_after_repeat"
+                      value="end_after_repeat"
+                      checked={form.repeat_limits.is_repeats_quantity}
+                      onChange={toggle_is_repeats_quantity}
+                    />
                     Завершить после
-                    <input class={styles.fieldset_input_number} type="number" />
+                  </label>
+                  <label
+                    class={styles.repeat_number_label}
+                    classList={{ [styles.disabled]: !form.repeat_limits.is_repeats_quantity}}
+                  >
+                    <input
+                      class={styles.fieldset_input_number}
+                      type="number"
+                      value={form.repeat_limits.is_repeats_quantity ? form.repeat_limits.finish_repeats_quantity : ''}
+                      onChange={(e)=> set_finish_after_repeats(+e.target.value)}
+                    />
                     повторений
                   </label>
                 </div>
@@ -269,8 +314,8 @@ export const PlaningModal = (props: TPlaningModalProps) => {
               </fieldset>
             </fieldset>
             <div class={styles.buttons_wrapper}>
-              <button class={styles.bottom_button} classList={{ [styles.bottom_button_submit]: true }}>{SAVE}</button>
-              <button class={styles.bottom_button} classList={{ [styles.bottom_button_reset]: true }}>{CANCEL}</button>
+              <button type="submit" class={styles.bottom_button} classList={{ [styles.bottom_button_submit]: true }}>{SAVE}</button>
+              <button type="button" class={styles.bottom_button} classList={{ [styles.bottom_button_reset]: true }}>{CANCEL}</button>
             </div>
           </form>
         </div>

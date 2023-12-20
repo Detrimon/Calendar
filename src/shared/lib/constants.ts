@@ -46,23 +46,3 @@ export const Month = {
 };
 
 export type REPEAT_RATE_DAYS = "monday" | "tuesday" | "wednesday" | "thursday" | "friday";
-
-export type FORM_STORE = {
-  is_allday_meeting: boolean,
-  is_repeated: boolean,
-  time_period: {
-    start: string,
-    end: string
-  },
-  repeat_rate: TRepeatRate,
-  repeat_rate_custom: {
-    repeat_every_week_row: number,
-    week_days: REPEAT_RATE_DAYS[]
-  },
-  repeat_limits: {
-    start_date: string,
-    is_infinitely: boolean,
-    end_date: string,
-    finish_after_repeats: number,
-  }
-};

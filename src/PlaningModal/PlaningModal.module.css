@@ -228,8 +228,13 @@ fieldset{
 
 .form .disabled,
 .form .disabled input,
+.form input.disabled,
 .form .disabled fieldset{
   color: var(--grey_light_color);
   border-color: var(--grey_light_color);
   background-color: transparent;
+}
+
+.repeat_number_label{
+  margin-right: auto;
 }
