@@ -2,7 +2,7 @@ import { JSX, createContext, useContext } from "solid-js";
 import { createStore } from "solid-js/store";
 
 import type { TPlaningModalStore, TPlaningModalStateMethods } from "./PlaningModalContextTypes";
-import type { TPlaningModalProps } from "../PlaningModalTypes";
+import type { TPlaningModalProps } from "../ui/PlaningModalTypes";
 import { TRepeatRate } from "../../Calendar";
 import { REPEAT_RATE_DAYS } from "../../shared/lib/constants";
 

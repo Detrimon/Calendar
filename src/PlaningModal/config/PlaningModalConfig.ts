@@ -34,7 +34,7 @@ export class PlaningModalConfig {
     this.repeat_every_week_row = 
       typeof params.repeat_every_week_row === "number" ? params.repeat_every_week_row : 1;
     this.repeat_week_days = 
-      Array.isArray(params.repeat_week_days) ? params.repeat_week_days : ["monday", "thursday"];
+      Array.isArray(params.repeat_week_days) ? params.repeat_week_days : ["MONDAY", "TUESDAY"];
     this.is_repeat_infinitely =
       typeof params.is_repeat_infinitely === "boolean" ? params.is_repeat_infinitely : false;
     this.is_repeats_quantity =

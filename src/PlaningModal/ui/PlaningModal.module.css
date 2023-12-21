@@ -46,7 +46,7 @@ fieldset{
   margin-right: 10px;
   width: 15px;
   height: 15px;
-  background: url('../shared/assets/icons/calendar-svg.svg') no-repeat;
+  background: url('../../shared/assets/icons/calendar-svg.svg') no-repeat;
 }
 
 .header_close_button{
@@ -161,7 +161,7 @@ fieldset{
 
 /* Изменение значка на input[type="time"] */
 .form input[type="time"]::-webkit-calendar-picker-indicator {
-  background: url('../shared/assets/icons/arrow-down.svg') no-repeat;
+  background: url('../../shared/assets/icons/arrow-down.svg') no-repeat;
 }
 
 /* Изменение цвета значка на input[type="date"] */
@@ -204,7 +204,7 @@ fieldset{
   color: #ff4f19;
 }
 .bottom_button_reset::after{
-  background: url('../shared/assets/icons/forbidden-svg.svg') no-repeat;
+  background: url('../../shared/assets/icons/forbidden-svg.svg') no-repeat;
 }
 
 .bottom_button_submit{
@@ -212,7 +212,7 @@ fieldset{
   color: #179517;
 }
 .bottom_button_submit::after{
-  background: url('../shared/assets/icons/floppy-disk.svg') no-repeat;
+  background: url('../../shared/assets/icons/floppy-disk.svg') no-repeat;
 }
 
 .bottom_button_submit::after,

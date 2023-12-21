@@ -2,14 +2,13 @@ export const DAYS_IN_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 export const DAYS_IN_WEEK = 7;
 export const WEEKDAYS_SHORT_LIST = ["пн", "вт", "ср", "чт", "пт", "сб", "вс"];
 export enum WEEKDAYS_SHORT{
-  MON = "пн",
-  TUE = "вт",
-  WED = "ср",
-  THU = "чт",
-  FRI = "пт",
-  SAT = "сб",
-  SUN = "вс"
+  MONDAY = "пн",
+  TUESDAY = "вт",
+  WEDNESDAY = "ср",
+  THURSDAY = "чт",
+  FRIDAY = "пт",
 };
+
 export const WEEKDAYS_FULL =
   ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"];
 
@@ -43,4 +42,4 @@ export const Month = {
   December: 11,
 };
 
-export type REPEAT_RATE_DAYS = "monday" | "tuesday" | "wednesday" | "thursday" | "friday";
+export type REPEAT_RATE_DAYS = keyof typeof WEEKDAYS_SHORT;

@@ -1,1 +1,2 @@
-export { PlaningModal } from "./PlaningModal";
+export { PlaningModal } from "./ui/PlaningModal";
+export { PlaningModalController } from "./controller/PlaningModalController";

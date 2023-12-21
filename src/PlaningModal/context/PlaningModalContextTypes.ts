@@ -1,6 +1,6 @@
 import { TRepeatRate } from "../../Calendar";
 import { REPEAT_RATE_DAYS } from "../../shared/lib/constants";
-import { TPlaningModalProps } from "../PlaningModalTypes";
+import { TPlaningModalProps } from "../ui/PlaningModalTypes";
 import { PlaningModalController } from "../controller/PlaningModalController";
 
 export type TPlaningModalState = {

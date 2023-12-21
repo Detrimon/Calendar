@@ -1,6 +1,6 @@
 import { Show, batch, mergeProps } from "solid-js";
 
-import { TPlaningModalProps } from "./PlaningModalTypes";
+import { TPlaningModalProps, TRepeatVariantRadioProps, TWeekDaysInputProps } from "./PlaningModalTypes";
 import {
   ALLDAY_MEETING,
   CANCEL, END_DATE,
@@ -11,13 +11,13 @@ import {
   REPEAT_LIMITS,
   SAVE, START_DATE,
   TIME_PERIOD
-} from "./lib/constants";
-import { REPEAT_RATE_DAYS, WEEKDAYS_SHORT } from "../shared/lib/constants";
-import { get_time_period_options } from "./helpers/planing_modal_helpers";
-import { TRepeatRate } from "../Calendar";
-import { PlaningModalConfig } from "./config/PlaningModalConfig";
-import { PlaningModalProvider, usePlaningModalContext } from "./context/PlaningModalContext";
-import { PlaningModalController } from "./controller/PlaningModalController";
+} from "../lib/constants";
+import { REPEAT_RATE_DAYS, WEEKDAYS_SHORT } from "../../shared/lib/constants";
+import { get_time_period_options } from "../helpers/planing_modal_helpers";
+import { TRepeatRate } from "../../Calendar";
+import { PlaningModalConfig } from "../config/PlaningModalConfig";
+import { PlaningModalProvider, usePlaningModalContext } from "../context/PlaningModalContext";
+import { PlaningModalController } from "../controller/PlaningModalController";
 
 import styles from "./PlaningModal.module.css";
 
@@ -51,18 +51,18 @@ const PlaningModalMain = (initial_props: Partial<TPlaningModalProps>) => {
   const change_repeated_status = (new_value: boolean) => controller.set_is_repeated(new_value);
   const change_allday_meeting_status = (new_value: boolean) => controller.set_is_allday_meeting(new_value);
   const set_time_period_end = (new_value: string) => controller.set_time_end(new_value);
-  const set_time_period_start = (new_value: string) => {
-    batch(() => {
-      controller.set_time_start(new_value)
-      controller.set_time_end('')
-    });
-  };
   const set_repeat_rate = (new_value: TRepeatRate) => controller.set_repeat_rate(new_value);
   const toggle_is_repeats_quantity = () => controller.toggle_is_repeats_quantity();
   const set_finish_after_repeats = (new_value: number) => controller.set_finish_repeats_quantity(new_value);
   const set_repeat_every_week_row = (new_value: number) => controller.set_repeat_every_week_row(new_value);
   const set_is_infinitely = (new_value: boolean) => context.set_is_repeat_infinitely(new_value);
   const change_repeat_week_days = (new_value: REPEAT_RATE_DAYS) => context.change_repeat_week_days(new_value);
+    const set_time_period_start = (new_value: string) => {
+    batch(() => {
+      controller.set_time_start(new_value)
+      controller.set_time_end('')
+    });
+  };
 
   const submit_handler = (e) => {
     e.preventDefault()
@@ -87,7 +87,6 @@ const PlaningModalMain = (initial_props: Partial<TPlaningModalProps>) => {
                 <button
                   type="button" 
                   class={styles.button}
-                  // classList={{ [styles.button_colored]: form.is_allday_meeting }}
                   classList={{ [styles.button_colored]: context.get_is_allday_meeting()}}
                   onClick={() => change_allday_meeting_status(true)}
                 >Да</button>
@@ -164,22 +163,7 @@ const PlaningModalMain = (initial_props: Partial<TPlaningModalProps>) => {
 
                 <fieldset class={styles.fieldset_inputs_wrapper} onChange={(e) => set_repeat_rate(e.target.value)}>
                   Повторять:
-                  <label>
-                    <input type="radio" name="repeat_cycle" value={TRepeatRate.DAY} checked={context.get_repeat_rate() === TRepeatRate.DAY} />
-                    {REPEAT_EVERY.DAY}
-                  </label>
-                  <label>
-                    <input type="radio" name="repeat_cycle" value={TRepeatRate.WEEK} checked={context.get_repeat_rate()=== TRepeatRate.WEEK} />
-                    {REPEAT_EVERY.WEEK}
-                  </label>
-                  <label>
-                    <input type="radio" name="repeat_cycle" value={TRepeatRate.MONTH} checked={context.get_repeat_rate() === TRepeatRate.MONTH} />
-                    {REPEAT_EVERY.MONTH}
-                  </label>
-                  <label>
-                    <input type="radio" name="repeat_cycle" value={TRepeatRate.YEAR} checked={context.get_repeat_rate() === TRepeatRate.YEAR} />
-                    {REPEAT_EVERY.YEAR}
-                  </label>
+                  {Object.keys(REPEAT_EVERY).map(variant => <RepeatVariantRadio variant={variant} />)}
                 </fieldset>
 
                 <fieldset class={styles.fieldset_inputs_wrapper}>
@@ -193,57 +177,11 @@ const PlaningModalMain = (initial_props: Partial<TPlaningModalProps>) => {
                     onChange={(e) => set_repeat_every_week_row(+e.target.value)}
                   />
                   неделю в след. дни:
-
                   <fieldset
                     class={styles.week_days_wrapper}
                     onChange={(e) => change_repeat_week_days(e.target.value)}
                   >
-                    <label>
-                      <input
-                        type="checkbox"
-                        name="repeat_week_days"
-                        value="monday"
-                        checked={context.get_repeat_week_days().includes("monday")}
-                        required={context.get_repeat_week_days().length === 0} />
-                      {WEEKDAYS_SHORT.MON}
-                    </label>
-                    <label>
-                      <input
-                        type="checkbox"
-                        name="repeat_week_days"
-                        value="tuesday"
-                        checked={context.get_repeat_week_days().includes("tuesday")}
-                        required={context.get_repeat_week_days().length === 0} />
-                      {WEEKDAYS_SHORT.TUE}
-                    </label>
-                    <label>
-                      <input
-                        type="checkbox"
-                        name="repeat_week_days"
-                        value="wednesday"
-                        checked={context.get_repeat_week_days().includes("wednesday")}
-                        required={context.get_repeat_week_days().length === 0} />
-                      {WEEKDAYS_SHORT.WED}
-                    </label>
-                    <label>
-                      <input
-                        type="checkbox"
-                        name="repeat_week_days"
-                        value="thursday"
-                        checked={context.get_repeat_week_days().includes("thursday")}
-                        required={context.get_repeat_week_days().length === 0} />
-                      {WEEKDAYS_SHORT.THU}
-                    </label>
-                    <label>
-                      <input
-                        type="checkbox"
-                        name="repeat_week_days"
-                        value="friday"
-                        checked={context.get_repeat_week_days().includes("friday")}
-                        required={context.get_repeat_week_days().length === 0} />
-                      {WEEKDAYS_SHORT.FRI}
-                    </label>
-                    
+                    {Object.entries(WEEKDAYS_SHORT).map(day => <WeekDaysCheckbox day_name={day[0]} label={day[1]} />)}
                   </fieldset>
                 </fieldset>
 
@@ -324,3 +262,34 @@ const PlaningModalMain = (initial_props: Partial<TPlaningModalProps>) => {
     </Show>
   );
 }
+
+const WeekDaysCheckbox = (props: TWeekDaysInputProps) => {
+  const [_, context] = usePlaningModalContext();
+
+  return (
+    <label>
+      <input
+        type="checkbox"
+        name="repeat_week_days"
+        value={props.day_name}
+        checked={context.get_repeat_week_days().includes(props.day_name)}
+        required={context.get_repeat_week_days().length === 0} />
+      {props.label}
+    </label>
+  )
+};
+
+const RepeatVariantRadio = (props: TRepeatVariantRadioProps) => {
+  const [_, context] = usePlaningModalContext();
+
+  return (
+    <label>
+      <input
+        type="radio"
+        name="repeat_cycle"
+        value={props.variant}
+        checked={context.get_repeat_rate() === props.variant} />
+      {REPEAT_EVERY[props.variant]}
+    </label>
+  )
+};
