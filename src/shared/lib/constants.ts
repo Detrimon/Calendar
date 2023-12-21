@@ -1,5 +1,3 @@
-import { TRepeatRate } from "../../Calendar";
-
 export const DAYS_IN_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 export const DAYS_IN_WEEK = 7;
 export const WEEKDAYS_SHORT_LIST = ["пн", "вт", "ср", "чт", "пт", "сб", "вс"];
