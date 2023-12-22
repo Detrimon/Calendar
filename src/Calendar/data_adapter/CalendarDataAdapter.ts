@@ -70,10 +70,13 @@ export class CalendarDataAdapter implements ICalendarDataAdapter{
         const tasks = await response.json();
 
         const tasks_data = await Promise.all(tasks.data.map(task => this.get_task_data(task.attributes.uuid)));
-        const day_tasks = tasks.data.map((task, i: number) => ({
-          title: task.attributes.title,
-          tasks: tasks_data[i]
-        }));
+        const day_tasks = tasks.data.map((task, i: number) => {
+          tasks_data[i].sort((a, b) => a.attributes.start_time.localeCompare(b.attributes.start_time));
+          return {
+            title: task.attributes.title,
+            tasks: tasks_data[i]
+          }
+        });
 
         return day_tasks as TDateTask[];
       } else {
