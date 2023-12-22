@@ -399,7 +399,6 @@ const DayItem = (props : {day: Date}) => {
     <td
       data-day={props.day}
       onClick={() => select_day_handler(props.day)}
-      class={styles.hide_tooltip}
       classList={{
         [styles.day_holiday]: is_holiday() && !is_become_working(),
         [styles.day_selected]: is_selected(),
