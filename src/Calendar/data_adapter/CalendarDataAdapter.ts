@@ -1,8 +1,8 @@
-import { holidays } from "../../mock/mock_holidays_data";
 import { format_date_to_reversed_string, create_query_string } from "../../shared/lib/helpers";
 import type { TQueryParams } from "../../shared/types";
 import type { TCalendarEvents, TDateTask, TTaskElement, THolidaysData } from "../data_provider/CalendarDataProviderTypes";
 import { ICalendarDataAdapter } from "../ui/CalendarTypes";
+import { TGetHolidayResponse } from "./CalendarDataAdapterTypes";
 
 const token = import.meta.env.VITE_BEARER_TOKEN;
 
@@ -118,11 +118,46 @@ export class CalendarDataAdapter implements ICalendarDataAdapter{
     };
   }
 
-  get_year_holidays(year: number): Promise<THolidaysData> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(holidays[year]);
-      }, 500);
-    });
+  async get_year_holidays(year: number): Promise<THolidaysData> {
+    const query_params: TQueryParams = {
+      root_path: 'https://rcgpnspn01.inlinegroup.ru/api/holidays?',
+      filters: {
+        year: { value: year, rel: '' },
+      },
+      fields: ['date', 'type']
+    };
+
+    try {
+      const response = await fetch(
+        create_query_string(query_params), {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json;charset=utf-8",
+          Authorization: token
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json() as TGetHolidayResponse;
+
+        const result = data.data.reduce<THolidaysData>((acc, curr) => {
+          const date_string = curr.attributes.date.split('-').reverse().join('.');
+          const is_holiday = curr.attributes.type === "HOLIDAY";
+          acc[is_holiday ? 'holidays' : 'become_working'].push(date_string);
+
+          return acc;
+        }, { holidays: [], become_working: [] });
+
+        return result;
+      } else {
+        console.error("Ошибка HTTP: " + response.status);
+        return { holidays: [], become_working: [] };
+      };
+    } catch (error) {
+      console.error(error);
+      return { holidays: [], become_working: [] };
+    };
   };
 };
+
+
