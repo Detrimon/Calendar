@@ -6,8 +6,6 @@ import { REPEAT_EVERY } from "../lib/constants";
 export type TPlaningModalProps = {
   controller: PlaningModalController
   config?: PlaningModalConfig
-  show: boolean;
-  onModalHide: () => void;
 };
 
 export type TWeekDaysInputProps = {

@@ -1,0 +1,98 @@
+.modal{
+  position: relative;
+  width: 510px;
+  padding: 15px;
+  border-radius: 5px;
+  background-color: var(--base_light_color);
+}
+
+.container {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  overflow: hidden;
+  overflow-y: auto;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+  z-index: 99;
+  background-color: rgba(0, 0, 0, 0.75);
+}
+
+.header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--secondary_color);
+  margin-bottom: 10px;
+}
+
+.header::before {
+  content: '';
+  display: block;
+  margin-right: 10px;
+  width: 15px;
+  height: 15px;
+  background: url('../shared//assets/icons/calendar-svg.svg') no-repeat;
+}
+
+.header_close_button {
+  border: none;
+  margin-left: auto;
+  color: var(--secondary_color);
+  font-size: 18px;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.buttons_wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+  margin-top: 5px;
+}
+
+.button {
+  width: 85px;
+  position: relative;
+  font-size: 12px;
+  font-weight: 400;
+  padding: 3px 16px 3px 3px;
+  background-color: transparent;
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+}
+
+.button_reset {
+  border: 1px solid #ff4f19;
+  color: #ff4f19;
+}
+
+.button_reset::after {
+  background: url('../shared/assets/icons/forbidden-svg.svg') no-repeat;
+}
+
+.button_submit {
+  border: 1px solid #179517;
+  color: #179517;
+}
+
+.button_submit::after {
+  background: url('../shared/assets/icons/floppy-disk.svg') no-repeat;
+}
+
+.button_submit::after,
+.button_reset::after {
+  content: '';
+  display: block;
+  width: 10px;
+  height: 10px;
+  position: absolute;
+  right: 4px;
+  top: 5px;
+}

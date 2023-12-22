@@ -1,4 +1,4 @@
-export const ALLDAY_MEETING = "Заседание на весь день:";
+export const ALLDAY_MEETING = "Событие на весь день:";
 export const TIME_PERIOD = "Период времени:";
 export const REPEAT = "Повторение:";
 
@@ -15,5 +15,3 @@ export enum REPEAT_EVERY{
 export const START_DATE = "Дата начала:";
 export const INFINITELY = "Бесконечно";
 export const END_DATE = "Дата окончания";
-export const SAVE = 'Сохранить';
-export const CANCEL = 'Отменить';

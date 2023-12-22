@@ -1,5 +1,5 @@
 import { TRepeatRate } from "../../Calendar";
-import { TPlaningModalState } from "../context/PlaningModalContextTypes";
+import { TPlaningModalState } from "../context";
 
 export class PlaningModalConfig {
   is_allday_meeting: TPlaningModalState["is_allday_meeting"];
@@ -15,7 +15,6 @@ export class PlaningModalConfig {
   is_repeats_quantity: TPlaningModalState["is_repeats_quantity"];
   finish_repeats_quantity: TPlaningModalState["finish_repeats_quantity"];
   
-
   constructor(params: Partial<TPlaningModalState>) {
     this.is_allday_meeting =
       typeof params.is_allday_meeting === "boolean" ? params.is_allday_meeting : false;

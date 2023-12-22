@@ -43,7 +43,7 @@ import { CalendarConfig } from "../config/CalendarConfig";
 import { CalendarViewMode } from "./CalendarView/CalendarViewTypes";
 import type { TCalendarStateMethods } from "../context/CalendarContextTypes";
 import { CalendarDataAdapter } from "../data_adapter/CalendarDataAdapter";
-import { PlaningModal } from "../../PlaningModal";
+import { SmetComissionModal } from "../../SmetComissionModal/SmetComissionModal";
 
 import styles from "./Calendar.module.css";
 
@@ -87,12 +87,9 @@ const CalendarMain = (initial_props: Partial<TCalendarProps>) => {
 
   return (
     <>
-      <PlaningModal
-        show={showModal()}
-        onModalHide={() => {
+      <SmetComissionModal onModalHide={() => {
           setShowModal(!showModal());
-        }}
-      />
+        }}/>
       <Show
         when={context.get_calendar_mode() === CalendarViewMode.YEAR}
         fallback={<Months />}

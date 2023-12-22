@@ -1,9 +1,10 @@
-import { JSX, createContext, useContext } from "solid-js";
+import { JSX, batch, createContext, useContext } from "solid-js";
 import { createStore } from "solid-js/store";
 
 import type { TPlaningModalStore, TPlaningModalStateMethods } from "./PlaningModalContextTypes";
 import type { TPlaningModalProps } from "../ui/PlaningModalTypes";
 import { REPEAT_RATE_DAYS } from "../../shared/lib/constants";
+import { TRepeatRate } from "../../Calendar";
 
 const PlaningModalContext = createContext<[TPlaningModalStore, TPlaningModalStateMethods]>();
 
@@ -26,14 +27,14 @@ export const PlaningModalProvider = (props: { children: JSX.Element }) => {
         return store.controller;
       },
 
-       get_context_value(field_name){
+      get_context_value(field_name) {
         if (typeof store.state[field_name] === "undefined")
           throw Error(`PlaningModalProvider has not ${field_name} in it store`);
         return store.state[field_name];
       },
        
-       set_context_value(field_name, value){
-         set_store('state', field_name, value);
+      set_context_value(field_name, value) {
+        set_store('state', field_name, value);
       },
 
       change_repeat_week_days(value: REPEAT_RATE_DAYS) {
@@ -52,6 +53,23 @@ export const PlaningModalProvider = (props: { children: JSX.Element }) => {
       toggle_is_repeats_quantity() {
         set_store('state', 'is_repeats_quantity', prev => !prev)
       },
+
+      set_store_to_default() {
+        batch(() => {
+          set_store('state', 'is_allday_meeting', false);
+          set_store('state', 'is_repeated', true);
+          set_store('state', 'time_start', '');
+          set_store('state', 'time_end', '');
+          set_store('state', 'start_date', '');
+          set_store('state', 'end_date', '');
+          set_store('state', 'repeat_rate', TRepeatRate.WEEK);
+          set_store('state', 'repeat_every_week_row', 1);
+          set_store('state', 'repeat_week_days', ["MONDAY", "TUESDAY"]);
+          set_store('state', 'is_repeat_infinitely', false);
+          set_store('state', 'is_repeats_quantity', true);
+          set_store('state', 'finish_repeats_quantity', 10);
+        });
+      }
     },
   ];
 

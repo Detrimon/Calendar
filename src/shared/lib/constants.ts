@@ -42,4 +42,9 @@ export const Month = {
   December: 11,
 };
 
+export const YES = 'Да';
+export const NO = 'Нет';
+export const SAVE = 'Сохранить';
+export const CANCEL = 'Отменить';
+
 export type REPEAT_RATE_DAYS = keyof typeof WEEKDAYS_SHORT;
