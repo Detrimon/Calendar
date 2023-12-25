@@ -21,7 +21,7 @@ export const Task = (props: TTaskProps) => {
           <For each={props.task.tasks}>
             {(task_elem) =>
               <li class={styles.task_elem}>
-                <p class={styles.task_elem_time}>{task_elem.attributes.start_time}</p>
+                <p class={styles.task_elem_time}>{task_elem.attributes.start_time.slice(0, 5)}</p>
                 <p class={styles.task_elem_text}>{task_elem.attributes.title}</p>
                 <a href="/">{task_elem.attributes.plan_item_number}</a>
               </li>

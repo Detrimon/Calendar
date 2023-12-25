@@ -84,12 +84,12 @@ export const CalendarProvider = (props: { children: JSX.Element }) => {
         set_store("state", "selected_date", date);
       },
 
-      get_events() {
-        return store.state.events;
+      get_events(year: number) {
+        return store.state.events[year];
       },
 
-      set_events(events: TEventsByDate) {
-        set_store("state", "events", events);
+      set_events(events: TEventsByDate, year: number) {
+        set_store("state", "events", year ,events);
       },
 
       get_selected_date_tasks() {

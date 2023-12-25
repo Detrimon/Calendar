@@ -34,6 +34,7 @@ import type {
   MonthItemHeader,
   MonthItemProps,
   TCalendarProps,
+  TDayItemProps,
 } from "./CalendarTypes";
 import { CalendarController } from "../controller/CalendarController";
 import { CalendarDataProvider } from "../data_provider/CalendarDataProvider";
@@ -278,7 +279,7 @@ const MonthItem = (props: MonthItemProps) => {
     >
       <table>
         <MonthItemHeader is_current={is_current} month_name={props.month} year={props.year} />
-        <MonthItemBody month_dates={props.month_dates} />
+        <MonthItemBody month_dates={props.month_dates} year={props.year || context.get_year()} />
       </table>
     </div>
   );
@@ -318,13 +319,13 @@ const MonthItemBody = (props: MonthItemBodyProps) => {
   let current_td: HTMLTableCellElement | null;
   let tbody_ref: HTMLTableSectionElement;
   
-  const handle_mouse_over: JSX.EventHandler<HTMLTableSectionElement, MouseEvent > = (e) => {
+  const handle_mouse_over: JSX.EventHandler<HTMLTableSectionElement, MouseEvent> = (e) => {
     if (current_td) return;
     const target = e.target.closest('td');
     if (!target) return;
 
     const date_string = format_date_to_string(new Date(target.dataset.day as string));
-    if (!context.get_events()[date_string]) {
+    if (context.get_events(props.year) && !context.get_events(props.year)[date_string]) {
       return;
     };
     current_td = target;
@@ -369,7 +370,7 @@ const MonthItemBody = (props: MonthItemBodyProps) => {
             <For each={week}>
               {(day) => (
                 <Show when={day} fallback={<td></td>}>
-                  <DayItem day={day}/>
+                  <DayItem day={day} year={props.year} />
                 </Show>
               )}
             </For>
@@ -380,14 +381,14 @@ const MonthItemBody = (props: MonthItemBodyProps) => {
   );
 };
 
-const DayItem = (props : {day: Date}) => {
+const DayItem = (props: TDayItemProps) => {
   const [_, context] = useCalendarContext();
   const controller = context.get_controller();
 
   const get_today_date_string = () => format_date_to_string(props.day);
-
   const is_day_today = () => get_today().getTime() === props.day.getTime();
-  const is_event = () => !!context.get_events()[get_today_date_string()];
+  const is_event = () =>
+    context.get_events(props.year) ? !!context.get_events(props.year)[get_today_date_string()] : false;
   const is_become_working = () => context.get_holidays()?.become_working.includes(get_today_date_string());
   const is_holiday = () =>
     props.day.getDay() === 6 || props.day.getDay() === 0 || context.get_holidays()?.holidays.includes(get_today_date_string());
