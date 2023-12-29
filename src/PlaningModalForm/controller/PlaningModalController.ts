@@ -40,12 +40,21 @@ export class PlaningModalController{
     const context = this.get_context();
 
     const is_allday_meeting = context.get_context_value('is_allday_meeting');
+    const is_repeated = context.get_context_value('is_repeated');
     const time_start = context.get_context_value('time_start');
     const time_end = context.get_context_value('time_end');
+    const repeat_every_week_row = context.get_context_value('repeat_every_week_row');
+    const repeat_rate = context.get_context_value('repeat_rate');
     const start_date = context.get_context_value('start_date');
     const end_date = context.get_context_value('end_date');
 
-    if (!is_allday_meeting && !time_start && !time_end) return false;
+    if (!is_allday_meeting && (time_start.length === 0 || time_end.length === 0)) return false;
+    if (is_repeated && repeat_every_week_row < 1) return false;
+    if (is_repeated && repeat_rate.length === 0) return false;
+    
+
+
+    return true
   };
 
   // TODO Для получения объекта Планировщика

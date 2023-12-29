@@ -2,7 +2,7 @@ import { JSX, batch, createContext, useContext } from "solid-js";
 import { createStore } from "solid-js/store";
 
 import type { TPlaningModalStore, TPlaningModalStateMethods } from "./PlaningModalContextTypes";
-import type { TPlaningModalProps } from "../ui/PlaningModalTypes";
+import type { TPlaningModalFormProps } from "../ui/PlaningModalTypes";
 import { REPEAT_RATE_DAYS } from "../../shared/lib/constants";
 import { TRepeatRate } from "../../Calendar";
 
@@ -14,7 +14,7 @@ export const PlaningModalProvider = (props: { children: JSX.Element }) => {
   const context: [TPlaningModalStore, TPlaningModalStateMethods] = [
     store,
     {
-      initialize(data: TPlaningModalProps) {
+      initialize(data: TPlaningModalFormProps) {
         set_store("controller", data.controller);
         if (data.config) {
           set_store("state", { ...store.state, ...data.config });

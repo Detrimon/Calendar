@@ -1,6 +1,6 @@
 import { batch, mergeProps } from "solid-js";
 
-import { TPlaningModalProps, TRepeatVariantRadioProps, TWeekDaysInputProps } from "./PlaningModalTypes";
+import { TPlaningModalFormProps, TRepeatVariantRadioProps, TWeekDaysInputProps } from "./PlaningModalTypes";
 import {
   ALLDAY_MEETING,
   END_DATE,
@@ -22,15 +22,15 @@ import { PlaningModalController } from "../controller";
 import styles from "./PlaningModalForm.module.css";
 
 function get_default_props(
-  initial_props: Partial<TPlaningModalProps>
-): TPlaningModalProps {
+  initial_props: Partial<TPlaningModalFormProps>
+): TPlaningModalFormProps {
   return {
     controller: initial_props.controller ? null : new PlaningModalController(),
     config: initial_props.config ? null : new PlaningModalConfig({}),
-  } as TPlaningModalProps;
+  } as TPlaningModalFormProps;
 };
 
-export const PlaningModalForm = (initial_props: Partial<TPlaningModalProps>) => {
+export const PlaningModalForm = (initial_props: Partial<TPlaningModalFormProps>) => {
   return (
     <PlaningModalProvider>
       <PlaningModalMain {...initial_props}/>
@@ -38,10 +38,10 @@ export const PlaningModalForm = (initial_props: Partial<TPlaningModalProps>) => 
   );
 };
 
-const PlaningModalMain = (initial_props: Partial<TPlaningModalProps>) => {
+const PlaningModalMain = (initial_props: Partial<TPlaningModalFormProps>) => {
   const [_, context] = usePlaningModalContext();
   const default_props = get_default_props(initial_props);
-  const props = mergeProps(default_props, initial_props) as Required<TPlaningModalProps>;
+  const props = mergeProps(default_props, initial_props) as Required<TPlaningModalFormProps>;
   context.initialize(props);
   props.controller.initialize(context);
 
@@ -81,13 +81,13 @@ const PlaningModalMain = (initial_props: Partial<TPlaningModalProps>) => {
           <button
             type="button"
             class={styles.button}
-            classList={{ [styles.button_colored]: context.get_context_value('is_allday_meeting') as boolean }}
+            classList={{ [styles.button_colored]: context.get_context_value('is_allday_meeting')}}
             onClick={() => change_allday_meeting_status(true)}
           >{YES}</button>
           <button
             type="button"
             class={styles.button}
-            classList={{ [styles.button_colored]: !context.get_context_value('is_allday_meeting') as boolean }}
+            classList={{ [styles.button_colored]: !context.get_context_value('is_allday_meeting')}}
             onClick={() => change_allday_meeting_status(false)}
           >{NO}</button>
         </div>
@@ -97,8 +97,8 @@ const PlaningModalMain = (initial_props: Partial<TPlaningModalProps>) => {
         <span>{TIME_PERIOD}</span>
         <fieldset
           class={styles.buttons_wrapper}
-          classList={{ [styles.disabled]: context.get_context_value('is_allday_meeting') as boolean }}
-          disabled={context.get_context_value('is_allday_meeting') as boolean}
+          classList={{ [styles.disabled]: context.get_context_value('is_allday_meeting')}}
+          disabled={context.get_context_value('is_allday_meeting')}
         >
 
           <span>с</span>
@@ -109,7 +109,7 @@ const PlaningModalMain = (initial_props: Partial<TPlaningModalProps>) => {
             required
             value={
               !context.get_context_value('is_allday_meeting')
-                ? context.get_context_value('time_start') as string
+                ? context.get_context_value('time_start')
                 : ''
             }
             onChange={(e) => set_time_period_start(e.target.value)}
@@ -126,14 +126,14 @@ const PlaningModalMain = (initial_props: Partial<TPlaningModalProps>) => {
             required
             value={
               !context.get_context_value('is_allday_meeting')
-                ? context.get_context_value('time_end') as string
+                ? context.get_context_value('time_end')
                 : ''
             }
             onChange={(e) => set_time_period_end(e.target.value)}
           />
           <datalist id="time_end_variants">
             {get_time_period_options({
-              start: context.get_context_value('time_start') as string || undefined
+              start: context.get_context_value('time_start') || undefined
             }).map(option => <option value={option} />)}
           </datalist>
                 
@@ -146,13 +146,13 @@ const PlaningModalMain = (initial_props: Partial<TPlaningModalProps>) => {
           <button
             type="button"
             class={styles.button}
-            classList={{ [styles.button_colored]: context.get_context_value('is_repeated') as boolean }}
+            classList={{ [styles.button_colored]: context.get_context_value('is_repeated') }}
             onClick={() => change_repeated_status(true)}
           >{YES}</button>
           <button
             type="button"
             class={styles.button}
-            classList={{ [styles.button_colored]: !context.get_context_value('is_repeated') as boolean }}
+            classList={{ [styles.button_colored]: !context.get_context_value('is_repeated') }}
             onClick={() => change_repeated_status(false)}
           >{NO}</button>
         </div>
@@ -160,8 +160,8 @@ const PlaningModalMain = (initial_props: Partial<TPlaningModalProps>) => {
 
       <fieldset
         class={styles.repeat_params}
-        classList={{ [styles.disabled]: !context.get_context_value('is_repeated') as boolean }}
-        disabled={!context.get_context_value('is_repeated') as boolean}
+        classList={{ [styles.disabled]: !context.get_context_value('is_repeated') }}
+        disabled={!context.get_context_value('is_repeated')}
       >
         <h5 class={styles.fieldset_header}>{REPEAT_CYCLE}</h5>
 
@@ -180,7 +180,7 @@ const PlaningModalMain = (initial_props: Partial<TPlaningModalProps>) => {
               type="number"
               required
               min='1'
-              value={context.get_context_value('repeat_every_week_row') as number}
+              value={context.get_context_value('repeat_every_week_row')}
               onChange={(e) => set_repeat_every_week_row(+e.target.value)}
             />
             неделю в след. дни:
@@ -208,7 +208,7 @@ const PlaningModalMain = (initial_props: Partial<TPlaningModalProps>) => {
                 type="radio"
                 name="end_date_variant"
                 value="infinitely"
-                checked={context.get_context_value('is_repeat_infinitely') as boolean}
+                checked={context.get_context_value('is_repeat_infinitely')}
                 onChange={(e) => set_is_infinitely(e.target.checked)}
               />
               {INFINITELY}
@@ -218,7 +218,7 @@ const PlaningModalMain = (initial_props: Partial<TPlaningModalProps>) => {
                 type="radio"
                 name="end_date_variant"
                 value="by_end_date"
-                checked={!context.get_context_value('is_repeat_infinitely') as boolean}
+                checked={!context.get_context_value('is_repeat_infinitely')}
                 onChange={(e) => set_is_infinitely(!e.target.checked)}
               />
               {END_DATE}
@@ -227,8 +227,8 @@ const PlaningModalMain = (initial_props: Partial<TPlaningModalProps>) => {
               type="date"
               name="end_date"
               required
-              disabled={context.get_context_value('is_repeat_infinitely') as boolean}
-              classList={{ [styles.disabled]: context.get_context_value('is_repeat_infinitely') as boolean }}
+              disabled={context.get_context_value('is_repeat_infinitely') }
+              classList={{ [styles.disabled]: context.get_context_value('is_repeat_infinitely') }}
             />
           </div>
 
@@ -238,22 +238,22 @@ const PlaningModalMain = (initial_props: Partial<TPlaningModalProps>) => {
                 type="checkbox"
                 name="end_after_repeat"
                 value="end_after_repeat"
-                checked={context.get_context_value('is_repeats_quantity') as boolean}
+                checked={context.get_context_value('is_repeats_quantity') }
                 onChange={toggle_is_repeats_quantity}
               />
               Завершить после
             </label>
             <label
               class={styles.repeat_number_label}
-              classList={{ [styles.disabled]: !context.get_context_value('is_repeats_quantity') as boolean }}
+              classList={{ [styles.disabled]: !context.get_context_value('is_repeats_quantity') }}
             >
               <input
                 class={styles.fieldset_input_number}
                 type="number"
                 min='1'
                 value={
-                  context.get_context_value('is_repeats_quantity') as boolean
-                    ? context.get_context_value('finish_repeats_quantity') as number
+                  context.get_context_value('is_repeats_quantity')
+                    ? context.get_context_value('finish_repeats_quantity')
                     : ''
                 }
                 onChange={(e) => set_finish_after_repeats(+e.target.value)}
@@ -277,8 +277,8 @@ const WeekDaysCheckbox = (props: TWeekDaysInputProps) => {
         type="checkbox"
         name="repeat_week_days"
         value={props.day_name}
-        checked={(context.get_context_value('repeat_week_days') as REPEAT_RATE_DAYS[]).includes(props.day_name)}
-        required={(context.get_context_value('repeat_week_days') as REPEAT_RATE_DAYS[]).length === 0} />
+        checked={(context.get_context_value('repeat_week_days')).includes(props.day_name)}
+        required={(context.get_context_value('repeat_week_days')).length === 0} />
       {props.label}
     </label>
   )

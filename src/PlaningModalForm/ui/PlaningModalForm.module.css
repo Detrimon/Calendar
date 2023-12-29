@@ -7,6 +7,12 @@ fieldset{
   border: none;
 }
 
+input,
+button,
+label{
+  cursor: pointer;
+}
+
 .form{
   display: flex;
   flex-direction: column;
@@ -136,6 +142,13 @@ fieldset{
   color: var(--grey_light_color);
   border-color: var(--grey_light_color);
   background-color: transparent;
+}
+
+.buttons_wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
 }
 
 .repeat_number_label{

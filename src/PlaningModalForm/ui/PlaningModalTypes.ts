@@ -3,7 +3,7 @@ import { PlaningModalConfig } from "../config/PlaningModalConfig";
 import { PlaningModalController } from "../controller/PlaningModalController";
 import { REPEAT_EVERY } from "../lib/constants";
 
-export type TPlaningModalProps = {
+export type TPlaningModalFormProps = {
   controller: PlaningModalController
   config?: PlaningModalConfig
 };

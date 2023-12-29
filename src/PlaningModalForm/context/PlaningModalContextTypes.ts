@@ -1,6 +1,6 @@
 import { TRepeatRate } from "../../Calendar";
 import { REPEAT_RATE_DAYS } from "../../shared/lib/constants";
-import { TPlaningModalProps } from "../ui/PlaningModalTypes";
+import { TPlaningModalFormProps } from "../ui/PlaningModalTypes";
 import { PlaningModalController } from "../controller";
 
 export type TPlaningModalState = {
@@ -19,15 +19,15 @@ export type TPlaningModalState = {
 };
 
 export type TPlaningModalStateMethods = {
-  initialize(data: TPlaningModalProps): void;
+  initialize(data: TPlaningModalFormProps): void;
   get_controller(): PlaningModalController;
-  get_context_value(field_name: keyof TPlaningModalState): TPlaningModalState[typeof field_name] | undefined
+  get_context_value<T extends TPlaningModalState, U extends keyof TPlaningModalState>(field_name: U): T[U]
   set_context_value(field_name: keyof TPlaningModalState, value: TPlaningModalState[typeof field_name]): void
   change_repeat_week_days(value: REPEAT_RATE_DAYS): void;
   toggle_is_repeats_quantity(): void;
   set_store_to_default(): void
 };
 
-export type TPlaningModalStore = Partial<TPlaningModalProps> & {
+export type TPlaningModalStore = Partial<TPlaningModalFormProps> & {
   state: Partial<TPlaningModalState>;
 };
