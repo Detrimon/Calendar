@@ -120,6 +120,7 @@
 td{
   position: relative;
   border: 1px solid transparent;
+  cursor: pointer;
 }
 
 .td_tooltip{
@@ -142,5 +143,4 @@ td{
 .include_event{
   border: 1px solid var(--secondary_color);
   border-radius: 10px;
-  cursor: pointer;
 }

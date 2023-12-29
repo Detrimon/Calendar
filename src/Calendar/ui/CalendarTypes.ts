@@ -31,7 +31,13 @@ export type MonthItemProps = {
 };
 
 export type MonthItemBodyProps = {
-  month_dates: Date[][]
+  month_dates: Date[][];
+  year: number
+};
+
+export type TDayItemProps = {
+  day: Date,
+  year: number
 };
 
 export type PrevCreateEffectValues = Partial<Record<CalendarActions, any>>;
