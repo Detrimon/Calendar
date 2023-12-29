@@ -4,7 +4,7 @@ import { CalendarActions, TDateTask } from '../Calendar';
 import { format_date_to_string_with_words } from '../shared/lib/helpers';
 import { TAsideEvents } from './AsideEventsTypes';
 import { NO_SCHEDULED_TASKS } from './lib/constants';
-import { Task } from './ui/Task/Task';
+import { Task } from './ui/Task/Task'; 
 
 import styles from './AsideEvents.module.css';
 

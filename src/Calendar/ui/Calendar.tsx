@@ -4,6 +4,7 @@ import {
   Match,
   Show,
   Switch,
+  createSignal,
   mergeProps,
   onCleanup
 } from "solid-js";
@@ -20,7 +21,7 @@ import {
 import {
   DAYS_IN_WEEK,
   MONTHS,
-  WEEKDAYS_SHORT
+  WEEKDAYS_SHORT_LIST
 } from "../../shared/lib/constants";
 import { get_month_data} from "../helpers/calendar_helpers";
 import { get_current_month, get_current_year, get_today } from "../../shared/lib/helpers";
@@ -31,7 +32,7 @@ import {
 } from "../context/CalendarContext";
 import type {
   MonthItemBodyProps,
-  MonthItemHeader,
+  TMonthItemHeaderProps,
   MonthItemProps,
   TCalendarProps,
   TDayItemProps,
@@ -43,6 +44,7 @@ import { CalendarConfig } from "../config/CalendarConfig";
 import { CalendarViewMode } from "./CalendarView/CalendarViewTypes";
 import type { TCalendarStateMethods } from "../context/CalendarContextTypes";
 import { CalendarDataAdapter } from "../data_adapter/CalendarDataAdapter";
+import { SmetComissionModal } from "../../SmetComissionModal/SmetComissionModal";
 
 import styles from "./Calendar.module.css";
 
@@ -77,6 +79,7 @@ export const Calendar = (initial_props: Partial<TCalendarProps>) => {
 };
 
 const CalendarMain = (initial_props: Partial<TCalendarProps>) => {
+  const [showModal, setShowModal] = createSignal(true);
   const [_, context] = useCalendarContext();
   const default_props = get_default_props(initial_props);
   const props = mergeProps(default_props, initial_props) as Required<TCalendarProps>;
@@ -84,12 +87,17 @@ const CalendarMain = (initial_props: Partial<TCalendarProps>) => {
   initialize_settings(props, context);
 
   return (
-    <Show
-      when={context.get_calendar_mode() === CalendarViewMode.YEAR}
-      fallback={<Months />}
-    >
-      <Year />
-    </Show>
+    <>
+      <SmetComissionModal onModalHide={() => {
+          setShowModal(!showModal());
+        }}/>
+      <Show
+        when={context.get_calendar_mode() === CalendarViewMode.YEAR}
+        fallback={<Months />}
+      >
+        <Year />
+      </Show>
+    </>
   );
 };
 
@@ -285,7 +293,7 @@ const MonthItem = (props: MonthItemProps) => {
   );
 };
 
-const MonthItemHeader = (props: MonthItemHeader) => (
+const MonthItemHeader = (props: TMonthItemHeaderProps) => (
   <thead class={styles.month_item_header_container}>
     <tr>
       <th
@@ -299,7 +307,7 @@ const MonthItemHeader = (props: MonthItemHeader) => (
       </th>
     </tr>
     <tr>
-      <For each={WEEKDAYS_SHORT}>
+      <For each={WEEKDAYS_SHORT_LIST}>
         {(week_day, i) => <th
           class={styles.week_day}
           classList={{

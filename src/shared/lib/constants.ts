@@ -1,6 +1,14 @@
 export const DAYS_IN_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 export const DAYS_IN_WEEK = 7;
-export const WEEKDAYS_SHORT = ["пн", "вт", "ср", "чт", "пт", "сб", "вс"];
+export const WEEKDAYS_SHORT_LIST = ["пн", "вт", "ср", "чт", "пт", "сб", "вс"];
+export enum WEEKDAYS_SHORT{
+  MONDAY = "пн",
+  TUESDAY = "вт",
+  WEDNESDAY = "ср",
+  THURSDAY = "чт",
+  FRIDAY = "пт",
+};
+
 export const WEEKDAYS_FULL =
   ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"];
 
@@ -33,3 +41,10 @@ export const Month = {
   November: 10,
   December: 11,
 };
+
+export const YES = 'Да';
+export const NO = 'Нет';
+export const SAVE = 'Сохранить';
+export const CANCEL = 'Отменить';
+
+export type REPEAT_RATE_DAYS = keyof typeof WEEKDAYS_SHORT;

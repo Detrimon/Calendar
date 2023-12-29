@@ -1,10 +1,12 @@
-import { Calendar } from "./Calendar/ui/Calendar";
-import { CalendarDataProvider } from "./Calendar/data_provider/CalendarDataProvider";
-import { CalendarController } from "./Calendar/controller/CalendarController";
-import { CalendarView } from "./Calendar/ui/CalendarView/CalendarView";
-import { CalendarConfig } from "./Calendar/config/CalendarConfig";
-import { CalendarDataAdapter } from "./Calendar/data_adapter/CalendarDataAdapter";
-import { AsideEvents } from "./AsideEvents/AsideEvents";
+import {
+  Calendar,
+  CalendarDataProvider,
+  CalendarController,
+  CalendarView,
+  CalendarConfig,
+  CalendarDataAdapter
+} from "./Calendar";
+import { AsideEvents } from "./AsideEvents";
 
 import "./App.css";
 
