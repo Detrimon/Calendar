@@ -73,11 +73,26 @@ export class CalendarController {
 
   async load_and_set_events(year: number) {
     const data_provider = this.get_data_provider();
+    const context = this.get_context();
 
     const events = (await data_provider.get_year_events(
       year
     )) as TEventsByDate;
-    this.set_context_events(events);
+
+    this.set_context_events(events, year);
+
+    if (!context.get_events(year + 1)) {
+      const next_year_events = (await data_provider.get_year_events(
+        year + 1
+      )) as TEventsByDate;
+      this.set_context_events(next_year_events, year + 1);
+    };
+    if (!context.get_events(year - 1)) {
+      const prev_year_events = (await data_provider.get_year_events(
+        year - 1
+      )) as TEventsByDate;
+      this.set_context_events(prev_year_events, year - 1);
+    };
   };
 
   async load_and_set_date_tasks(date: Date) {
@@ -89,7 +104,7 @@ export class CalendarController {
     this.set_context_selected_date_tasks(date_events);
   };
 
-    async load_and_set_year_holidays(year: number) {
+  async load_and_set_year_holidays(year: number) {
     const data_provider = this.get_data_provider();
 
     const holidays = (await data_provider.get_year_holidays(
@@ -166,9 +181,9 @@ export class CalendarController {
     this.notify(CalendarActions.SELECTED_DATE, date);
   }
 
-  set_context_events(events: TEventsByDate) {
+  set_context_events(events: TEventsByDate, year: number) {
     const context = this.get_context();
-    context.set_events(events);
+    context.set_events(events, year);
   }
 
   set_context_selected_date_tasks(tasks: TDateTask[]) {

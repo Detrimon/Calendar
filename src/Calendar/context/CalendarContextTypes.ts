@@ -17,7 +17,9 @@ export type TCalendarState = {
   month?: number;
   selected_date?: Date;
   selected_date_tasks: TDateTask[];
-  events: TEventsByDate;
+  events: {
+    [key: number]: TEventsByDate;
+  };
   holidays: THolidaysData
 };
 
@@ -32,8 +34,8 @@ export type TCalendarStateMethods = {
   set_month(month: number): void;
   get_selected_date(): Date;
   set_selected_date(date: Date): void;
-  get_events(): TEventsByDate;
-  set_events(events: TEventsByDate): void;
+  get_events(year: number): TEventsByDate;
+  set_events(events: TEventsByDate, year: number): void;
   get_calendar_mode(): CalendarViewMode;
   get_selected_date_tasks(): TDateTask[];
   set_selected_date_tasks(events: TDateTask[]): void;
