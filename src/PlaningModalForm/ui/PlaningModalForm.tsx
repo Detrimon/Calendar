@@ -51,26 +51,39 @@ const PlaningModalMain = (initial_props: Partial<TPlaningModalFormProps>) => {
     (new_value: boolean) => controller.set_context_value('is_repeated', new_value);
   const change_allday_meeting_status =
     (new_value: boolean) => controller.set_context_value('is_allday_meeting', new_value);
-  const set_time_period_end =
-    (new_value: string) => controller.set_context_value('time_end', new_value);
-  const set_repeat_rate =
-    (new_value: TRepeatRate) => controller.set_context_value('repeat_rate', new_value);
-  const set_finish_after_repeats =
-    (new_value: number) => controller.set_context_value('finish_repeats_quantity', new_value);
-  const set_repeat_every_week_row
-    = (new_value: number) => controller.set_context_value('repeat_every_week_row', new_value);
-  const set_is_infinitely
-    = (new_value: boolean) => context.set_context_value('is_repeat_infinitely', new_value);
-  const change_repeat_week_days
-    = (new_value: REPEAT_RATE_DAYS) => controller.change_repeat_week_days(new_value);
-  const toggle_is_repeats_quantity
-    = () => controller.toggle_is_repeats_quantity();
+  
   const set_time_period_start = (new_value: string) => {
     batch(() => {
       controller.set_context_value('time_start', new_value);
       controller.set_context_value('time_end', '');
     });
   };
+  const set_time_period_end =
+    (new_value: string) => controller.set_context_value('time_end', new_value);
+  
+
+
+  const set_repeat_rate =
+    (new_value: TRepeatRate) => controller.set_context_value('repeat_rate', new_value);
+  const set_finish_after_repeats =
+    (new_value: number) => controller.set_context_value('finish_repeats_quantity', new_value);
+  const set_repeat_every_week_row
+    = (new_value: number) => controller.set_context_value('repeat_every_week_row', new_value);
+  const set_end_date =
+    (new_value: string) => controller.set_context_value('end_date', new_value);
+  const set_start_date = (new_value: string) => {
+    batch(() => {
+      controller.set_context_value('start_date', new_value);
+      controller.set_context_value('end_date', '');
+    });
+  };
+  const set_is_infinitely
+    = (new_value: boolean) => context.set_context_value('is_repeat_infinitely', new_value);
+  const change_repeat_week_days
+    = (new_value: REPEAT_RATE_DAYS) => controller.change_repeat_week_days(new_value);
+  const toggle_is_repeats_quantity
+    = () => controller.toggle_is_repeats_quantity();
+ 
 
   return (
     <form class={styles.form}>
@@ -112,7 +125,7 @@ const PlaningModalMain = (initial_props: Partial<TPlaningModalFormProps>) => {
                 ? context.get_context_value('time_start')
                 : ''
             }
-            onChange={(e) => set_time_period_start(e.target.value)}
+            onInput={(e) => set_time_period_start(e.target.value)}
           />
           <datalist id="time_start_variants">
             {get_time_period_options().map(option => <option value={option} />)}
@@ -201,7 +214,13 @@ const PlaningModalMain = (initial_props: Partial<TPlaningModalFormProps>) => {
           <div class={styles.fieldset_inputs_wrapper}>
             <label>
               {START_DATE}
-              <input type="date" name="start_date" required />
+              <input
+                type="date"
+                name="start_date"
+                value={context.get_context_value('start_date')}
+                required
+                onInput={(e) => set_start_date(e.target.value)}
+              />
             </label>
             <label>
               <input
@@ -226,9 +245,11 @@ const PlaningModalMain = (initial_props: Partial<TPlaningModalFormProps>) => {
             <input
               type="date"
               name="end_date"
+              value={context.get_context_value('end_date')}
               required
               disabled={context.get_context_value('is_repeat_infinitely') }
               classList={{ [styles.disabled]: context.get_context_value('is_repeat_infinitely') }}
+              onInput={(e) => set_end_date(e.target.value)}
             />
           </div>
 

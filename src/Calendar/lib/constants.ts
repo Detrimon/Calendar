@@ -11,3 +11,5 @@ export enum MODE_BUTTONS_TEXT {
   MONTH = 'Месяц'
 };
 
+export const SCHEDULE_MEETING_SC = 'Запланировать заседание СК'
+

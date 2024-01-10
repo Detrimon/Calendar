@@ -27,6 +27,10 @@ export const PlaningModalProvider = (props: { children: JSX.Element }) => {
         return store.controller;
       },
 
+      get_form_data() {
+        return { ...store.state };
+      },
+
       get_context_value(field_name) {
         if (typeof store.state[field_name] === "undefined")
           throw Error(`PlaningModalProvider has not ${field_name} in it store`);

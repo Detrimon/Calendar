@@ -26,6 +26,7 @@ export type TPlaningModalStateMethods = {
   change_repeat_week_days(value: REPEAT_RATE_DAYS): void;
   toggle_is_repeats_quantity(): void;
   set_store_to_default(): void
+  get_form_data(): Partial<TPlaningModalState>
 };
 
 export type TPlaningModalStore = Partial<TPlaningModalFormProps> & {

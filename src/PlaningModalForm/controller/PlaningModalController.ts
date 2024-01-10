@@ -3,11 +3,9 @@ import { TPlaningModalState, TPlaningModalStateMethods } from "../context";
 
 export class PlaningModalController{
   context: TPlaningModalStateMethods | null;
-  data_provider: null;
 
   constructor() {
     this.context = null;
-    this.data_provider = null;
   };
 
   initialize(context: TPlaningModalStateMethods) {
@@ -19,6 +17,11 @@ export class PlaningModalController{
       throw Error('PlaningModalController instance has not "context" property');
     return this.context;
   };
+
+  get_form_data() {
+    const context = this.get_context();
+    return context.get_form_data();
+  }
 
   set_context_value(field_name: keyof TPlaningModalState, value: TPlaningModalState[typeof field_name]) {
     const context = this.get_context();
@@ -35,7 +38,6 @@ export class PlaningModalController{
     context.toggle_is_repeats_quantity();
   };
 
-  // TODO Для проверки логики заполнения
   check() {
     const context = this.get_context();
 
@@ -44,22 +46,28 @@ export class PlaningModalController{
     const time_start = context.get_context_value('time_start');
     const time_end = context.get_context_value('time_end');
     const repeat_every_week_row = context.get_context_value('repeat_every_week_row');
-    const repeat_rate = context.get_context_value('repeat_rate');
+    const repeat_week_days = context.get_context_value('repeat_week_days');
+    const is_repeat_infinitely = context.get_context_value('is_repeat_infinitely');
+    const is_repeats_quantity = context.get_context_value('is_repeats_quantity');
+    const finish_repeats_quantity = context.get_context_value('finish_repeats_quantity');
     const start_date = context.get_context_value('start_date');
     const end_date = context.get_context_value('end_date');
 
     if (!is_allday_meeting && (time_start.length === 0 || time_end.length === 0)) return false;
     if (is_repeated && repeat_every_week_row < 1) return false;
-    if (is_repeated && repeat_rate.length === 0) return false;
-    
+    if (is_repeated && repeat_week_days.length === 0) return false;
+    if (is_repeated && start_date.length === 0) return false;
+    if (is_repeated && !is_repeat_infinitely && end_date.length === 0) return false;
+    if (is_repeated && is_repeats_quantity && finish_repeats_quantity < 1) return false;
 
+    // TODO сделать проверку на дата начала > дата окончания
 
-    return true
+    return true;
   };
 
-  // TODO Для получения объекта Планировщика
   get_scheduling() {
-    
+    const context = this.get_context();
+    return context.get_form_data();
   };
 
   clear() {
