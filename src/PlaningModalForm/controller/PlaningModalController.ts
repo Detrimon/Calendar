@@ -1,5 +1,6 @@
 import { REPEAT_RATE_DAYS } from "../../shared/lib/constants";
 import { TPlaningModalState, TPlaningModalStateMethods } from "../context";
+import { TErrorsData } from "./PlaningModalControllerTypes";
 
 export class PlaningModalController{
   context: TPlaningModalStateMethods | null;
@@ -41,6 +42,41 @@ export class PlaningModalController{
   check() {
     const context = this.get_context();
 
+    const is_valid: TErrorsData = {
+      time: {
+        status: true,
+        title: 'Время события'
+      },
+      repeat_every_week_row: {
+        status: true,
+        title: 'Поле "Повторять каждую неделю"'
+      },
+      repeat_week_days: {
+        status: true,
+        title: 'Дни недели'
+      },
+      start_date: {
+        status: true,
+        title: 'Дата начала'
+      },
+      end_date: {
+        status: true,
+        title: 'Дата окончания'
+      },
+      finish_repeats_quantity: {
+        status: true,
+        title: 'Поле "Завершить после повторений"'
+      },
+      date_diapason: {
+        status: true,
+        title: 'Не корректный диапазон дат'
+      },
+      total: {
+        status: true,
+        title: ''
+      }
+    };
+    
     const is_allday_meeting = context.get_context_value('is_allday_meeting');
     const is_repeated = context.get_context_value('is_repeated');
     const time_start = context.get_context_value('time_start');
@@ -53,16 +89,36 @@ export class PlaningModalController{
     const start_date = context.get_context_value('start_date');
     const end_date = context.get_context_value('end_date');
 
-    if (!is_allday_meeting && (time_start.length === 0 || time_end.length === 0)) return false;
-    if (is_repeated && repeat_every_week_row < 1) return false;
-    if (is_repeated && repeat_week_days.length === 0) return false;
-    if (is_repeated && start_date.length === 0) return false;
-    if (is_repeated && !is_repeat_infinitely && end_date.length === 0) return false;
-    if (is_repeated && is_repeats_quantity && finish_repeats_quantity < 1) return false;
+    if (!is_allday_meeting && (time_start.length === 0 || time_end.length === 0)) {
+      is_valid.time.status = false;
+      is_valid.total.status = false;
+    };
+    if (is_repeated && repeat_every_week_row < 1) {
+      is_valid.repeat_every_week_row.status = false;
+      is_valid.total.status = false;
+    };
+    if (is_repeated && repeat_week_days.length === 0) {
+      is_valid.repeat_week_days.status = false;
+      is_valid.total.status = false;
+    };
+    if (is_repeated && start_date.length === 0) {
+      is_valid.start_date.status = false;
+      is_valid.total.status = false;
+    };
+    if (is_repeated && !is_repeat_infinitely && end_date.length === 0) {
+      is_valid.end_date.status= false;
+      is_valid.total.status = false;
+    };
+    if (is_repeated && is_repeats_quantity && finish_repeats_quantity < 1) {
+      is_valid.finish_repeats_quantity.status = false;
+      is_valid.total.status = false;
+    };
+    if (is_repeated && !is_repeat_infinitely && start_date > end_date) {
+      is_valid.date_diapason.status = false;
+      is_valid.total.status = false;
+    };
 
-    // TODO сделать проверку на дата начала > дата окончания
-
-    return true;
+    return is_valid;
   };
 
   get_scheduling() {

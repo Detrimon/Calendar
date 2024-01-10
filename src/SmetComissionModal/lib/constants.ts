@@ -1,0 +1,1 @@
+export const ERRORS_LIST_HEADER = 'Не корректно указано:';

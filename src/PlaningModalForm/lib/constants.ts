@@ -1,3 +1,5 @@
+import { TErrorsData } from "../controller";
+
 export const ALLDAY_MEETING = "Событие на весь день:";
 export const TIME_PERIOD = "Период времени:";
 export const REPEAT = "Повторение:";

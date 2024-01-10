@@ -1,8 +1,10 @@
-import { Show, createSignal } from "solid-js";
+import { For, Show, createSignal } from "solid-js";
 import { PlaningModalController, PlaningModalForm } from "../../PlaningModalForm";
 import { CANCEL, SAVE } from "../../shared/lib/constants";
 import { SmetComissionModalProvider } from "../data_provider/SmetComissionModalProvider";
 import { useCalendarContext } from "../../Calendar/context/CalendarContext";
+import { ERRORS_LIST_HEADER } from "../lib/constants";
+import { TErrorsData } from "../../PlaningModalForm/controller";
 
 import styles from "./SmetComissionModal.module.css";
 
@@ -31,16 +33,17 @@ export const SmetComissionModal = () => {
   
   return (
     <Show when={showSmetComissionModal()}>
-      <section class={styles.container} onClick={container_handler }>
+      <section class={styles.container} onClick={container_handler}>
         <div class={styles.modal}>
+
           <h5 class={styles.header}>
             SmetComission Заголовок
             <button type="button" class={styles.header_close_button}>
               &#10006;
             </button>
           </h5>
-
-          <PlaningModalForm controller={form_controller}/>
+          <PlaningModalForm controller={form_controller} />
+          <ErrorsList errors={form_controller.check()}/>
 
           <div class={styles.buttons_wrapper}>
             <button
@@ -48,22 +51,38 @@ export const SmetComissionModal = () => {
               class={styles.button}
               classList={{ [styles.button_submit]: true }}
               onClick={save_click_handler}
-              disabled={!form_controller.check()}
+              disabled={!form_controller.check().total.status}
             >
               {SAVE}
             </button>
             <button
               type="button"
               class={styles.button}
-              classList={{[styles.button_reset]: true}}
+              classList={{ [styles.button_reset]: true }}
               onClick={cancel_click_handler}
             >
               {CANCEL}
             </button>
           </div>
+
         </div>
       </section>
     </Show>
     
   );
+};
+
+const ErrorsList = (props: { errors: TErrorsData }) => {
+  return (
+    <Show when={!props.errors.total.status}>
+      <ul class={styles.error_list}>
+        <h5 class={styles.error_header}>
+          {ERRORS_LIST_HEADER}
+        </h5>
+        <For each={Object.values(props.errors)}>
+          {(error) => !error.status && <li class={styles.error_list_item}>{error.title}</li>}
+        </For>
+      </ul>
+    </Show>
+  )
 };
