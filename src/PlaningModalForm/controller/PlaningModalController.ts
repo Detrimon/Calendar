@@ -43,6 +43,10 @@ export class PlaningModalController{
     const context = this.get_context();
 
     const is_valid: TErrorsData = {
+      title: {
+        status: true,
+        title: 'Не введёно название события '
+      },
       time: {
         status: true,
         title: 'Время события'
@@ -77,10 +81,12 @@ export class PlaningModalController{
       }
     };
     
+
+    const title = context.get_context_value('title');
     const is_allday_meeting = context.get_context_value('is_allday_meeting');
     const is_repeated = context.get_context_value('is_repeated');
-    const time_start = context.get_context_value('time_start');
-    const time_end = context.get_context_value('time_end');
+    const start_time = context.get_context_value('start_time');
+    const end_time = context.get_context_value('end_time');
     const repeat_every_week_row = context.get_context_value('repeat_every_week_row');
     const repeat_week_days = context.get_context_value('repeat_week_days');
     const is_repeat_infinitely = context.get_context_value('is_repeat_infinitely');
@@ -89,7 +95,11 @@ export class PlaningModalController{
     const start_date = context.get_context_value('start_date');
     const end_date = context.get_context_value('end_date');
 
-    if (!is_allday_meeting && (time_start.length === 0 || time_end.length === 0)) {
+    if (title.length === 0) {
+      is_valid.title.status = false;
+      is_valid.total.status = false;
+    }
+    if (!is_allday_meeting && (start_time.length === 0 || end_time.length === 0)) {
       is_valid.time.status = false;
       is_valid.total.status = false;
     };

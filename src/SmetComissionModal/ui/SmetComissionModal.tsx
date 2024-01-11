@@ -36,12 +36,6 @@ export const SmetComissionModal = () => {
       <section class={styles.container} onClick={container_handler}>
         <div class={styles.modal}>
 
-          <h5 class={styles.header}>
-            SmetComission Заголовок
-            <button type="button" class={styles.header_close_button}>
-              &#10006;
-            </button>
-          </h5>
           <PlaningModalForm controller={form_controller} />
           <ErrorsList errors={form_controller.check()}/>
 

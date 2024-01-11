@@ -5,11 +5,18 @@ import type { TPlaningModalStore, TPlaningModalStateMethods } from "./PlaningMod
 import type { TPlaningModalFormProps } from "../ui/PlaningModalTypes";
 import { REPEAT_RATE_DAYS } from "../../shared/lib/constants";
 import { TRepeatRate } from "../../Calendar";
+import { TCalendarEventType } from "../../Calendar/data_provider/CalendarDataProviderTypes";
 
 const PlaningModalContext = createContext<[TPlaningModalStore, TPlaningModalStateMethods]>();
 
+// TODO Когда будет реализован функционал личного кабинета изменить хардкод username
 export const PlaningModalProvider = (props: { children: JSX.Element }) => {
-  const [store, set_store] = createStore<TPlaningModalStore>({ state: {} });
+  const [store, set_store] = createStore<TPlaningModalStore>({
+    state: {
+      username: 'INGUTEV',
+      type: TCalendarEventType.SC
+    }
+  });
 
   const context: [TPlaningModalStore, TPlaningModalStateMethods] = [
     store,
@@ -60,10 +67,11 @@ export const PlaningModalProvider = (props: { children: JSX.Element }) => {
 
       set_store_to_default() {
         batch(() => {
+          set_store('state', 'title', '');
           set_store('state', 'is_allday_meeting', false);
           set_store('state', 'is_repeated', true);
-          set_store('state', 'time_start', '');
-          set_store('state', 'time_end', '');
+          set_store('state', 'start_time', '');
+          set_store('state', 'end_time', '');
           set_store('state', 'start_date', '');
           set_store('state', 'end_date', '');
           set_store('state', 'repeat_rate', TRepeatRate.WEEK);

@@ -2,7 +2,7 @@ export type TEventTasksID = number;
 export type TCalendarEventID = string;
 export type TCalendarEventTime = string;
 export enum TCalendarEventType {
-  SC= "SmetComission"
+  SC= "SMET_COMISSION"
 };
 export enum TRepeatRate {
   NONE = "NONE",

@@ -20,6 +20,40 @@ label{
   color: var(--secondary_color);
 }
 
+.header {
+  height: 30px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--secondary_color);
+  padding-bottom: 5px;
+  margin-bottom: 10px;
+}
+
+.header::before {
+  content: '';
+  display: block;
+  margin-right: 10px;
+  width: 15px;
+  height: 15px;
+  background: url('../../shared/assets/icons/calendar-svg.svg') no-repeat;
+}
+
+.title_input {
+  flex-grow: 1;
+  font-size: 13px;
+  border: none;
+  outline: none;
+}
+
+.title_clear_button {
+  border: none;
+  color: var(--secondary_color);
+  font-size: 18px;
+  background-color: transparent;
+  cursor: pointer;
+}
+
 .row_wrapper{
   display: flex;
   justify-content: space-between;
