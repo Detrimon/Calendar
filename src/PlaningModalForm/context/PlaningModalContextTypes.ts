@@ -4,11 +4,12 @@ import { TPlaningModalFormProps } from "../ui/PlaningModalTypes";
 import { PlaningModalController } from "../controller";
 
 export type TPlaningModalState = {
+  usergroup: string;
   title: string;
   username: string;
   type: string;
   is_allday_meeting: boolean,
-  is_repeated: boolean,
+  is_periodic: boolean,
   start_time: string,
   end_time: string,
   repeat_rate: TRepeatRate,

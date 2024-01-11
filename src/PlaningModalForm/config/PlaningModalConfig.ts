@@ -4,7 +4,7 @@ import { TPlaningModalState } from "../context";
 export class PlaningModalConfig {
   title: TPlaningModalState["title"];
   is_allday_meeting: TPlaningModalState["is_allday_meeting"];
-  is_repeated: TPlaningModalState['is_repeated'];
+  is_periodic: TPlaningModalState['is_periodic'];
   start_time: TPlaningModalState["start_time"];
   end_time: TPlaningModalState["end_time"];
   repeat_rate: TPlaningModalState["repeat_rate"];
@@ -21,8 +21,8 @@ export class PlaningModalConfig {
       typeof params.title === "string" ? params.title : '';
     this.is_allday_meeting =
       typeof params.is_allday_meeting === "boolean" ? params.is_allday_meeting : false;
-    this.is_repeated =
-      typeof params.is_repeated === "boolean" ? params.is_repeated : true;
+    this.is_periodic =
+      typeof params.is_periodic === "boolean" ? params.is_periodic : true;
     this.start_time =
       typeof params.start_time === "string" ? params.start_time : '';
     this.end_time =

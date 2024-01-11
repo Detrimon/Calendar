@@ -5,7 +5,6 @@ const token = import.meta.env.VITE_BEARER_TOKEN;
 export class SmetComissionModalProvider {
 
   async send_form_data(data: Partial<TPlaningModalState>) {
-    // TODO подставить в fetch корректный путь
     try {
       const response = await fetch('https://rcgpnspn01.inlinegroup.ru/api/calendar-events', {
         method: 'POST',

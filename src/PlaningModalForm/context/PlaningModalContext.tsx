@@ -13,6 +13,7 @@ const PlaningModalContext = createContext<[TPlaningModalStore, TPlaningModalStat
 export const PlaningModalProvider = (props: { children: JSX.Element }) => {
   const [store, set_store] = createStore<TPlaningModalStore>({
     state: {
+      usergroup: '646_3',
       username: 'INGUTEV',
       type: TCalendarEventType.SC
     }
@@ -69,7 +70,7 @@ export const PlaningModalProvider = (props: { children: JSX.Element }) => {
         batch(() => {
           set_store('state', 'title', '');
           set_store('state', 'is_allday_meeting', false);
-          set_store('state', 'is_repeated', true);
+          set_store('state', 'is_periodic', true);
           set_store('state', 'start_time', '');
           set_store('state', 'end_time', '');
           set_store('state', 'start_date', '');

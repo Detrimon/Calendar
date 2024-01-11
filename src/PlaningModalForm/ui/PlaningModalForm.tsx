@@ -19,6 +19,8 @@ import { TRepeatRate } from "../../Calendar";
 import { PlaningModalConfig } from "../config";
 import { PlaningModalProvider, usePlaningModalContext } from "../context";
 import { PlaningModalController } from "../controller";
+import { useCalendarContext } from "../../Calendar/context/CalendarContext";
+import { format_date_to_reversed_string} from "../../shared/lib/helpers";
 
 import styles from "./PlaningModalForm.module.css";
 
@@ -40,7 +42,8 @@ export const PlaningModalForm = (initial_props: Partial<TPlaningModalFormProps>)
 };
 
 const PlaningModalMain = (initial_props: Partial<TPlaningModalFormProps>) => {
-  const [_, context] = usePlaningModalContext();
+  const [_, calendar_context] = useCalendarContext();
+  const [__, context] = usePlaningModalContext();
   const default_props = get_default_props(initial_props);
   const props = mergeProps(default_props, initial_props) as Required<TPlaningModalFormProps>;
   context.initialize(props);
@@ -49,8 +52,18 @@ const PlaningModalMain = (initial_props: Partial<TPlaningModalFormProps>) => {
   const controller = context.get_controller();
 
   const set_title = (new_value: string) => context.set_context_value('title', new_value);
-  const change_repeated_status =
-    (new_value: boolean) => controller.set_context_value('is_repeated', new_value);
+  const change_repeated_status = (new_value: boolean) => {
+    controller.set_context_value('is_periodic', new_value);
+
+    if (!new_value) {
+      const date_string = format_date_to_reversed_string(calendar_context.get_selected_date());
+      controller.set_context_value('start_date', date_string);
+      controller.set_context_value('end_date', date_string);
+    } else {
+      controller.set_context_value('start_date', '');
+      controller.set_context_value('end_date', '');
+    }
+  };
   const change_allday_meeting_status = (new_value: boolean) => {
     controller.set_context_value('is_allday_meeting', new_value);
     controller.set_context_value('start_time', '00:00:00');
@@ -83,8 +96,7 @@ const PlaningModalMain = (initial_props: Partial<TPlaningModalFormProps>) => {
     = (new_value: boolean) => context.set_context_value('is_repeat_infinitely', new_value);
   const change_repeat_week_days
     = (new_value: REPEAT_RATE_DAYS) => controller.change_repeat_week_days(new_value);
-  const toggle_is_repeats_quantity
-    = () => controller.toggle_is_repeats_quantity();
+  const toggle_is_repeats_quantity = () => controller.toggle_is_repeats_quantity();
  
   return (
     <form class={styles.form}>
@@ -172,13 +184,13 @@ const PlaningModalMain = (initial_props: Partial<TPlaningModalFormProps>) => {
           <button
             type="button"
             class={styles.button}
-            classList={{ [styles.button_colored]: context.get_context_value('is_repeated') }}
+            classList={{ [styles.button_colored]: context.get_context_value('is_periodic') }}
             onClick={() => change_repeated_status(true)}
           >{YES}</button>
           <button
             type="button"
             class={styles.button}
-            classList={{ [styles.button_colored]: !context.get_context_value('is_repeated') }}
+            classList={{ [styles.button_colored]: !context.get_context_value('is_periodic') }}
             onClick={() => change_repeated_status(false)}
           >{NO}</button>
         </div>
@@ -186,8 +198,8 @@ const PlaningModalMain = (initial_props: Partial<TPlaningModalFormProps>) => {
 
       <fieldset
         class={styles.repeat_params}
-        classList={{ [styles.disabled]: !context.get_context_value('is_repeated') }}
-        disabled={!context.get_context_value('is_repeated')}
+        classList={{ [styles.disabled]: !context.get_context_value('is_periodic') }}
+        disabled={!context.get_context_value('is_periodic')}
       >
         <h5 class={styles.fieldset_header}>{REPEAT_CYCLE}</h5>
 

@@ -84,7 +84,7 @@ export class PlaningModalController{
 
     const title = context.get_context_value('title');
     const is_allday_meeting = context.get_context_value('is_allday_meeting');
-    const is_repeated = context.get_context_value('is_repeated');
+    const is_periodic = context.get_context_value('is_periodic');
     const start_time = context.get_context_value('start_time');
     const end_time = context.get_context_value('end_time');
     const repeat_every_week_row = context.get_context_value('repeat_every_week_row');
@@ -103,27 +103,27 @@ export class PlaningModalController{
       is_valid.time.status = false;
       is_valid.total.status = false;
     };
-    if (is_repeated && repeat_every_week_row < 1) {
+    if (is_periodic && repeat_every_week_row < 1) {
       is_valid.repeat_every_week_row.status = false;
       is_valid.total.status = false;
     };
-    if (is_repeated && repeat_week_days.length === 0) {
+    if (is_periodic && repeat_week_days.length === 0) {
       is_valid.repeat_week_days.status = false;
       is_valid.total.status = false;
     };
-    if (is_repeated && start_date.length === 0) {
+    if (is_periodic && start_date.length === 0) {
       is_valid.start_date.status = false;
       is_valid.total.status = false;
     };
-    if (is_repeated && !is_repeat_infinitely && end_date.length === 0) {
+    if (is_periodic && !is_repeat_infinitely && end_date.length === 0) {
       is_valid.end_date.status= false;
       is_valid.total.status = false;
     };
-    if (is_repeated && is_repeats_quantity && finish_repeats_quantity < 1) {
+    if (is_periodic && is_repeats_quantity && finish_repeats_quantity < 1) {
       is_valid.finish_repeats_quantity.status = false;
       is_valid.total.status = false;
     };
-    if (is_repeated && !is_repeat_infinitely && start_date > end_date) {
+    if (is_periodic && !is_repeat_infinitely && start_date > end_date) {
       is_valid.date_diapason.status = false;
       is_valid.total.status = false;
     };
