@@ -3,6 +3,7 @@ import { CalendarDataProvider } from "../data_provider/CalendarDataProvider";
 import { CalendarConfig } from "../config/CalendarConfig";
 import { CalendarView } from "./CalendarView/CalendarView";
 import { TCalendarEvents, TDateTask, TTaskElement, THolidaysData } from "../data_provider/CalendarDataProviderTypes";
+import { JSX } from "solid-js/jsx-runtime";
 
 export interface ICalendarDataAdapter{
   get_all_events(year: number): Promise<TCalendarEvents[]>
@@ -16,6 +17,7 @@ export type TCalendarProps = {
   controller: CalendarController
   view: CalendarView
   config?: CalendarConfig
+  children?: JSX.Element
 };
 
 export type TMonthItemHeaderProps = {

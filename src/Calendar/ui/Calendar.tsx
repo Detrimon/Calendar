@@ -4,7 +4,6 @@ import {
   Match,
   Show,
   Switch,
-  createSignal,
   mergeProps,
   onCleanup
 } from "solid-js";
@@ -16,7 +15,6 @@ import {
   DATE_POPUP_SHOW_DELAY_MS,
   EVENTS_POPUP_TEXT,
   MODE_BUTTONS_TEXT,
-  SCHEDULE_MEETING_SC,
   YEAR_MODIFIER
 } from "../lib/constants";
 import {
@@ -88,10 +86,7 @@ const CalendarMain = (initial_props: Partial<TCalendarProps>) => {
 
   return (
     <>
-      <Portal>
-        <SmetComissionModal/>
-      </Portal>
-
+      {props.children}
       <Show
         when={context.get_calendar_mode() === CalendarViewMode.YEAR}
         fallback={<Months />}

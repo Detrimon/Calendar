@@ -16,7 +16,6 @@ export class SmetComissionModalProvider {
       });
 
       if (response.ok) {
-        console.log('response', response);
         return response.ok
       } else {
         console.error("Ошибка HTTP: " + response.status);
