@@ -9,6 +9,7 @@ import type { CalendarViewMode } from "../ui/CalendarView/CalendarViewTypes";
 import { MONTHS } from "../../shared/lib/constants";
 import type { THolidaysData, TDateTask, TEventsByDate } from "../data_provider/CalendarDataProviderTypes";
 import type { GUID, Observers } from "./CalendarControllerTypes";
+import { format_date_to_string } from "../../shared/lib/helpers";
 
 export class CalendarController {
   data_provider: CalendarDataProvider | null;
@@ -157,8 +158,14 @@ export class CalendarController {
   };
 
   select_day_handler(date: Date) {
+    const context = this.get_context();
+    const year_events_dates = Object.keys(context.get_events(date.getFullYear()));
+
     this.set_context_selected_date(date);
-    this.load_and_set_date_tasks(date);
+
+    if (year_events_dates.includes(format_date_to_string(date))) {
+      this.load_and_set_date_tasks(date);
+    }
   };
 
   set_context_year(year: number) {
