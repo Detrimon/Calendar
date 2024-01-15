@@ -34,7 +34,7 @@ export const App = () => {
           config={calendar_config}
         >
           <Portal>
-            <SmetComissionModal subscribe={calendar_controller.subscribe}/>
+            <SmetComissionModal />
           </Portal>
         </Calendar>
         <AsideEvents subscribe={calendar_controller.subscribe} />

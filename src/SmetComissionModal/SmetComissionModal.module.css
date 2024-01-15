@@ -48,7 +48,7 @@
 }
 
 .button_reset::after {
-  background: url('../../shared/assets/icons/forbidden-svg.svg') no-repeat;
+  background: url('../shared/assets/icons/forbidden-svg.svg') no-repeat;
 }
 
 .button_submit {
@@ -57,7 +57,7 @@
 }
 
 .button_submit::after {
-  background: url('../../shared/assets/icons/floppy-disk.svg') no-repeat;
+  background: url('../shared/assets/icons/floppy-disk.svg') no-repeat;
 }
 
 .button_submit:disabled {
@@ -67,7 +67,7 @@
 }
 
 .button_submit:disabled::after {
-    background: url('../../shared/assets/icons/floppy-disk-gray.svg') no-repeat;
+    background: url('../shared/assets/icons/floppy-disk-gray.svg') no-repeat;
 }
 
 .button_submit::after,
@@ -79,34 +79,4 @@
   position: absolute;
   right: 4px;
   top: 5px;
-}
-
-.error_list{
-  list-style: none;
-  margin: 5px 0 0 5px;
-}
-
-.error_header{
-  color: var(--error_color);
-}
-
-.error_list_item{
-  font-size: 12px;
-  color: var(--error_color);
-}
-
-.success_modal{
-  background-color: #fff;
-  padding: 10px;
-  border-radius: 5px;
-  text-align: center;
-}
-
-.success_modal_button{
-  margin-top: 10px;
-  padding: 5px;
-  background-color: var(--secondary_color);
-  border-radius: 3px;
-  border: transparent;
-  color: #fff;
 }

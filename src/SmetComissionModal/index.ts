@@ -2,4 +2,4 @@ export {
   SmetComissionModal,
   showSmetComissionModal,
   setShowSmetComissionModal
-} from "./ui/SmetComissionModal";
+} from "./SmetComissionModal";

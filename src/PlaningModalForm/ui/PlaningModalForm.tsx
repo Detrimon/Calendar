@@ -1,4 +1,4 @@
-import { Show, batch, mergeProps } from "solid-js";
+import { Show, batch, createEffect, mergeProps } from "solid-js";
 
 import { TPlaningModalFormProps, TRepeatVariantRadioProps, TWeekDaysInputProps } from "./PlaningModalTypes";
 import {
@@ -51,21 +51,28 @@ const PlaningModalMain = (initial_props: Partial<TPlaningModalFormProps>) => {
 
   const controller = context.get_controller();
 
-  const set_title = (new_value: string) => context.set_context_value('title', new_value);
-  const change_repeated_status = (new_value: boolean) => {
-    controller.set_context_value('is_periodic', new_value);
+  createEffect(() => {
     const date_string = format_date_to_reversed_string(calendar_context.get_selected_date());
 
-    controller.set_context_value('start_date', new_value ? '' : date_string);
-    controller.set_context_value('end_date', new_value ? '' : date_string);
+    console.log('date_string', date_string);
+    
 
-  };
+    batch(() => {
+      controller.set_context_value('start_date', date_string);
+      controller.set_context_value('end_date', date_string);
+    });
+  })
+
+  const set_title = (new_value: string) => context.set_context_value('title', new_value);
+  const change_repeated_status = (new_value: boolean) =>
+    controller.set_context_value('is_periodic', new_value);
   const change_allday_meeting_status = (new_value: boolean) => {
-    controller.set_context_value('is_allday_meeting', new_value);
-    controller.set_context_value('start_time', new_value ? '00:00:00' : '');
-    controller.set_context_value('end_time', new_value ? '00:00:00' : '');
+    batch(() => {
+      controller.set_context_value('is_allday_meeting', new_value);
+      controller.set_context_value('start_time', new_value ? '00:00:00' : '');
+      controller.set_context_value('end_time', new_value ? '00:00:00' : '');
+    })
   };
-  
   const set_time_period_start = (new_value: string) => {
     batch(() => {
       controller.set_context_value('start_time', new_value);
@@ -85,7 +92,7 @@ const PlaningModalMain = (initial_props: Partial<TPlaningModalFormProps>) => {
   const set_start_date = (new_value: string) => {
     batch(() => {
       controller.set_context_value('start_date', new_value);
-      controller.set_context_value('end_date', '');
+      controller.set_context_value('end_date', new_value);
     });
   };
   const set_is_infinitely
@@ -195,11 +202,13 @@ const PlaningModalMain = (initial_props: Partial<TPlaningModalFormProps>) => {
       <fieldset
         class={styles.repeat_params}
         classList={{ [styles.disabled]: !context.get_context_value('is_periodic') }}
-        disabled={!context.get_context_value('is_periodic')}
       >
         <h5 class={styles.fieldset_header}>{REPEAT_CYCLE}</h5>
 
-        <fieldset class={styles.fieldset_content} >
+        <fieldset
+          class={styles.fieldset_content}
+          disabled={!context.get_context_value('is_periodic')}
+        >
 
           <fieldset class={styles.fieldset_inputs_wrapper} onChange={(e) => set_repeat_rate(e.target.value)}>
             Повторять:
@@ -233,7 +242,7 @@ const PlaningModalMain = (initial_props: Partial<TPlaningModalFormProps>) => {
         <fieldset class={styles.fieldset_content}>
 
           <div class={styles.fieldset_inputs_wrapper}>
-            <label>
+            <label class={styles.start_date_label}>
               {START_DATE}
               <input
                 type="date"
@@ -241,6 +250,7 @@ const PlaningModalMain = (initial_props: Partial<TPlaningModalFormProps>) => {
                 value={context.get_context_value('start_date')}
                 required
                 onInput={(e) => set_start_date(e.target.value)}
+                class={styles.start_date_input}
               />
             </label>
             <label>
@@ -250,6 +260,7 @@ const PlaningModalMain = (initial_props: Partial<TPlaningModalFormProps>) => {
                 value="infinitely"
                 checked={context.get_context_value('is_repeat_infinitely')}
                 onChange={(e) => set_is_infinitely(e.target.checked)}
+                disabled={!context.get_context_value('is_periodic')}
               />
               {INFINITELY}
             </label>
@@ -260,6 +271,7 @@ const PlaningModalMain = (initial_props: Partial<TPlaningModalFormProps>) => {
                 value="by_end_date"
                 checked={!context.get_context_value('is_repeat_infinitely')}
                 onChange={(e) => set_is_infinitely(!e.target.checked)}
+                disabled={!context.get_context_value('is_periodic')}
               />
               {END_DATE}
             </label>
@@ -268,9 +280,10 @@ const PlaningModalMain = (initial_props: Partial<TPlaningModalFormProps>) => {
               name="end_date"
               value={context.get_context_value('end_date')}
               required
-              disabled={context.get_context_value('is_repeat_infinitely')}
+              disabled={context.get_context_value('is_repeat_infinitely') || !context.get_context_value('is_periodic')}
               classList={{ [styles.disabled]: context.get_context_value('is_repeat_infinitely') }}
               onInput={(e) => set_end_date(e.target.value)}
+
             />
           </div>
 
@@ -282,6 +295,7 @@ const PlaningModalMain = (initial_props: Partial<TPlaningModalFormProps>) => {
                 value="end_after_repeat"
                 checked={context.get_context_value('is_repeats_quantity')}
                 onChange={toggle_is_repeats_quantity}
+                disabled={!context.get_context_value('is_periodic')}
               />
               Завершить после
             </label>
@@ -299,6 +313,7 @@ const PlaningModalMain = (initial_props: Partial<TPlaningModalFormProps>) => {
                     : ''
                 }
                 onChange={(e) => set_finish_after_repeats(+e.target.value)}
+                disabled={!context.get_context_value('is_periodic')}
               />
               повторений
             </label>

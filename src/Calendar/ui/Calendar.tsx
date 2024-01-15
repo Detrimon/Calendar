@@ -7,7 +7,7 @@ import {
   mergeProps,
   onCleanup
 } from "solid-js";
-import { Portal, render } from "solid-js/web";
+import { render } from "solid-js/web";
 
 import {
   CHOOSE_MONTH,
@@ -43,7 +43,6 @@ import { CalendarConfig } from "../config/CalendarConfig";
 import { CalendarViewMode } from "./CalendarView/CalendarViewTypes";
 import type { TCalendarStateMethods } from "../context/CalendarContextTypes";
 import { CalendarDataAdapter } from "../data_adapter/CalendarDataAdapter";
-import { SmetComissionModal } from "../../SmetComissionModal";
 
 import styles from "./Calendar.module.css";
 
