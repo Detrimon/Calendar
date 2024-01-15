@@ -42,10 +42,9 @@ export type TDayItemProps = {
   year: number
 };
 
-export type PrevCreateEffectValues = Partial<Record<CalendarActions, any>>;
-
 export enum CalendarActions{
   SELECTED_DATE = 'get_selected_date',
   GET_YEAR = 'get_year',
-  GET_SELECTED_DATE_EVENTS = 'get_selected_date_events'
+  GET_SELECTED_DATE_EVENTS = 'get_selected_date_events',
+  GET_EVENTS = 'get_events'
 };

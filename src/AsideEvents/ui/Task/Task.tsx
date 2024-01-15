@@ -1,6 +1,5 @@
 import { createSignal, Show, For } from "solid-js";
 import { TTaskProps } from "../../AsideEventsTypes";
-import { NO_SCHEDULED_SUBTASKS } from "../../lib/constants";
 
 import styles from "./Task.module.css";
 
@@ -16,7 +15,6 @@ export const Task = (props: TTaskProps) => {
         onClick={handle_title_click}
       >{props.task.title}</h4>
       <Show when={show()}>
-        <Show when={props.task.tasks.length !== 0} fallback={<p>{NO_SCHEDULED_SUBTASKS}</p>}>
           <ul class={styles.task_list}>
             <For each={props.task.tasks}>
               {(task_elem) =>
@@ -28,8 +26,6 @@ export const Task = (props: TTaskProps) => {
               }
             </For>
           </ul>
-        </Show>
-        
       </Show>
     </div>
   );

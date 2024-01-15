@@ -39,7 +39,6 @@ export const App = () => {
         </Calendar>
         <AsideEvents subscribe={calendar_controller.subscribe} />
       </div>
-      
     </>
   );
 };

@@ -35,6 +35,7 @@ export type TCalendarStateMethods = {
   get_selected_date(): Date;
   set_selected_date(date: Date): void;
   get_events(year: number): TEventsByDate;
+  get_all_events(): { [key: number]: TEventsByDate; }
   set_events(events: TEventsByDate, year: number): void;
   get_calendar_mode(): CalendarViewMode;
   get_selected_date_tasks(): TDateTask[];

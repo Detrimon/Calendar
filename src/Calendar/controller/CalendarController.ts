@@ -165,6 +165,8 @@ export class CalendarController {
 
     if (year_events_dates.includes(format_date_to_string(date))) {
       this.load_and_set_date_tasks(date);
+    } else {
+      this.set_context_selected_date_tasks([]);
     }
   };
 
@@ -191,6 +193,8 @@ export class CalendarController {
   set_context_events(events: TEventsByDate, year: number) {
     const context = this.get_context();
     context.set_events(events, year);
+
+    this.notify(CalendarActions.GET_EVENTS, context.get_all_events());
   }
 
   set_context_selected_date_tasks(tasks: TDateTask[]) {
