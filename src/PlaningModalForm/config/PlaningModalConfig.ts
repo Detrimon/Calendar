@@ -20,9 +20,9 @@ export class PlaningModalConfig {
     this.title =
       typeof params.title === "string" ? params.title : '';
     this.is_allday_meeting =
-      typeof params.is_allday_meeting === "boolean" ? params.is_allday_meeting : false;
+      typeof params.is_allday_meeting === "boolean" ? params.is_allday_meeting : true;
     this.is_periodic =
-      typeof params.is_periodic === "boolean" ? params.is_periodic : true;
+      typeof params.is_periodic === "boolean" ? params.is_periodic : false;
     this.start_time =
       typeof params.start_time === "string" ? params.start_time : '';
     this.end_time =

@@ -9,7 +9,7 @@ import { TCalendarEventType } from "../../Calendar/data_provider/CalendarDataPro
 
 const PlaningModalContext = createContext<[TPlaningModalStore, TPlaningModalStateMethods]>();
 
-// TODO Когда будет реализован функционал личного кабинета изменить хардкод username
+// TODO Когда будет реализован функционал личного кабинета изменить хардкод username и usergroup
 export const PlaningModalProvider = (props: { children: JSX.Element }) => {
   const [store, set_store] = createStore<TPlaningModalStore>({
     state: {
