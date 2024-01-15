@@ -24,9 +24,9 @@ export class PlaningModalConfig {
     this.is_periodic =
       typeof params.is_periodic === "boolean" ? params.is_periodic : false;
     this.start_time =
-      typeof params.start_time === "string" ? params.start_time : '';
+      typeof params.start_time === "string" ? params.start_time : '00:00:00';
     this.end_time =
-      typeof params.end_time === "string" ? params.end_time : '';
+      typeof params.end_time === "string" ? params.end_time : '00:00:00';
        this.start_date =
       typeof params.start_date === "string" ? params.start_date : '';
     this.end_date =

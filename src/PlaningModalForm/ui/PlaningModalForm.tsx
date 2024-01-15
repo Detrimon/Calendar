@@ -54,20 +54,16 @@ const PlaningModalMain = (initial_props: Partial<TPlaningModalFormProps>) => {
   const set_title = (new_value: string) => context.set_context_value('title', new_value);
   const change_repeated_status = (new_value: boolean) => {
     controller.set_context_value('is_periodic', new_value);
+    const date_string = format_date_to_reversed_string(calendar_context.get_selected_date());
 
-    if (!new_value) {
-      const date_string = format_date_to_reversed_string(calendar_context.get_selected_date());
-      controller.set_context_value('start_date', date_string);
-      controller.set_context_value('end_date', date_string);
-    } else {
-      controller.set_context_value('start_date', '');
-      controller.set_context_value('end_date', '');
-    }
+    controller.set_context_value('start_date', new_value ? '' : date_string);
+    controller.set_context_value('end_date', new_value ? '' : date_string);
+
   };
   const change_allday_meeting_status = (new_value: boolean) => {
     controller.set_context_value('is_allday_meeting', new_value);
-    controller.set_context_value('start_time', '00:00:00');
-    controller.set_context_value('end_time', '00:00:00');
+    controller.set_context_value('start_time', new_value ? '00:00:00' : '');
+    controller.set_context_value('end_time', new_value ? '00:00:00' : '');
   };
   
   const set_time_period_start = (new_value: string) => {
