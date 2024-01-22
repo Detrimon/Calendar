@@ -1,6 +1,7 @@
 :root{
   --selected_color: #f89e30;
   --holiday_color: #f00;
+  --error_color: #dd3535;
   --preholiday_color: #ffb6c1;
   --base_dark_color: #000;
   --base_light_color: #fff;
@@ -23,6 +24,19 @@
   display: flex;
   justify-content: space-between;
   gap: 15px;
+}
+
+.buttons{
+  display: flex;
+  gap: 10px;
+}
+
+.button{
+  padding: 5px;
+  color: #41926a;
+  background-color: transparent;
+  border: 1px solid #41926a;
+  border-radius: 3px;
 }
 
 .logo {

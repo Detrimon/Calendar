@@ -4,7 +4,6 @@ import {
   Match,
   Show,
   Switch,
-  createSignal,
   mergeProps,
   onCleanup
 } from "solid-js";
@@ -44,7 +43,6 @@ import { CalendarConfig } from "../config/CalendarConfig";
 import { CalendarViewMode } from "./CalendarView/CalendarViewTypes";
 import type { TCalendarStateMethods } from "../context/CalendarContextTypes";
 import { CalendarDataAdapter } from "../data_adapter/CalendarDataAdapter";
-import { SmetComissionModal } from "../../SmetComissionModal/SmetComissionModal";
 
 import styles from "./Calendar.module.css";
 
@@ -79,7 +77,6 @@ export const Calendar = (initial_props: Partial<TCalendarProps>) => {
 };
 
 const CalendarMain = (initial_props: Partial<TCalendarProps>) => {
-  const [showModal, setShowModal] = createSignal(true);
   const [_, context] = useCalendarContext();
   const default_props = get_default_props(initial_props);
   const props = mergeProps(default_props, initial_props) as Required<TCalendarProps>;
@@ -88,9 +85,7 @@ const CalendarMain = (initial_props: Partial<TCalendarProps>) => {
 
   return (
     <>
-      <SmetComissionModal onModalHide={() => {
-          setShowModal(!showModal());
-        }}/>
+      {props.children}
       <Show
         when={context.get_calendar_mode() === CalendarViewMode.YEAR}
         fallback={<Months />}

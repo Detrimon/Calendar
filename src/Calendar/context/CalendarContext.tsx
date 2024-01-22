@@ -88,6 +88,10 @@ export const CalendarProvider = (props: { children: JSX.Element }) => {
         return store.state.events[year];
       },
 
+      get_all_events() {
+        return store.state.events;
+      },
+
       set_events(events: TEventsByDate, year: number) {
         set_store("state", "events", year ,events);
       },

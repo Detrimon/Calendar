@@ -4,10 +4,14 @@ import { TPlaningModalFormProps } from "../ui/PlaningModalTypes";
 import { PlaningModalController } from "../controller";
 
 export type TPlaningModalState = {
+  usergroup: string;
+  title: string;
+  username: string;
+  type: string;
   is_allday_meeting: boolean,
-  is_repeated: boolean,
-  time_start: string,
-  time_end: string,
+  is_periodic: boolean,
+  start_time: string,
+  end_time: string,
   repeat_rate: TRepeatRate,
   repeat_every_week_row: number,
   repeat_week_days: REPEAT_RATE_DAYS[],
@@ -26,6 +30,7 @@ export type TPlaningModalStateMethods = {
   change_repeat_week_days(value: REPEAT_RATE_DAYS): void;
   toggle_is_repeats_quantity(): void;
   set_store_to_default(): void
+  get_form_data(): Partial<TPlaningModalState>
 };
 
 export type TPlaningModalStore = Partial<TPlaningModalFormProps> & {

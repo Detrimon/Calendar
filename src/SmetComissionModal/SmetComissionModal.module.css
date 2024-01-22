@@ -22,32 +22,6 @@
   background-color: rgba(0, 0, 0, 0.75);
 }
 
-.header {
-  position: relative;
-  display: flex;
-  align-items: center;
-  border-bottom: 1px solid var(--secondary_color);
-  margin-bottom: 10px;
-}
-
-.header::before {
-  content: '';
-  display: block;
-  margin-right: 10px;
-  width: 15px;
-  height: 15px;
-  background: url('../shared//assets/icons/calendar-svg.svg') no-repeat;
-}
-
-.header_close_button {
-  border: none;
-  margin-left: auto;
-  color: var(--secondary_color);
-  font-size: 18px;
-  background-color: transparent;
-  cursor: pointer;
-}
-
 .buttons_wrapper {
   display: flex;
   align-items: center;
@@ -84,6 +58,16 @@
 
 .button_submit::after {
   background: url('../shared/assets/icons/floppy-disk.svg') no-repeat;
+}
+
+.button_submit:disabled {
+  color: var(--grey_light_color);
+  border: 1px solid var(--grey_light_color);
+  cursor: not-allowed;
+}
+
+.button_submit:disabled::after {
+    background: url('../shared/assets/icons/floppy-disk-gray.svg') no-repeat;
 }
 
 .button_submit::after,

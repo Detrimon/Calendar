@@ -2,10 +2,11 @@ import { TRepeatRate } from "../../Calendar";
 import { TPlaningModalState } from "../context";
 
 export class PlaningModalConfig {
+  title: TPlaningModalState["title"];
   is_allday_meeting: TPlaningModalState["is_allday_meeting"];
-  is_repeated: TPlaningModalState['is_repeated'];
-  time_start: TPlaningModalState["time_start"];
-  time_end: TPlaningModalState["time_end"];
+  is_periodic: TPlaningModalState['is_periodic'];
+  start_time: TPlaningModalState["start_time"];
+  end_time: TPlaningModalState["end_time"];
   repeat_rate: TPlaningModalState["repeat_rate"];
   repeat_every_week_row: TPlaningModalState["repeat_every_week_row"];
   repeat_week_days: TPlaningModalState["repeat_week_days"];
@@ -16,14 +17,16 @@ export class PlaningModalConfig {
   finish_repeats_quantity: TPlaningModalState["finish_repeats_quantity"];
   
   constructor(params: Partial<TPlaningModalState>) {
+    this.title =
+      typeof params.title === "string" ? params.title : '';
     this.is_allday_meeting =
-      typeof params.is_allday_meeting === "boolean" ? params.is_allday_meeting : false;
-    this.is_repeated =
-      typeof params.is_repeated === "boolean" ? params.is_repeated : true;
-    this.time_start =
-      typeof params.time_start === "string" ? params.time_start : '';
-    this.time_end =
-      typeof params.time_end === "string" ? params.time_end : '';
+      typeof params.is_allday_meeting === "boolean" ? params.is_allday_meeting : true;
+    this.is_periodic =
+      typeof params.is_periodic === "boolean" ? params.is_periodic : false;
+    this.start_time =
+      typeof params.start_time === "string" ? params.start_time : '00:00:00';
+    this.end_time =
+      typeof params.end_time === "string" ? params.end_time : '00:00:00';
        this.start_date =
       typeof params.start_date === "string" ? params.start_date : '';
     this.end_date =
